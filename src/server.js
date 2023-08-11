@@ -210,7 +210,6 @@ router.post('/', async (request, env) => {
           }
         }
         console.log(awards);
-        //TODO add awards logic
         fields.push({
           "name":"Top 5% events",
           "value": awards,
