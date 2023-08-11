@@ -8,6 +8,7 @@ Bot for recording and displaying achievements in the salmon run overfishing serv
 - record scores for user (s3, event, and s2 scores) in a database
 - display scores for a user
 - it works
+- at any time i can say i have 300 eggs day only and no one can dispute it
 
 ## future features (?)
 - added to OFS
@@ -17,6 +18,7 @@ Bot for recording and displaying achievements in the salmon run overfishing serv
 - add badges (emoji) to the profile
 - command to automatically record scores for a user into the database based on OFS roles
 - allow user to automatically choose their discord role badge based on scores in their profile
+- profile command options with different layouts
 
 - feature suggestions?
 
