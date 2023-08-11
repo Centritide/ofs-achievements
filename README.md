@@ -17,7 +17,7 @@ Bot for recording and displaying achievements in the salmon run overfishing serv
 
 - add badges (emoji) to the profile
 - command to automatically record scores for a user into the database based on OFS roles
-- allow user to automatically choose their discord role badge based on scores in their profile
+- allow user to automatically choose their discord role badge based on scores in their profile, and add ofs roles based on profile
 - profile command options with different layouts
 
 - feature suggestions?
