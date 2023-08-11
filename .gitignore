@@ -1,3 +1,8 @@
 node_modules
 coverage
 .dev.vars
+ngrok
+wrangler.toml
+LICENSE
+.eslintrc.json
+.github

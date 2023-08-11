@@ -1,4 +1,4 @@
-import { AWW_COMMAND, INVITE_COMMAND } from './commands.js';
+import {UPDATE_EVENT_COMMAND,UPDATE_SCORE_COMMAND,DISPLAY_PROFILE_COMMAND, UPDATE_SCORE_COMMAND_2} from './commands.js';
 import dotenv from 'dotenv';
 import process from 'node:process';
 
@@ -34,7 +34,7 @@ const response = await fetch(url, {
     Authorization: `Bot ${token}`,
   },
   method: 'PUT',
-  body: JSON.stringify([AWW_COMMAND, INVITE_COMMAND]),
+  body: JSON.stringify([UPDATE_EVENT_COMMAND,UPDATE_SCORE_COMMAND,DISPLAY_PROFILE_COMMAND,UPDATE_SCORE_COMMAND_2]),
 });
 
 if (response.ok) {
@@ -54,3 +54,4 @@ if (response.ok) {
   }
   console.error(errorText);
 }
+
