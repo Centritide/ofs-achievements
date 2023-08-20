@@ -10,7 +10,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,UPDATE_SCORE_COMMAND,DISPLAY_PROFILE_COMMAND, UPDATE_SCORE_COMMAND_2} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,PROFILE_TO_ROLES_COMMAND} from './commands.js';
 import { InteractionResponseFlags } from 'discord-interactions';
 const dict = {
   "map0":"SG",
@@ -129,245 +129,36 @@ router.post('/', async (request, env) => {
 
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     // Most user commands will come as `APPLICATION_COMMAND`.
-    let user;
-    let score;
-    let stage;
-    let column = '';
-    let dayonly;
     // console.log(interaction.data.name.toLowerCase() ==UPDATE_SCORE_COMMAND_2.name.toLowerCase());
     switch (interaction.data.name.toLowerCase()) {
       case DISPLAY_PROFILE_COMMAND.name.toLowerCase():
-        user = interaction.data.options[0].value;
-        // console.log(interaction.guild);
-        let avi_url;
-        if(interaction.data.resolved.users[user].avatar.substring(0,2) == "a_"){
-          avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".gif";
-        }else{
-          // console.log("test")
-          avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".png";
-        }
-        // console.log(avi_url);
-        const config = {
-          host: env.DATABASE_HOST,
-          username: env.DATABASE_USERNAME,
-          password: env.DATABASE_PASSWORD
-        }
-        const conn = connect(config);
-        const output = await conn.execute("SELECT * from users where id = ?;", [user]);
-        // console.log(output);
-        // const old = await conn.execute("SELECT map2day from users where id = ?;", [user],{as:'array'});
-        // console.log(old);
-        let row;
-        if(output.rows.length >0){
-          row = output.rows[0];
-        } else {
-          return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-              content: "No profile detected for user <@"+user+">",
-              flags: 1000000
-          }});
-        }
-        delete row.id;
-        // const keys = Object.keys(row);
-        // const values = Object.values(row);
-        let fields = [];
-        // console.log(keys);
-        // console.log(values);
-        const layout = ["map5", "map6","map0",
-        "map5day","map6day","map0day",
-        "map1","map7","princess",
-        "map1day", "map7day",""]
-        for(let i in layout){
-          // console.log(layout[i]);
-          const value = row[layout[i]];
-          if(value >= 150){
-            fields.push({
-              "name": dict[layout[i]],
-              "value": value,
-              "inline":true
-            })
-          } else {
-            fields.push({
-              "name": dict[layout[i]],
-              "value": "​",
-              "inline":true 
-            })
-          }
-        }
-        const events = ["br0", "br1","br2","ew0","ew1"]
-        let awards = "​";
-        let first = true;
-        for(let i in events){
-          console.log(row[events[i]]>=event_thresholds[events[i]]);
-          // console.log(events[i]);
-
-          // console.log(dict["br1"])
-          if(row[events[i]]>=event_thresholds[events[i]]){
-            console.log(events[i]);
-            console.log(dict[events[i]])
-            awards = awards + (first ? "" : ", ")+  dict[events[i]];
-            first = false;
-          }
-        }
-        console.log(awards);
-        fields.push({
-          "name":"Top 5% events",
-          "value": awards,
-          "inline": false
-        });
-        
-        const layout2 = ["s2map0", "s2map1","s2map2",
-        "s2map0day","s2map1day","s2map2day",
-        "s2map3","s2map4","s2princess",
-        "s2map3day", "s2map4day",""]
-        for(let i in layout2){
-          // console.log(layout[i]);
-          const value = row[layout2[i]];
-          if(value >= 150){
-            fields.push({
-              "name": dict[layout2[i]],
-              "value": value,
-              "inline":true
-            })
-          } else {
-            fields.push({
-              "name": dict[layout2[i]],
-              "value": "​",
-              "inline":true 
-            })
-          }
-        }
-        // update when added to OFS
-        // const guilds = await fetch("https://discord.com/api/v10/users/@me/guilds",{headers: {
-        //   'Content-Type': 'application/json',
-        //   Authorization: `Bot ${env.DISCORD_TOKEN}`,
-        // }}).then(response => response.json());
-        // const guild = guilds.find(guild => guild.id === "OFS ID")
-        // console.log(guild); 
-        // const guild_icon = "https://cdn.discordapp.com/icons/" + guild.id + "/" + guild.icon + ".png";
-        // console.log(guild_icon);
-        return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            "content": "",
-            "tts": false,
-            "embeds": [
-              {
-                "id": 652627557,
-                "title": "",
-                "description": "<@" + user + ">'s scores (<t:"+Math.floor((Date.now()/1000))+":d>)",
-                "color": 11714851,
-                "fields": fields,
-                "author": {
-                  "name": "OF Scorecard",
-                  // "url": "https://author.url",
-                  "icon_url": "" //guild_icon
-                },
-                // "image": {
-                //   "url": ""
-                // },
-                "thumbnail": {
-                  "url": avi_url
-                },
-                "footer": {
-                  "text": "what should i write here",
-                  "icon_url": ""
-                },
-                // "timestamp": "<t:"+Date.now()":d>"
-              }
-            ]
-          }});
+        return showProfile(interaction,env);
       case UPDATE_EVENT_COMMAND.name.toLowerCase():
-        const subcommand = interaction.data.options[0].name.toLowerCase();
-        user = interaction.data.options[0].options[0].value;
-        const event = interaction.data.options[0].options[1].value;
-        score = interaction.data.options[0].options[2].value;
-        //const dayonly = (interaction.data.options[0].options.length >=4) ? interaction.data.options[0].options[3].value : false;
-        
-        
-        if (subcommand == UPDATE_EVENT_COMMAND.options[0].name.toLowerCase()){
-            column = 'br';
-        }else { 
-            column = 'ew';
+        switch (interaction.data.options[0].name.toLowerCase()){
+          case UPDATE_EVENT_COMMAND.options[0].name.toLowerCase():
+            return updateS3(interaction,env);
+          case UPDATE_EVENT_COMMAND.options[1].name.toLowerCase():
+            return updateS2(interaction,env);
+          default: 
+            return updateEvent(interaction,env);
         }
-        // console.log(subcommand);
-        // console.log(UPDATE_EVENT_COMMAND.options[1].name.toLowerCase());
-        column = column + event;
-        const new_event_score = await updateScore(user, score, column,env);
-        
-        return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: "Updated " + column + " score for <@"+user + ">: "  + new_event_score,
-            flags: 1000000
-        }});
-      case UPDATE_SCORE_COMMAND.name.toLowerCase():
-        user = interaction.data.options[0].value;
-        stage = interaction.data.options[1].value;
-        score = interaction.data.options[2].value;
-        dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
-        
-        switch (stage){
-          case 100:
-            column = 'princess';
-          default:
-            column = 'map' + stage;
-        }
-        // console.log("here");
-        const new_score = await updateScore(user,score,column,env);
-        // console.log(content);
-        let content = "Updated " + column + " score for <@"+user + ">: "  + new_score;
-        // console.log(content);
-        if(stage !=100 && dayonly){
-          column = column + 'day';
-          // console.log(column);
-          const day_new = await updateScore(user,score,column,env);
-          // console.log(day_new);
-          content =  content +  "\nUpdated " + column + " score for <@"+user + ">: "  + day_new;
-        }
-        // console.log(content);
-        return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: content,
-            flags: 1000000
-        }});
-      case UPDATE_SCORE_COMMAND_2.name.toLowerCase():
-        // console.log(command);
-        user = interaction.data.options[0].value;
-        stage = interaction.data.options[1].value;
-        score = interaction.data.options[2].value;
-        dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
+      case IMPORT_FROM_ROLES_COMMAND.name.toLowerCase():
 
-        switch (stage){
-          case 100:
-            column = 'princess';
-          default:
-            column = 'map' + stage;
-        }
-        column = 's2' + column;
-        
-        
-        console.log(column);
-        const new_score2 = await updateScore(user,score,column,env);
-        // console.log(content);
-        let content2 = "Updated " + column + " score for <@"+user + ">: "  + new_score2;
-        // console.log(content);
-        if(stage !=100 && dayonly){
-          column = column + 'day';
-          // console.log(column);
-          const day_new = await updateScore(user,score,column,env);
-          // console.log(day_new);
-          content2 =  content2 +  "\nUpdated " + column + " score for <@"+user + ">: "  + day_new;
-        }
-        //  console.log(content2);
-        return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: content2,
-            flags: 1000000
-        }})
+      case REQUEST_SCORE_COMMAND.name.toLowerCase():
+        return requestScore(interaction,env);
+      case PROFILE_TO_ROLES_COMMAND.name.toLowerCase():
+
+      // case UPDATE_SCORE_COMMAND.name.toLowerCase():
+      //   return updateS3(interaction,env);
+      // case UPDATE_SCORE_COMMAND_2.name.toLowerCase():
+      //   return updateS2(interaction,env);
       default:
         return new JsonResponse({ error: 'Unknown Type' + interaction.data.name.toLowerCase() }, { status: 400 });
     }
   }
+  if (interaction.type === InteractionType.MESSAGE_COMPONENT){
 
+  }
   console.error('Unknown Type');
   return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
 });
@@ -395,7 +186,155 @@ const server = {
   },
   
 };
+async function showProfile(interaction,env){
+  let user = interaction.data.options[0].value;
+  // console.log(interaction.guild);
+  let avi_url;
+  if(interaction.data.resolved.users[user].avatar.substring(0,2) == "a_"){
+    avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".gif";
+  }else{
+    // console.log("test")
+    avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".png";
+  }
+  // console.log(avi_url);
+  const config = {
+    host: env.DATABASE_HOST,
+    username: env.DATABASE_USERNAME,
+    password: env.DATABASE_PASSWORD
+  }
+  const conn = connect(config);
+  const output = await conn.execute("SELECT * from users where id = ?;", [user]);
+  // console.log(output);
+  // const old = await conn.execute("SELECT map2day from users where id = ?;", [user],{as:'array'});
+  // console.log(old);
+  let row;
+  if(output.rows.length >0){
+    row = output.rows[0];
+  } else {
+    return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "No profile detected for user <@"+user+">",
+        flags: 1000000
+    }});
+  }
+  delete row.id;
+  // const keys = Object.keys(row);
+  // const values = Object.values(row);
+  let fields = [];
+  // console.log(keys);
+  // console.log(values);
+  const layout = ["map5", "map6","map0",
+  "map5day","map6day","map0day",
+  "map1","map7","princess",
+  "map1day", "map7day",""]
+  for(let i in layout){
+    // console.log(layout[i]);
+    const value = row[layout[i]];
+    if(value >= 150){
+      fields.push({
+        "name": dict[layout[i]],
+        "value": value,
+        "inline":true
+      })
+    } else {
+      fields.push({
+        "name": dict[layout[i]],
+        "value": "​",
+        "inline":true 
+      })
+    }
+  }
+  const events = ["br0", "br1","br2","ew0","ew1"]
+  let awards = "​";
+  let first = true;
+  for(let i in events){
+    // console.log(row[events[i]]>=event_thresholds[events[i]]);
+    // console.log(events[i]);
 
+    // console.log(dict["br1"])
+    if(row[events[i]]>=event_thresholds[events[i]]){
+      // console.log(events[i]);
+      // console.log(dict[events[i]])
+      awards = awards + (first ? "" : ", ")+  dict[events[i]];
+      first = false;
+    }
+  }
+  // console.log(awards);
+  fields.push({
+    "name":"Top 5% events",
+    "value": awards,
+    "inline": false
+  });
+  
+  const layout2 = ["s2map0", "s2map1","s2map2",
+  "s2map0day","s2map1day","s2map2day",
+  "s2map3","s2map4","s2princess",
+  "s2map3day", "s2map4day",""]
+  for(let i in layout2){
+    // console.log(layout[i]);
+    const value = row[layout2[i]];
+    if(value >= 150){
+      fields.push({
+        "name": dict[layout2[i]],
+        "value": value,
+        "inline":true
+      })
+    } else {
+      fields.push({
+        "name": dict[layout2[i]],
+        "value": "​",
+        "inline":true 
+      })
+    }
+  }
+  // const perms = await fetch("https://discord.com/api/v10/applications/1135411894262435881/guilds/814901025856159804/commands/permissions",
+  // {headers:{
+  //   'Content-Type': 'application/json',
+  //   Authorization: `Bot ${env.DISCORD_TOKEN}`,
+  //   method:'GET'
+  // }}).then(response => response.json());
+  // console.log(perms);
+  // update when added to OFS
+  const guilds = await fetch("https://discord.com/api/v10/users/@me/guilds",{headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bot ${env.DISCORD_TOKEN}`,
+  }}).then(response => response.json());
+  // const guild = guilds.find(guild => guild.id === "OFS ID")
+  console.log(guilds); 
+  // const guild_icon = "https://cdn.discordapp.com/icons/" + guild.id + "/" + guild.icon + ".png";
+  // console.log(guild_icon);
+  return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "",
+      "tts": false,
+      "embeds": [
+        {
+          // "id": 652627557,
+          "title": "",
+          "description": "<@" + user + ">'s scores (<t:"+Math.floor((Date.now()/1000))+":d>)",
+          "color": 11714851,
+          "fields": fields,
+          "author": {
+            "name": "OF Scorecard",
+            // "url": "https://author.url",
+            "icon_url": "" //guild_icon
+          },
+          // "image": {
+          //   "url": ""
+          // },
+          "thumbnail": {
+            "url": avi_url
+          },
+          "footer": {
+            "text": "what should i write here",
+            "icon_url": ""
+          },
+          // "timestamp": "<t:"+Date.now()":d>"
+        }
+      ]
+    }
+  });
+}
 async function updateScore(user,score,column,env){
   const config = {
     host: env.DATABASE_HOST,
@@ -440,4 +379,234 @@ async function updateScore(user,score,column,env){
   // }
   return Math.max(old_score,score);
 }
+
+async function updateEvent(interaction,env){
+  const subcommand = interaction.data.options[0].name.toLowerCase();
+  const user = interaction.data.options[0].options[0].value;
+  const event = interaction.data.options[0].options[1].value;
+  const score = interaction.data.options[0].options[2].value;
+  
+  let column;
+  if (subcommand == UPDATE_EVENT_COMMAND.options[2].name.toLowerCase()){
+      column = 'br';
+  }else { 
+      column = 'ew';
+  }
+  // console.log(subcommand);
+  // console.log(UPDATE_EVENT_COMMAND.options[1].name.toLowerCase());
+  column = column + event;
+  const new_event_score = await updateScore(user, score, column,env);
+  
+  return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      content: "Updated " + column + " score for <@"+user + ">: "  + new_event_score,
+      flags: 1000000
+  }});
+}
+
+async function updateS3(interaction,env){
+  const user = interaction.data.options[0].value;
+  const stage = interaction.data.options[1].value;
+  const score = interaction.data.options[2].value;
+  const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
+  let column;
+  switch (stage){
+    case 100:
+      column = 'princess';
+    default:
+      column = 'map' + stage;
+  }
+  // console.log("here");
+  const new_score = await updateScore(user,score,column,env);
+  // console.log(content);
+  let content = "Updated " + column + " score for <@"+user + ">: "  + new_score;
+  // console.log(content);
+  if(stage !=100 && dayonly){
+    column = column + 'day';
+    // console.log(column);
+    const day_new = await updateScore(user,score,column,env);
+    // console.log(day_new);
+    content =  content +  "\nUpdated " + column + " score for <@"+user + ">: "  + day_new;
+  }
+  // console.log(content);
+  return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      content: content,
+      flags: 1000000
+  }});
+}
+
+async function updateS2(interaction,env){
+  // console.log(command);
+  const user = interaction.data.options[0].value;
+  const stage = interaction.data.options[1].value;
+  const score = interaction.data.options[2].value;
+  const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
+  let column;
+  switch (stage){
+    case 100:
+      column = 'princess';
+    default:
+      column = 'map' + stage;
+  }
+  column = 's2' + column;
+   
+   
+  console.log(column);
+  const new_score2 = await updateScore(user,score,column,env);
+  // console.log(content);
+  let content2 = "Updated " + column + " score for <@"+user + ">: "  + new_score2;
+  // console.log(content);
+  if(stage !=100 && dayonly){
+    column = column + 'day';
+    // console.log(column);
+    const day_new = await updateScore(user,score,column,env);
+    // console.log(day_new);
+    content2 =  content2 +  "\nUpdated " + column + " score for <@"+user + ">: "  + day_new;
+  }
+  //  console.log(content2);
+  return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      content: content2,
+      flags: 1000000
+  }})
+}
+
+async function requestScore(interaction,env){
+  const subcommand = interaction.data.options[0].name.toLowerCase();
+  console.log(interaction);
+  const user = interaction.member.user.id;
+  const link = interaction.data.options[0].options[0].value;
+  const stage = interaction.data.options[0].options[1].value;
+  const score = interaction.data.options[0].options[2].value;
+  const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
+  // if(link.substring(0,67) === "https://discord.com/channels/737359708276654121/747408376253775873/"){
+        
+  // } else {
+  //   return new JsonResponse({
+  //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+  //     data: {
+  //       "content": "Please link a message from <#747408376253775873>.",
+  //       "flags":1000000
+  //     }
+  //   });
+  // }
+  // const msg_id = link.substring(67);
+  // console.log(msg_id);
+  // const get_message = await fetch("https://discord.com/api/v10/channels/814901025856159808/messages/" + msg_id, {
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     Authorization: `Bot ${env.DISCORD_TOKEN}`,
+  //   }
+  // });
+  // const msg = await get_message.json();
+  // console.log(msg);
+  const img = await fetch(link);
+  const real = await img.status;
+  if(real==200){
+
+  } else {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Please link a valid image",
+        "flags":1000000
+      }
+    });
+  }
+  const response = await fetch("https://discord.com/api/v10/channels/1142653555895971943/messages",{
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method:'POST',
+    body: JSON.stringify({
+      "content": "<@" + user + "> requested (" + subcommand + ") " + score + " on spawning grounds" + (dayonly ? " day only " : ""),
+      "embeds": [
+        {
+          "id": 652627557,
+          "author": {
+            "name": ""
+          },
+          "image": {
+            "url": link
+          },
+          "fields": []
+        }
+      ],
+      "components":[
+        {
+          type:1,
+          components:[
+            {
+              type:2,
+              label:"approve",
+              style:3,
+              custom_id:"approve"
+            },
+            {
+              type:2,
+              label:"deny",
+              style:4,
+              custom_id:"deny"
+            },
+            {
+              type:2,
+              label:"no action",
+              style:2,
+              custom_id:"nop"
+            }
+          ]
+        },
+        {
+          type:1,
+          components:[{
+            type:3,
+            custom_id:"change map",
+            placeholder:"change map",
+            options:[
+              {
+                "label": "jsj",
+                "value": "jsj",
+                "description": "ez map",
+              }
+            ]
+          }]
+        },
+        {
+          type:1,
+          components:[{
+            type:3,
+            custom_id:"change score",
+            placeholder:"adjust score",
+            options:[
+              {
+                "label": "jsj",
+                "value": "jsj",
+                "description": "ez map",
+              }
+            ]
+          }]
+        },
+        // {
+        //   type:1,
+        //   components:[{
+        //     type:4,
+        //     custom_id:"score",
+        //     label:"score"
+        //   }]
+        // }
+      ]
+    })
+  })
+  const data = await response.json()
+  // console.log(data);
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "lol"
+    }
+  });
+}
+
 export default server;

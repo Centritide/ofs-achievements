@@ -9,10 +9,10 @@ Bot for recording and displaying achievements in the salmon run overfishing serv
 - display scores for a user
 - it works
 - at any time i can say i have 300 eggs day only and no one can dispute it
+- permission locking commands to certain roles (eg only staff can update scores)
 
 ## future features (?)
 - added to OFS
-- permission locking commands to certain roles (eg only staff can update scores)
 - allow user to delete some/all of their scores
 
 - add badges (emoji) to the profile

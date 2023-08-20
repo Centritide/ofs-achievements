@@ -1,4 +1,4 @@
-import {UPDATE_EVENT_COMMAND,UPDATE_SCORE_COMMAND,DISPLAY_PROFILE_COMMAND, UPDATE_SCORE_COMMAND_2} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,PROFILE_TO_ROLES_COMMAND} from './commands.js';
 import dotenv from 'dotenv';
 import process from 'node:process';
 
@@ -34,7 +34,7 @@ const response = await fetch(url, {
     Authorization: `Bot ${token}`,
   },
   method: 'PUT',
-  body: JSON.stringify([UPDATE_EVENT_COMMAND,UPDATE_SCORE_COMMAND,DISPLAY_PROFILE_COMMAND,UPDATE_SCORE_COMMAND_2]),
+  body: JSON.stringify([UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND,IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,PROFILE_TO_ROLES_COMMAND]),
 });
 
 if (response.ok) {
