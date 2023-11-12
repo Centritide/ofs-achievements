@@ -4,86 +4,16 @@
 
 import { Router } from 'itty-router';
 import {Client,connect} from '@planetscale/database';
-// import {fetch} from 'undici';
 import {
   InteractionResponseType,
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,PROFILE_TO_ROLES_COMMAND} from './commands.js';
-import { InteractionResponseFlags } from 'discord-interactions';
-const dict = {
-  "map0":"SG",
-  "map1":"MB",
-  "map2":"LO",
-  "map3":"SS",
-  "map4":"AP",
-  "map5":"SSt",
-  "map6":"GFH",
-  "map7":"JSJ",
-  "map8":"",
-  "map9":"",
-  "map10":"",
-  "map11":"",
-  "map0day":"SG☀️",
-  "map1day":"MB☀️",
-  "map2day":"LO☀️",
-  "map3day":"SS☀️",
-  "map4day":"AP☀️",
-  "map5day":"SSt☀️",
-  "map6day":"GFH☀️",
-  "map7day":"JSJ☀️",
-  "map8day":"",
-  "map9day":"",
-  "map10day":"",
-  "map11day":"",
-  "princess":"Princess",
-  "br0":"BR1 - Wahoo World",
-  "br1":"BR2 - Inkblot Art Academy",
-  "br2":"BR3 - Undertow Spillway",
-  "br3":"",
-  "br4":"",
-  "br5":"",
-  "br6":"",
-  "br7":"",
-  "br8":"",
-  "br9":"",
-  "br10":"",
-  "br11":"",
-  "br12":"",
-  "ew0":"EW1 - SSt",
-  "ew1":"EW2 - GFH",
-  "ew2":"",
-  "ew3":"",
-  "ew4":"",
-  "ew5":"",
-  "ew6":"",
-  "ew7":"",
-  "ew8":"",
-  "ew9":"",
-  "ew10":"",
-  "ew11":"",
-  "ew12":"",
-  "s2map0":"SG (s2)",
-  "s2map1":"MB (s2)",
-  "s2map2":"LO (s2)",
-  "s2map3":"SS (s2)",
-  "s2map4":"AP (s2)", 
-  "s2map0day":"SG☀️ (s2)",
-  "s2map1day":"MB☀️ (s2)",
-  "s2map2day":"LO☀️ (s2)",
-  "s2map3day":"SS☀️ (s2)",
-  "s2map4day":"AP☀️ (s2)",
-  "s2princess":"Princess (s2)",
-  "":""
-}
-const event_thresholds = {
-  "br0": 137,
-  "br1": 141,
-  "br2": 150,
-  "ew0": 203,
-  "ew1": 217
-}
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER} from './commands.js';
+const data = require("./data/data.json");
+const dict = data.dict;
+const event_thresholds = data.event_thresholds;
+const table = "users_prod";
 class JsonResponse extends Response {
   constructor(body, init) {
     const jsonBody = JSON.stringify(body);
@@ -118,7 +48,7 @@ router.post('/', async (request, env) => {
   if (!isValid || !interaction) {
     return new Response('Bad request signature.', { status: 401 });
   }
-  console.log(interaction)
+  console.log(interaction);
   if (interaction.type === InteractionType.PING) {
     // The `PING` message is used during the initial webhook handshake, and is
     // required to configure the webhook in the developer portal.
@@ -126,66 +56,63 @@ router.post('/', async (request, env) => {
       type: InteractionResponseType.PONG,
     });
   }
-
+  
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     // Most user commands will come as `APPLICATION_COMMAND`.
-    // console.log(interaction.data.name.toLowerCase() ==UPDATE_SCORE_COMMAND_2.name.toLowerCase());
+    // console.log("test");
     switch (interaction.data.name.toLowerCase()) {
       case DISPLAY_PROFILE_COMMAND.name.toLowerCase():
         return showProfile(interaction,env);
       case UPDATE_EVENT_COMMAND.name.toLowerCase():
         switch (interaction.data.options[0].name.toLowerCase()){
           case UPDATE_EVENT_COMMAND.options[0].name.toLowerCase():
-            return updateS3(interaction,env);
+            return update(interaction,env);
           case UPDATE_EVENT_COMMAND.options[1].name.toLowerCase():
-            return updateS2(interaction,env);
+            return update(interaction,env);
           default: 
             return updateEvent(interaction,env);
         }
       case IMPORT_FROM_ROLES_COMMAND.name.toLowerCase():
-
+        return importFromRoles(interaction.member.user.id,interaction,env);
+      case IMPORT_USER.name.toLowerCase():
+        return importFromRoles(interaction.data.options[0].value,interaction,env);
+      
+      // case PROFILE_TO_ROLES_COMMAND.name.toLowerCase():
+        
       case REQUEST_SCORE_COMMAND.name.toLowerCase():
         return requestScore(interaction,env);
-      case PROFILE_TO_ROLES_COMMAND.name.toLowerCase():
-
-      // case UPDATE_SCORE_COMMAND.name.toLowerCase():
-      //   return updateS3(interaction,env);
-      // case UPDATE_SCORE_COMMAND_2.name.toLowerCase():
-      //   return updateS2(interaction,env);
+      case TEST_COMMAND.name.toLowerCase():
+        
+        // console.log("test");
+        return new JsonResponse({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data:{
+            embeds:[
+              {
+                image: {
+                  url: interaction.data.resolved.attachments[Object.keys(interaction.data.resolved.attachments)[0]].url
+                }
+              }
+            ]
+          }
+        })
+        break;
+      
       default:
         return new JsonResponse({ error: 'Unknown Type' + interaction.data.name.toLowerCase() }, { status: 400 });
     }
   }
   if (interaction.type === InteractionType.MESSAGE_COMPONENT){
-
-  }
+    return await componentResponse(interaction,env);
+  } 
   console.error('Unknown Type');
   return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
 });
 router.all('*', () => new Response('Not Found.', { status: 404 }));
 
-async function verifyDiscordRequest(request, env) {
-  const signature = request.headers.get('x-signature-ed25519');
-  const timestamp = request.headers.get('x-signature-timestamp');
-  const body = await request.text();
-  const isValidRequest =
-    signature &&
-    timestamp &&
-    verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY);
-  if (!isValidRequest) {
-    return { isValid: false };
-  }
 
-  return { interaction: JSON.parse(body), isValid: true };
-}
+// holy hell. what the hell. AAAAAAAA
 
-const server = {
-  verifyDiscordRequest: verifyDiscordRequest,
-  fetch: async function (request, env) {
-    return router.handle(request, env);
-  },
-  
-};
 async function showProfile(interaction,env){
   let user = interaction.data.options[0].value;
   // console.log(interaction.guild);
@@ -203,7 +130,7 @@ async function showProfile(interaction,env){
     password: env.DATABASE_PASSWORD
   }
   const conn = connect(config);
-  const output = await conn.execute("SELECT * from users where id = ?;", [user]);
+  const output = await conn.execute("SELECT * from " + table + " where id = ?;", [user]);
   // console.log(output);
   // const old = await conn.execute("SELECT map2day from users where id = ?;", [user],{as:'array'});
   // console.log(old);
@@ -217,34 +144,44 @@ async function showProfile(interaction,env){
         flags: 1000000
     }});
   }
+  // console.log(row);
   delete row.id;
+  // console.log(row);
   // const keys = Object.keys(row);
   // const values = Object.values(row);
   let fields = [];
   // console.log(keys);
   // console.log(values);
-  const layout = ["map5", "map6","map0",
-  "map5day","map6day","map0day",
-  "map1","map7","princess",
-  "map1day", "map7day",""]
+  const layout = ["sst", "gfh","sg",
+  "mb", "jsj","ssy",
+"sstday","gfhday","sgday",
+"mbday","jsjday","ssyday",
+"princess","br1","br2",
+"br3","br4","ew1",
+"ew2","ew3","ew4",
+"s2sg","s2mb","s2lo",
+"s2ss","s2ap","s2princess",
+"s2sgday","s2mbday","s2loday",
+"s2ssday","s2apday"]
   for(let i in layout){
     // console.log(layout[i]);
     const value = row[layout[i]];
-    if(value >= 150){
+    // console.log(value);
+    if(true){ //there should be some logic for adding badges to scores
       fields.push({
-        "name": dict[layout[i]],
+        "name": layout[i], //change back to dict[layout[i]]
         "value": value,
         "inline":true
       })
     } else {
       fields.push({
-        "name": dict[layout[i]],
+        "name": layout[i], //this too
         "value": "​",
         "inline":true 
       })
     }
   }
-  const events = ["br0", "br1","br2","ew0","ew1"]
+  const events = ["br1", "br2","br3","br4","ew1","ew2","ew3"]
   let awards = "​";
   let first = true;
   for(let i in events){
@@ -265,34 +202,28 @@ async function showProfile(interaction,env){
     "value": awards,
     "inline": false
   });
-  
-  const layout2 = ["s2map0", "s2map1","s2map2",
-  "s2map0day","s2map1day","s2map2day",
-  "s2map3","s2map4","s2princess",
-  "s2map3day", "s2map4day",""]
-  for(let i in layout2){
-    // console.log(layout[i]);
-    const value = row[layout2[i]];
-    if(value >= 150){
-      fields.push({
-        "name": dict[layout2[i]],
-        "value": value,
-        "inline":true
-      })
-    } else {
-      fields.push({
-        "name": dict[layout2[i]],
-        "value": "​",
-        "inline":true 
-      })
-    }
-  }
-  // const perms = await fetch("https://discord.com/api/v10/applications/1135411894262435881/guilds/814901025856159804/commands/permissions",
-  // {headers:{
-  //   'Content-Type': 'application/json',
-  //   Authorization: `Bot ${env.DISCORD_TOKEN}`,
-  //   method:'GET'
-  // }}).then(response => response.json());
+  // console.log("here")
+  // const layout2 = ["s2map0", "s2map1","s2map2",
+  // "s2map0day","s2map1day","s2map2day",
+  // "s2map3","s2map4","s2princess",
+  // "s2map3day", "s2map4day",""]
+  // for(let i in layout2){
+  //   // console.log(layout[i]);
+  //   const value = row[layout2[i]];
+  //   if(value >= 150){
+  //     fields.push({
+  //       "name": dict[layout2[i]],
+  //       "value": value,
+  //       "inline":true
+  //     })
+  //   } else {
+  //     fields.push({
+  //       "name": dict[layout2[i]],
+  //       "value": "​",
+  //       "inline":true 
+  //     })
+  //   }
+  // }
   // console.log(perms);
   // update when added to OFS
   const guilds = await fetch("https://discord.com/api/v10/users/@me/guilds",{headers: {
@@ -300,9 +231,10 @@ async function showProfile(interaction,env){
     Authorization: `Bot ${env.DISCORD_TOKEN}`,
   }}).then(response => response.json());
   // const guild = guilds.find(guild => guild.id === "OFS ID")
-  console.log(guilds); 
+  // console.log(guilds); 
   // const guild_icon = "https://cdn.discordapp.com/icons/" + guild.id + "/" + guild.icon + ".png";
   // console.log(guild_icon);
+  // console.log(fields);
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
       "content": "",
@@ -335,7 +267,456 @@ async function showProfile(interaction,env){
     }
   });
 }
-async function updateScore(user,score,column,env){
+
+// handles responding to super secret staff buttons/fields
+
+async function componentResponse(interaction,env){
+  // console.log(interaction);
+  const user = interaction.message.embeds[0].fields[0].value;
+  // console.log(user);
+  let subcommand = interaction.message.embeds[0].fields[1].value;
+  let score = Number(interaction.message.embeds[0].fields[2].value);
+  let rot_type = interaction.message.embeds[0].fields[3].value;
+  let stage = interaction.message.embeds[0].fields[4].value;
+  const link = interaction.message.embeds[0].image.url;
+  
+  switch(interaction.data.custom_id.toLowerCase()){
+    case "approve":
+      
+      let column = stage + ((subcommand == "bigrun" || subcommand == "eggstra") ? "":rot_type);
+      // console.log(stage);
+      // console.log();
+      let newscore = await updateScore(user,score,column,env);
+      // console.log("hello");
+      return new JsonResponse({
+        type: InteractionResponseType.UPDATE_MESSAGE,
+        data: {
+          content: "Updated score for <@" + user + ">. " + column + " score: " + newscore,
+          components:[]
+        }
+      });
+    case "deny":
+      return new JsonResponse({
+        type: InteractionResponseType.UPDATE_MESSAGE,
+        data: {
+          content:"denied",
+          embeds:[interaction.message.embeds[0]],
+          components:[]
+        }
+      });
+    case "change subcommand":
+      subcommand = interaction.data.values[0];
+      // console.log(map_event_field);
+      
+    case "change map":
+      stage = interaction.data.values[0];
+      break;
+    case "change rotation type":
+      rot_type = interaction.data.values[0];
+      break;
+    
+    case "add 1":
+      score = score + 1;
+      break;
+    case "add 2":
+      score +=2;
+      break;
+    case "add 5":
+      score +=5;
+      break;
+    case "add 10":
+      score +=10;
+      break;
+    case "sub 1":
+      score -=1;
+      break;
+    case "sub 2":
+      score -=2;
+      break;
+    case "sub 5":
+      score -=5;
+      break;
+    case "sub 10":
+      score -=10;
+      break;
+  }
+  return new JsonResponse({
+    type: InteractionResponseType.UPDATE_MESSAGE,
+    data: {
+      "embeds":  embedMaker(link,user,subcommand,score,rot_type,stage),
+      "components": componentMaker(subcommand,score,rot_type,stage)
+    }
+  });
+}
+
+//formatting for the super secret staff messages
+
+function embedMaker(link,user,subcommand,score,rot_type,stage){
+  return [
+    {
+      // "id": 652627557,
+      "author": {
+        "name": ""
+      },
+      "image": {
+        "url": link
+      },
+      "fields": [
+        {
+          "name":"user",
+          "value": user
+        },
+        {
+          "name":"subcommand",
+          "value": subcommand
+        },
+        {
+          "name":"score",
+          "value": score,
+        },
+        {
+          "name": "rot_type",
+          "value": rot_type
+        },
+        {
+          "name": "stage/event #",
+          "value": stage
+        }
+      ]
+    }
+  ];
+}
+
+function mapField(subcommand){
+  let map_event_field;
+  // console.log("test");
+  switch(subcommand){
+    case REQUEST_SCORE_COMMAND.options[0].name.toLowerCase(): //s3
+      map_event_field = 
+      {
+        type:1,
+        components:[{
+          type:3,
+          custom_id:"change map",
+          placeholder:"change map/event",
+          options:[
+            {
+              "label": "Spawning Grounds",
+              "value": "sg",
+              // "description": "ez map",
+            },
+            {
+              "label": "Marooner's Bay",
+              "value": "mb",
+              // "description": "ez map",
+            },
+            {
+              "label": "Salmonid Smokeyard",
+              "value": "ssy",
+              // "description": "ez map",
+            },
+            {
+              "label": "Gone Fission Hydroplant",
+              "value": "gfh",
+              // "description": "ez map",
+            },
+            {
+              "label": "Sockeye Station",
+              "value": "sst",
+              // "description": "ez map",
+            },
+            {
+              "label": "Jammin' Salmon Junction",
+              "value": "jsj",
+              // "description": "ez map",
+            },
+          ]
+        }]
+      };
+      break;
+    case REQUEST_SCORE_COMMAND.options[1].name.toLowerCase(): //s2
+      map_event_field = 
+      {
+        type:1,
+        components:[{
+          type:3,
+          custom_id:"change map",
+          placeholder:"change map/event",
+          options:[
+            {
+              "label": "Spawning Grounds",
+              "value": "s2sg",
+              // "description": "ez map",
+            },
+            {
+              "label": "Marooner's Bay",
+              "value": "s2mb",
+              // "description": "ez map",
+            },
+            {
+              "label": "Lost Outpost",
+              "value": "s2lo",
+              // "description": "ez map",
+            },
+            {
+              "label": "Salmond Smokeyard",
+              "value": "s2ss",
+              // "description": "ez map",
+            },
+            {
+              "label": "Ruins of Ark Polaris",
+              "value": "s2ap",
+              // "description": "ez map",
+            },
+          ]
+        }]
+      };
+      break;
+    case REQUEST_SCORE_COMMAND.options[2].name.toLowerCase(): //bigrun
+      map_event_field = 
+      {
+        type:1,
+        components:[{
+          type:3,
+          custom_id:"change map",
+          placeholder:"change map/event",
+          options:[
+            {
+              "label": "Big Run #1 - Wahoo World",
+              "value": "br1",
+              // "description": "ez map",
+            },
+            {
+              "label": "Big Run #2 - Inkblot Art Academy",
+              "value": "br2",
+              // "description": "ez map",
+            },
+            {
+              "label": "Big Run #3 - Undertow Spillway",
+              "value": "br3",
+              // "description": "ez map",
+            },
+            {
+              "label": "Big Run #4 - Um'ami Ruins",
+              "value": "br4",
+              // "description": "ez map",
+            },
+            // {
+            //   "label": "whaoo",
+            //   "value": "whaoo",
+            //   // "description": "ez map",
+            // },
+          ]
+        }]
+      };
+      break;
+    case REQUEST_SCORE_COMMAND.options[3].name.toLowerCase(): //eggstra
+      // console.log("test");
+      map_event_field = 
+      {
+        type:1,
+        components:[{
+          type:3,
+          custom_id:"change map",
+          placeholder:"change map/event",
+          options:[
+            {
+              "label": "Eggstra Work #1 - Sockeye Station",
+              "value": "ew1",
+              "description": "Splattershot, Blaster, Splat Roller, Splat Charger",
+            },
+            {
+              "label": "Eggstra Work #2 - Gone Fission Hydroplant",
+              "value": "ew2",
+              "description": "Heavy Splatling, Slosher, Splat Dualies, Splat Brella",
+            },
+          ]
+        }]
+      };
+      break;
+  }
+  // console.log("test2" + map_event_field);
+  return map_event_field;
+}
+
+function componentMaker(subcommand,score,rot_type,stage){
+  const approverow = {
+    type:1,
+    components:[
+      {
+        type:2,
+        label:"approve",
+        style:3,
+        custom_id:"approve",
+        // disabled:"true"
+      },
+      {
+        type:2,
+        label:"deny",
+        style:4,
+        custom_id:"deny",
+        // disabled:"true"
+      },
+      {
+        type:2,
+        label:"+1",
+        style:2,
+        custom_id:"add 1"
+      },
+      {
+        type:2,
+        label:"+2",
+        style:2,
+        custom_id:"add 2"
+      },
+      {
+        type:2,
+        label:"+5",
+        style:2,
+        custom_id:"add 5"
+      }
+    ]
+  };
+  const subcommandrow = {
+    type:1,
+    components:[{
+      type:3,
+      custom_id:"change subcommand",
+      placeholder:"change subcommand",
+      options:[
+        {
+          "label": "s3",
+          "value": "s3"
+        },
+        {
+          "label": "s2",
+          "value": "s2"
+        },
+        {
+          "label": "big run",
+          "value": "bigrun"
+        },
+        {
+          "label": "eggstra work",
+          "value": "eggstra"
+        }
+      ]
+    }]
+  }
+  const stagerow = mapField(subcommand.toLowerCase());
+  const rotationrow = {
+    type:1,
+    components:[{
+      type:3,
+      custom_id:"change rotation type",
+      placeholder:"change rotation type",
+      options:[
+        {
+          label:"Normal",
+          value:"normal"
+        },
+        {
+          label:"All Green Random",
+          value:"green_random"
+        },
+        {
+          label:"One Green Random",
+          value:"single_random"
+        },
+        {
+          label:"All Gold Random",
+          value:"golden_random"
+        },
+        {
+          label:"Normal (Day Only)",
+          value:"normalday"
+        },
+        {
+          label:"All Green Random (Day Only)",
+          value:"green_randomday"
+        },
+        {
+          label:"One Green Random (Day Only)",
+          value:"single_randomday"
+        },
+        {
+          label:"All Gold Random (Day Only)",
+          value:"golden_randomday"
+        },
+      ]
+    }]
+  }
+  const scorerow = {
+    type:1,
+    components:[
+      {
+        type:2,
+        label:"-1",
+        style:2,
+        custom_id:"sub 1"
+      },
+      {
+        type:2,
+        label:"-2",
+        style:2,
+        custom_id:"sub 2"
+      },
+      {
+        type:2,
+        label:"-5",
+        style:2,
+        custom_id:"sub 5"
+      },
+      {
+        type:2,
+        label:"-10",
+        style:2,
+        custom_id:"sub 10"
+      },
+      {
+        type:2,
+        label:"+10",
+        style:2,
+        custom_id:"add 10"
+      }
+    ]
+  };
+  
+
+  if(!(data[subcommand].includes(stage))){
+    return([stagerow]);
+  } else if(subcommand == "bigrun" || subcommand == "eggstra") {
+    return(
+      [
+        approverow,
+        subcommandrow,
+        stagerow,
+        scorerow
+      ]
+    );
+  } else {
+    console.log([
+      approverow,
+      subcommandrow,
+      stagerow,
+      rotationrow,
+      scorerow
+    ]);
+    return(
+      [
+        approverow,
+        subcommandrow,
+        stagerow,
+        rotationrow,
+        scorerow
+      ]
+    );
+  }
+}
+
+//three functions that all update a score. well done. very normal
+
+async function updateScore(user,score,column,env,strict_increase = true){
   const config = {
     host: env.DATABASE_HOST,
     username: env.DATABASE_USERNAME,
@@ -347,37 +728,61 @@ async function updateScore(user,score,column,env){
   }
   // console.log("what");
   // console.log(user +" " + score+ " " + column);
+  // console.log("test");
   const client = new Client(config);
   // console.log("hmm?");
   const conn = client.connection();
   // const check = await conn.execute("select if(exists (select * from users where id =?),true, false);",[user],{as:'array'});
   // let query = "INSERT INTO users (id," + column + ") VALUES (" + user + "," + score + ");";
   // console.log(check.rows[0][0]==1);
-  const old = await conn.execute("SELECT "+column+" from users where id = ?;", [user],{as:"array"});
-  // console.log(old);
-  let old_score = 0;
-  // console.log(old.rows.length>0);
-  if(old.rows.length>0 && (old.rows[0][0]<score)){
-    try{
-      console.log(await conn.execute("UPDATE users set "+ column +" = " + score + " where id = "+ user +";"));
+  if(strict_increase){
+    const old = await conn.execute("SELECT "+column+" from " + table + " where id = ?;", [user],{as:"array"});
+    console.log(old);
+    let old_score = 0;
+    // console.log(old.rows.length>0);
+    if(old.rows.length>0 && (old.rows[0][0]<score)){
+      try{
+        // console.log("test");
+        console.log(await conn.execute("UPDATE " + table + " set "+ column +" = " + score + " where id = "+ user +";"));
+        old_score = old.rows[0][0];
+        // console.log(old.rows);
+      } catch{
+        // console.error("what");
+      }
+    } else if (old.rows.length > 0){
       old_score = old.rows[0][0];
-    } catch{
-      console.error("what");
+      console.log(old_score);
+    }else {
+      old_score = 0;
+      await conn.execute("INSERT INTO " + table + " (id,"+ column+ ") VALUES ("+ user +","+ score +");",{column:column,score:score,user:user});
+    };
+    return Math.max(old_score,score);
+  } else {
+    let old_score;
+    const old = await conn.execute("SELECT "+column+" from " + table + " where id = ?;", [user],{as:"array"});
+    console.log(old);
+    if(old.rows.length <= 0){
+      old_score = 0;
+      await conn.execute("INSERT INTO " + table + " (id,"+ column+ ") VALUES ("+ user +","+ score +");",{column:column,score:score,user:user});
+    } else {
+      try{
+        // console.log("test");
+        console.log(await conn.execute("UPDATE " + table + " set "+ column +" = " + score + " where id = "+ user +";"));
+        old_score = old.rows[0][0];
+        // console.log(old.rows);
+      } catch{
+        // console.error("what");
+      }
     }
-  } else if (old.rows.length > 0){
-    old_score = old.rows[0][0];
-    console.log(old_score);
-  }else {
-    old_score = 0;
-    await conn.execute("INSERT INTO users (id,"+ column+ ") VALUES ("+ user +","+ score +");",{column:column,score:score,user:user});
-  };
+    return old_score;
+  }
   // console.log(Math.max(old_score,score));
   // try{
   //   console.log(await conn.execute(query));
   // }catch (e){
   //   console.error(e);
   // }
-  return Math.max(old_score,score);
+  
 }
 
 async function updateEvent(interaction,env){
@@ -386,48 +791,41 @@ async function updateEvent(interaction,env){
   const event = interaction.data.options[0].options[1].value;
   const score = interaction.data.options[0].options[2].value;
   
-  let column;
-  if (subcommand == UPDATE_EVENT_COMMAND.options[2].name.toLowerCase()){
-      column = 'br';
-  }else { 
-      column = 'ew';
-  }
-  // console.log(subcommand);
-  // console.log(UPDATE_EVENT_COMMAND.options[1].name.toLowerCase());
-  column = column + event;
-  const new_event_score = await updateScore(user, score, column,env);
-  
+  const old_score = await updateScore(user, score, event,env,false);
+  if(old_score ===undefined){
+    return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "Failed to update score.",
+        flags: 1000000
+    }});
+  } else {
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      content: "Updated " + column + " score for <@"+user + ">: "  + new_event_score,
+      content: "Updated " + event + " score for <@"+user + "> to " + score + ". Was:"  + old_score,
       flags: 1000000
-  }});
+  }});}
 }
 
-async function updateS3(interaction,env){
-  const user = interaction.data.options[0].value;
-  const stage = interaction.data.options[1].value;
-  const score = interaction.data.options[2].value;
-  const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
-  let column;
-  switch (stage){
-    case 100:
-      column = 'princess';
-    default:
-      column = 'map' + stage;
-  }
+async function update(interaction,env){
+  // console.log(interaction);
+  // console.log("test");
+  const user = interaction.data.options[0].options[0].value;
+  const stage = interaction.data.options[0].options[1].value;
+  const score = interaction.data.options[0].options[2].value;
+  const rot_type = interaction.data.options[0].options[3].value;
+  let column = stage + rot_type;
   // console.log("here");
-  const new_score = await updateScore(user,score,column,env);
+  const old_score = await updateScore(user,score,column,env,false);
   // console.log(content);
-  let content = "Updated " + column + " score for <@"+user + ">: "  + new_score;
+  if(old_score ===undefined){
+    return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: "Failed to update score.",
+        flags: 1000000
+    }});
+  } else {
+  let content = "Updated " + column + " score for <@"+user + "> to " + score + ". Was:"  + old_score;
   // console.log(content);
-  if(stage !=100 && dayonly){
-    column = column + 'day';
-    // console.log(column);
-    const day_new = await updateScore(user,score,column,env);
-    // console.log(day_new);
-    content =  content +  "\nUpdated " + column + " score for <@"+user + ">: "  + day_new;
-  }
   // console.log(content);
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
@@ -435,51 +833,61 @@ async function updateS3(interaction,env){
       flags: 1000000
   }});
 }
-
-async function updateS2(interaction,env){
-  // console.log(command);
-  const user = interaction.data.options[0].value;
-  const stage = interaction.data.options[1].value;
-  const score = interaction.data.options[2].value;
-  const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
-  let column;
-  switch (stage){
-    case 100:
-      column = 'princess';
-    default:
-      column = 'map' + stage;
-  }
-  column = 's2' + column;
-   
-   
-  console.log(column);
-  const new_score2 = await updateScore(user,score,column,env);
-  // console.log(content);
-  let content2 = "Updated " + column + " score for <@"+user + ">: "  + new_score2;
-  // console.log(content);
-  if(stage !=100 && dayonly){
-    column = column + 'day';
-    // console.log(column);
-    const day_new = await updateScore(user,score,column,env);
-    // console.log(day_new);
-    content2 =  content2 +  "\nUpdated " + column + " score for <@"+user + ">: "  + day_new;
-  }
-  //  console.log(content2);
-  return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: {
-      content: content2,
-      flags: 1000000
-  }})
 }
-
+// requests. sends a message to secret channel
 async function requestScore(interaction,env){
   const subcommand = interaction.data.options[0].name.toLowerCase();
-  console.log(interaction);
+  // console.log(interaction);
   const user = interaction.member.user.id;
-  const link = interaction.data.options[0].options[0].value;
-  const stage = interaction.data.options[0].options[1].value;
-  const score = interaction.data.options[0].options[2].value;
-  const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
+  const options = interaction.data.options[0].options;
+  // console.log(options);
+  let link, score,stage;
+  let rot_type = false;
+  for(const i of options) {
+    // console.log(i);
+    switch (i.name.toLowerCase()){
+      case "stage":
+        stage = i.value;
+        break;
+      case "score":
+        score = i.value;
+        break;
+      case "rot_type":
+        rot_type = i.value;
+        break;
+      case "link":
+        link = i.value;
+        break;
+      case "attachment":
+        if(interaction.data.resolved.attachments[i.value].content_type.substring(0,5) === "image"){
+          link = interaction.data.resolved.attachments[i.value].url;
+        } else {
+          return new JsonResponse({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              "content": "Please only attach images",
+              "flags":1000000
+            }
+          });
+        }
+        
+        break;
+    }
+  }
+  // console.log(link);
+  if(link == undefined){
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Please provide an image link or an attached image",
+        "flags":1000000
+      }
+    });
+  }
+  // const link = interaction.data.options[0].options[0].value;
+  // const stage = interaction.data.options[0].options[1].value;
+  // const score = interaction.data.options[0].options[2].value;
+  // const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
   // if(link.substring(0,67) === "https://discord.com/channels/737359708276654121/747408376253775873/"){
         
   // } else {
@@ -514,99 +922,132 @@ async function requestScore(interaction,env){
       }
     });
   }
-  const response = await fetch("https://discord.com/api/v10/channels/1142653555895971943/messages",{
+  const components = componentMaker(subcommand,score,rot_type,stage);
+  const response = await fetch(`https://discord.com/api/v10/channels/${env.CHANNEL_ID}/messages`,{
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
     },
     method:'POST',
     body: JSON.stringify({
-      "content": "<@" + user + "> requested (" + subcommand + ") " + score + " on spawning grounds" + (dayonly ? " day only " : ""),
-      "embeds": [
-        {
-          "id": 652627557,
-          "author": {
-            "name": ""
-          },
-          "image": {
-            "url": link
-          },
-          "fields": []
-        }
-      ],
-      "components":[
-        {
-          type:1,
-          components:[
-            {
-              type:2,
-              label:"approve",
-              style:3,
-              custom_id:"approve"
-            },
-            {
-              type:2,
-              label:"deny",
-              style:4,
-              custom_id:"deny"
-            },
-            {
-              type:2,
-              label:"no action",
-              style:2,
-              custom_id:"nop"
-            }
-          ]
-        },
-        {
-          type:1,
-          components:[{
-            type:3,
-            custom_id:"change map",
-            placeholder:"change map",
-            options:[
-              {
-                "label": "jsj",
-                "value": "jsj",
-                "description": "ez map",
-              }
-            ]
-          }]
-        },
-        {
-          type:1,
-          components:[{
-            type:3,
-            custom_id:"change score",
-            placeholder:"adjust score",
-            options:[
-              {
-                "label": "jsj",
-                "value": "jsj",
-                "description": "ez map",
-              }
-            ]
-          }]
-        },
-        // {
-        //   type:1,
-        //   components:[{
-        //     type:4,
-        //     custom_id:"score",
-        //     label:"score"
-        //   }]
-        // }
-      ]
+      "content": "<@" + user + "> requested (" + subcommand + ") " + score + " on " + stage + " " + rot_type,
+      "embeds": embedMaker(link,user,subcommand,score,rot_type,stage),
+      "components":components
     })
   })
   const data = await response.json()
-  // console.log(data);
+  if(data.id === undefined){
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Request failed.",
+        "flags":1000000
+      }
+    });
+  } else{
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      "content": "lol"
+      "content": "Request sent! https://discord.com/channels/" + interaction.guild_id + "/" + data.channel_id + "/" + data.id ,
+      "flags":1000000
+    }
+  });}
+}
+
+// import roles from a user
+
+async function importFromRoles(id,interaction,env){
+  const guild = interaction.guild_id;
+  const user = await fetch(`https://discord.com/api/v10/guilds/${guild}/members/${id}`,{
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method:'GET'
+  }).then(response => response.json());
+  console.log(user.roles);
+  const config = {
+    host: env.DATABASE_HOST,
+    username: env.DATABASE_USERNAME,
+    password: env.DATABASE_PASSWORD
+  }
+  const client = new Client(config);
+  // console.log("ey");
+  const conn = client.connection();
+  let query;
+  let vals;
+  const old = await conn.execute("SELECT * from " + table + " where id = ?;", [id],{as:"array"});
+  console.log("yo");
+  let hits = 0;
+  if(old.rows.length <= 0){
+    query = `INSERT INTO ${table} (id,`;
+    vals = `VALUES (${id},`;
+    for(let i in user.roles){
+      const pair = data.roleid_mapscores[user.roles[i]];
+      if(pair!=undefined){
+        query = query + `\`${pair[0]}\`, `;
+        vals = vals + `${pair[1]}, `;
+        hits +=1;
+      } 
+    }
+    query = query.replace(/,\s*$/, "");
+    vals = vals.replace(/,\s*$/, "");
+    query = `${query}) ${vals});`
+  } else {
+    query = `UPDATE ${table} set `;;
+    for(let i in user.roles){
+      const pair = data.roleid_mapscores[user.roles[i]];
+      if(pair!=undefined){
+        query = query + `${pair[0]}=${pair[1]}, `;
+        hits +=1;
+      } 
+    }
+    query = query.replace(/,\s*$/, "");
+    query = query + ` WHERE id=${id}`
+  }
+  if(hits<1){
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "No score roles found.",
+        "flags":1000000
+      }
+    });
+  }
+  const response = await conn.execute(query);
+  console.log(response);
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": `Imported ${response.rowsAffected} scores`,
+      "embeds":[{
+        "description":"<:bunger:886046158034710559>        "
+      }],
+      "flags":1000000
     }
   });
 }
 
+//idk what the stuff after here is
+async function verifyDiscordRequest(request, env) {
+  const signature = request.headers.get('x-signature-ed25519');
+  const timestamp = request.headers.get('x-signature-timestamp');
+  const body = await request.text();
+  const isValidRequest =
+    signature &&
+    timestamp &&
+    verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY);
+  if (!isValidRequest) {
+    return { isValid: false };
+  }
+
+  return { interaction: JSON.parse(body), isValid: true };
+}
+const server = {
+  verifyDiscordRequest: verifyDiscordRequest,
+  fetch: async function (request, env) {
+    return router.handle(request, env);
+  },
+  
+};
 export default server;

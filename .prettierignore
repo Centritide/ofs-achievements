@@ -5,3 +5,5 @@ ngrok
 wrangler.toml
 LICENSE
 .eslintrc.json
+.github
+src/register.js

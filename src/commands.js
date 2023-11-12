@@ -145,32 +145,32 @@ export const UPDATE_EVENT_COMMAND = {
         {
           name:"stage",
           description:"stage",
-          type:4,
+          type:3,
           required: true,
           choices: [
             {
               name:"Spawning Grounds",
-              value:0
+              value:"sg"
             },
             {
               name:"Marooner's Bay",
-              value:1
+              value:"mb"
+            },
+            {
+              name:"Salmonid Smokeyard",
+              value:"ssy"
             },
             {
               name:"Sockeye Station",
-              value:5
+              value:"sst"
             },
             {
               name:"Gone Fission Hydroplant",
-              value:6
+              value:"gfh"
             },
             {
               name:"Jammin' Salmon Junction",
-              value:7
-            },
-            {
-              name:"Princess",
-              value:100
+              value:"jsj"
             }
           ]
         },
@@ -181,9 +181,48 @@ export const UPDATE_EVENT_COMMAND = {
           required: true
         },
         {
-          name:"dayonly",
-          description:"true if day only",
-          type:5
+          name:"rot_type",
+          required:true,
+          description:"Choose rotation type",
+          type:3,
+          choices:[
+            {
+              name:"Normal",
+              value:"normal"
+            },
+            {
+              name:"All Green Random",
+              value:"green_random"
+            },
+            {
+              name:"One Green Random",
+              value:"single_random"
+            },
+            {
+              name:"All Gold Random",
+              value:"golden_random"
+            },
+            {
+              name:"Normal (Day Only)",
+              value:"normalday"
+            },
+            {
+              name:"All Green Random (Day Only)",
+              value:"green_randomday"
+            },
+            {
+              name:"One Green Random (Day Only)",
+              value:"single_randomday"
+            },
+            {
+              name:"All Gold Random (Day Only)",
+              value:"golden_randomday"
+            },
+            {
+              name:"Princess",
+              value:"princess"
+            }
+          ]
         }
         
       ]
@@ -204,32 +243,32 @@ export const UPDATE_EVENT_COMMAND = {
         {
           name:"stage",
           description:"stage",
-          type:4,
+          type:3,
           required: true,
           choices: [
             {
               name:"Spawning Grounds",
-              value:0
+              value:"s2sg"
             },
             {
               name:"Marooner's Bay",
-              value:1
+              value:"s2mb"
             },
             {
               name:"Lost Outpost",
-              value:2
+              value:"s2lo"
             },
             {
               name:"Salmonid Smokeyard",
-              value:3
+              value:"s2ss"
             },
             {
               name:"Ruins of Ark Polaris",
-              value:4
+              value:"s2ap"
             },
             {
               name:"Princess",
-              value:100
+              value:"s2princess"
             }
           ]
         },
@@ -240,9 +279,48 @@ export const UPDATE_EVENT_COMMAND = {
           required: true
         },
         {
-          name:"dayonly",
-          description:"true if day only",
-          type:5
+          name:"rot_type",
+          required:true,
+          description:"Choose rotation type",
+          type:3,
+          choices:[
+            {
+              name:"Normal",
+              value:"normal"
+            },
+            {
+              name:"All Green Random",
+              value:"green_random"
+            },
+            {
+              name:"One Green Random",
+              value:"single_random"
+            },
+            {
+              name:"All Gold Random",
+              value:"golden_random"
+            },
+            {
+              name:"Normal (Day Only)",
+              value:"normalday"
+            },
+            {
+              name:"All Green Random (Day Only)",
+              value:"green_randomday"
+            },
+            {
+              name:"One Green Random (Day Only)",
+              value:"single_randomday"
+            },
+            {
+              name:"All Gold Random (Day Only)",
+              value:"golden_randomday"
+            },
+            {
+              name:"Princess",
+              value:"princess"
+            }
+          ]
         }
       ]
     },
@@ -260,20 +338,24 @@ export const UPDATE_EVENT_COMMAND = {
         {
           name:"event",
           description:"map",
-          type:4,
+          type:3,
           required:true,
           choices:[
             {
               name:"Wahoo World",
-              value:0
+              value:"br1"
             },
             {
               name:"Inkblot Art Academy",
-              value:1
+              value:"br2"
             },
             {
               name:"Undertow Spillway",
-              value:2
+              value:"br3"
+            },
+            {
+              name:"Umam'i Ruins",
+              value:"br4"
             }
           ]
         },
@@ -300,16 +382,16 @@ export const UPDATE_EVENT_COMMAND = {
         {
           name:"event",
           description:"event",
-          type:4,
+          type:3,
           required:true,
           choices:[
             {
               name:"1 - Sockeye Station",
-              value:0
+              value:"ew1"
             },
             {
               name:"2 - Gone Fission Hydroplant",
-              value:1
+              value:"ew2"
             }
           ]
         },
@@ -329,7 +411,7 @@ export const UPDATE_EVENT_COMMAND = {
 export const DISPLAY_PROFILE_COMMAND = {
   name:"profile",
   type:1,
-  dm_permission:"true",
+  dm_permission:"false",
   description:"see user profile",
   options:[
     {
@@ -381,8 +463,20 @@ export const IMPORT_FROM_ROLES_COMMAND = {
   name:"import",
   description:"import scores from your roles",
   dm_permission:"false",
+  type:1
+}
+export const IMPORT_USER = {
+  name:"forceimport",
+  default_member_permissions:"32",
+  description:"import scores from a user's roles",
+  dm_permission:"false",
   type:1,
-  guild_id:737359708276654121
+  options:[{
+    name:"user",
+    description:"user to search",
+    type:6,
+    required:true
+  }]
 }
 
 export const REQUEST_SCORE_COMMAND = {
@@ -399,40 +493,38 @@ export const REQUEST_SCORE_COMMAND = {
       description: 'request an s3 score',
       options: [
         {
-          name:"link",
-          description:"link to image proof",
-          type:3,
-          required:true
-        },
-        {
           name:"stage",
           description:"stage",
-          type:4,
+          type:3,
           required: true,
           choices: [
             {
               name:"Spawning Grounds",
-              value:0
+              value:"sg"
             },
             {
               name:"Marooner's Bay",
-              value:1
+              value:"mb"
+            },
+            {
+              name:"Salmonid Smokeyard",
+              value:"ss"
             },
             {
               name:"Sockeye Station",
-              value:5
+              value:"sst"
             },
             {
               name:"Gone Fission Hydroplant",
-              value:6
+              value:"gfh"
             },
             {
               name:"Jammin' Salmon Junction",
-              value:7
+              value:"jsj"
             },
             {
               name:"Princess",
-              value:100
+              value:"princess"
             }
           ]
         },
@@ -443,11 +535,57 @@ export const REQUEST_SCORE_COMMAND = {
           required: true
         },
         {
-          name:"dayonly",
-          description:"true if day only",
-          type:5
-        }
-        
+          name:"rot_type",
+          description:"Choose rotation type",
+          type:3,
+          required:true,
+          choices:[
+            {
+              name:"Normal",
+              value:"normal"
+            },
+            {
+              name:"All Green Random",
+              value:"green_random"
+            },
+            {
+              name:"One Green Random",
+              value:"single_random"
+            },
+            {
+              name:"All Gold Random",
+              value:"golden_random"
+            },
+            {
+              name:"Normal (Day Only)",
+              value:"normalday"
+            },
+            {
+              name:"All Green Random (Day Only)",
+              value:"green_randomday"
+            },
+            {
+              name:"One Green Random (Day Only)",
+              value:"single_randomday"
+            },
+            {
+              name:"All Gold Random (Day Only)",
+              value:"golden_randomday"
+            },
+          ]
+        },
+        {
+          name:"link",
+          description:"link to image proof",
+          type:3,
+          required:false
+        },
+        {
+          name:"attachment",
+          description:"link to image proof",
+          type:11,
+          required:false
+        },        
       ]
     },
     {
@@ -457,41 +595,36 @@ export const REQUEST_SCORE_COMMAND = {
       dm_permission:"false",
       description: 'request an s2 score',
       options: [
-        {
-          name:"link",
-          description:"link to image proof",
-          type:3,
-          required:true
-        },
+        
         {
           name:"stage",
           description:"stage",
-          type:4,
+          type:3,
           required: true,
           choices: [
             {
               name:"Spawning Grounds",
-              value:0
+              value:"s2sg"
             },
             {
               name:"Marooner's Bay",
-              value:1
+              value:"s2mb"
             },
             {
               name:"Lost Outpost",
-              value:2
+              value:"s2lo"
             },
             {
               name:"Salmonid Smokeyard",
-              value:3
+              value:"s2ss"
             },
             {
               name:"Ruins of Ark Polaris",
-              value:4
+              value:"s2ap"
             },
             {
               name:"Princess",
-              value:100
+              value:"s2princess"
             }
           ]
         },
@@ -502,10 +635,57 @@ export const REQUEST_SCORE_COMMAND = {
           required: true
         },
         {
-          name:"dayonly",
-          description:"true if day only",
-          type:5
-        }
+          name:"rot_type",
+          description:"Choose rotation type",
+          type:3,
+          required:true,
+          choices:[
+            {
+              name:"Normal",
+              value:"normal"
+            },
+            {
+              name:"All Green Random",
+              value:"green_random"
+            },
+            {
+              name:"One Green Random",
+              value:"single_random"
+            },
+            {
+              name:"All Gold Random",
+              value:"golden_random"
+            },
+            {
+              name:"Normal (Day Only)",
+              value:"normalday"
+            },
+            {
+              name:"All Green Random (Day Only)",
+              value:"green_randomday"
+            },
+            {
+              name:"One Green Random (Day Only)",
+              value:"single_randomday"
+            },
+            {
+              name:"All Gold Random (Day Only)",
+              value:"golden_randomday"
+            },
+          ]
+        },
+        {
+          name:"link",
+          description:"link to image proof",
+          type:3,
+          required:false
+        },
+        {
+          name:"attachment",
+          description:"link to image proof",
+          type:11,
+          required:false
+        },
       ]
     },
     {
@@ -513,29 +693,28 @@ export const REQUEST_SCORE_COMMAND = {
       description: 'request a big run achievement',
       type:1,
       options:[
+        
         {
-          name:"link",
-          description:"link to image proof",
-          type:3,
-          required:true
-        },
-        {
-          name:"event",
+          name:"stage",
           description:"map",
-          type:4,
+          type:3,
           required:true,
           choices:[
             {
               name:"Wahoo World",
-              value:0
+              value:"br1"
             },
             {
               name:"Inkblot Art Academy",
-              value:1
+              value:"br2"
             },
             {
               name:"Undertow Spillway",
-              value:2
+              value:"br3"
+            },
+            {
+              name:"Umam'i Ruins",
+              value:"br4"
             }
           ]
         },  
@@ -544,7 +723,19 @@ export const REQUEST_SCORE_COMMAND = {
           description:"score",
           type:4,
           required:true
-        }
+        },
+        {
+          name:"link",
+          description:"link to image proof",
+          type:3,
+          required:false
+        },
+        {
+          name:"attachment",
+          description:"link to image proof",
+          type:11,
+          required:false
+        },
       ]
     },
     {
@@ -552,25 +743,20 @@ export const REQUEST_SCORE_COMMAND = {
       description: 'request an eggstra achievement',
       type:1,
       options:[
+        
         {
-          name:"link",
-          description:"link to an image",
-          type:3,
-          required:true
-        },
-        {
-          name:"event",
+          name:"stage",
           description:"event",
-          type:4,
+          type:3,
           required:true,
           choices:[
             {
               name:"1 - Sockeye Station",
-              value:0
+              value:"ew1"
             },
             {
               name:"2 - Gone Fission Hydroplant",
-              value:1
+              value:"ew2"
             }
           ]
         },
@@ -579,166 +765,193 @@ export const REQUEST_SCORE_COMMAND = {
           description:"score",
           type:4,
           required:true
-        }
+        },
+        {
+          name:"link",
+          description:"link to image proof",
+          type:3,
+          required:false
+        },
+        {
+          name:"attachment",
+          description:"image proof file",
+          type:11,
+          required:false
+        },
       ]
     },
   ]
 }
 
-export const PROFILE_TO_ROLES_COMMAND = {
-  name:"role",
-  description:"add/remove role based on profile",
-  dm_permission:"false",
-  default_member_permissions:"0",
-  type:1,
-  guild_id:737359708276654121,
-  options:[
-    {
-      name: 's3',
-      type:1,
-      default_member_permissions:"32",
-      dm_permission:"false",
-      description: 'update a user\'s score',
-      options: [
-        {
-          name:"stage",
-          description:"stage",
-          type:4,
-          required: true,
-          choices: [
-            {
-              name:"Spawning Grounds",
-              value:0
-            },
-            {
-              name:"Marooner's Bay",
-              value:1
-            },
-            {
-              name:"Sockeye Station",
-              value:5
-            },
-            {
-              name:"Gone Fission Hydroplant",
-              value:6
-            },
-            {
-              name:"Jammin' Salmon Junction",
-              value:7
-            },
-            {
-              name:"Princess",
-              value:100
-            }
-          ]
-        },
-        {
-          name:"dayonly",
-          description:"true if day only",
-          type:5
-        }
+// export const PROFILE_TO_ROLES_COMMAND = {
+//   name:"role",
+//   description:"add/remove badge based on profile",
+//   dm_permission:"false",
+//   default_member_permissions:"0",
+//   type:1,
+//   guild_id:737359708276654121,
+//   options:[
+//     {
+//       name: 's3',
+//       type:1,
+//       default_member_permissions:"32",
+//       dm_permission:"false",
+//       description: 'update a user\'s score',
+//       options: [
+//         {
+//           name:"stage",
+//           description:"stage",
+//           type:4,
+//           required: true,
+//           choices: [
+//             {
+//               name:"Spawning Grounds",
+//               value:0
+//             },
+//             {
+//               name:"Marooner's Bay",
+//               value:1
+//             },
+//             {
+//               name:"Sockeye Station",
+//               value:5
+//             },
+//             {
+//               name:"Gone Fission Hydroplant",
+//               value:6
+//             },
+//             {
+//               name:"Jammin' Salmon Junction",
+//               value:7
+//             },
+//             {
+//               name:"Princess",
+//               value:100
+//             }
+//           ]
+//         },
+//         {
+//           name:"dayonly",
+//           description:"true if day only",
+//           type:5
+//         }
         
-      ]
-    },
-    {
-      name: 's2',
-      type:1,
-      default_member_permissions:"32",
-      dm_permission:"false",
-      description: 'update a user\'s score (s2)',
-      options: [
-        {
-          name:"stage",
-          description:"stage",
-          type:4,
-          required: true,
-          choices: [
-            {
-              name:"Spawning Grounds",
-              value:0
-            },
-            {
-              name:"Marooner's Bay",
-              value:1
-            },
-            {
-              name:"Lost Outpost",
-              value:2
-            },
-            {
-              name:"Salmonid Smokeyard",
-              value:3
-            },
-            {
-              name:"Ruins of Ark Polaris",
-              value:4
-            },
-            {
-              name:"Princess",
-              value:100
-            }
-          ]
-        },
-        {
-          name:"dayonly",
-          description:"true if day only",
-          type:5
-        }
-      ]
-    },
-    {
-      name:"bigrun",
-      description: 'update a user\'s big run achievement',
-      type:1,
-      options:[
-        {
-          name:"event",
-          description:"map",
-          type:4,
-          required:true,
-          choices:[
-            {
-              name:"Wahoo World",
-              value:0
-            },
-            {
-              name:"Inkblot Art Academy",
-              value:1
-            },
-            {
-              name:"Undertow Spillway",
-              value:2
-            }
-          ]
-        },
-      ]
-    },
-    {
-      name:"eggstra",
-      description: 'update a user\'s big run achievement',
-      type:1,
-      options:[
-        {
-          name:"event",
-          description:"event",
-          type:4,
-          required:true,
-          choices:[
-            {
-              name:"1 - Sockeye Station",
-              value:0
-            },
-            {
-              name:"2 - Gone Fission Hydroplant",
-              value:1
-            }
-          ]
-        }
-      ]
-    },
+//       ]
+//     },
+//     {
+//       name: 's2',
+//       type:1,
+//       default_member_permissions:"32",
+//       dm_permission:"false",
+//       description: 'update a user\'s score (s2)',
+//       options: [
+//         {
+//           name:"stage",
+//           description:"stage",
+//           type:4,
+//           required: true,
+//           choices: [
+//             {
+//               name:"Spawning Grounds",
+//               value:0
+//             },
+//             {
+//               name:"Marooner's Bay",
+//               value:1
+//             },
+//             {
+//               name:"Lost Outpost",
+//               value:2
+//             },
+//             {
+//               name:"Salmonid Smokeyard",
+//               value:3
+//             },
+//             {
+//               name:"Ruins of Ark Polaris",
+//               value:4
+//             },
+//             {
+//               name:"Princess",
+//               value:100
+//             }
+//           ]
+//         },
+//         {
+//           name:"dayonly",
+//           description:"true if day only",
+//           type:5
+//         }
+//       ]
+//     },
+//     {
+//       name:"bigrun",
+//       description: 'update a user\'s big run achievement',
+//       type:1,
+//       options:[
+//         {
+//           name:"event",
+//           description:"map",
+//           type:4,
+//           required:true,
+//           choices:[
+//             {
+//               name:"Wahoo World",
+//               value:0
+//             },
+//             {
+//               name:"Inkblot Art Academy",
+//               value:1
+//             },
+//             {
+//               name:"Undertow Spillway",
+//               value:2
+//             }
+//           ]
+//         },
+//       ]
+//     },
+//     {
+//       name:"eggstra",
+//       description: 'update a user\'s big run achievement',
+//       type:1,
+//       options:[
+//         {
+//           name:"event",
+//           description:"event",
+//           type:4,
+//           required:true,
+//           choices:[
+//             {
+//               name:"1 - Sockeye Station",
+//               value:0
+//             },
+//             {
+//               name:"2 - Gone Fission Hydroplant",
+//               value:1
+//             }
+//           ]
+//         }
+//       ]
+//     },
     
-  ]
-}
+//   ]
+// }
+
+// export const TEST_COMMAND = {
+//   name:"test",
+//   default_member_permissions:0,
+//   dm_permission:false,
+//   description:"test",
+//   type:1,
+//   options:[
+//     {
+//       name:"attach",
+//       description:"attach",
+//       type:11
+//     }
+//   ]
+// }
 
 // export const REMOVE_SCORE_COMMAND = {
 //   name:"remove_score",

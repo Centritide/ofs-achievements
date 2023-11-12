@@ -1,4 +1,4 @@
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,PROFILE_TO_ROLES_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,IMPORT_USER,REQUEST_SCORE_COMMAND} from './commands.js';
 import dotenv from 'dotenv';
 import process from 'node:process';
 
@@ -12,7 +12,7 @@ dotenv.config({ path: '.dev.vars' });
 
 const token = process.env.DISCORD_TOKEN;
 const applicationId = process.env.DISCORD_APPLICATION_ID;
-
+const guildId = process.env.GUILD_ID;
 if (!token) {
   throw new Error('The DISCORD_TOKEN environment variable is required.');
 }
@@ -26,7 +26,7 @@ if (!applicationId) {
  * Register all commands globally.  This can take o(minutes), so wait until
  * you're sure these are the commands you want.
  */
-const url = `https://discord.com/api/v10/applications/${applicationId}/commands`;
+const url = `https://discord.com/api/v10/applications/${applicationId}/guilds/${guildId}/commands`;
 
 const response = await fetch(url, {
   headers: {
@@ -34,7 +34,7 @@ const response = await fetch(url, {
     Authorization: `Bot ${token}`,
   },
   method: 'PUT',
-  body: JSON.stringify([UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND,IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,PROFILE_TO_ROLES_COMMAND]),
+  body: JSON.stringify([UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND,IMPORT_FROM_ROLES_COMMAND,IMPORT_USER,REQUEST_SCORE_COMMAND]),
 });
 
 if (response.ok) {

@@ -6,3 +6,5 @@ wrangler.toml
 LICENSE
 .eslintrc.json
 .github
+src/register.js
+.dev2.vars
