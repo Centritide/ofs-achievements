@@ -7,17 +7,16 @@ Bot for recording and displaying achievements in the salmon run overfishing serv
 
 ## features
 - record scores for user (s3, event, and s2 scores) in a database
-- display scores for a user
+- display scores for a user (this keeps breaking. i need to make it better anyway)
 - it works
 - at any time i can say i have 300 eggs day only and no one can dispute it
-- permission locking commands to certain roles (eg only staff can update scores)
+- permission locking some commands
+- command to automatically record scores for a user into the database based on OFS roles
 
 ## future features (?)
 - added to OFS
 - allow user to delete some/all of their scores
-
 - add badges (emoji) to the profile
-- command to automatically record scores for a user into the database based on OFS roles
 - allow user to automatically choose their discord role badge based on scores in their profile, and add ofs roles based on profile
 - profile command options with different layouts
 
