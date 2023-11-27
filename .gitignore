@@ -8,3 +8,5 @@ LICENSE
 .github
 src/register.js
 .dev2.vars
+.dev3.vars
+src/register2.js

@@ -125,14 +125,14 @@
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
   type:1,
-  default_member_permissions:"32",
+  default_member_permissions:"268435456",
   dm_permission:"false",
   description: 'update a user\'s event achievement',
   options: [
     {
       name: 's3',
       type:1,
-      default_member_permissions:"32",
+      default_member_permissions:"268435456",
       dm_permission:"false",
       description: 'update a user\'s score',
       options: [
@@ -230,7 +230,7 @@ export const UPDATE_EVENT_COMMAND = {
     {
       name: 's2',
       type:1,
-      default_member_permissions:"32",
+      default_member_permissions:"268435456",
       dm_permission:"false",
       description: 'update a user\'s score (s2)',
       options: [
@@ -356,6 +356,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"Umam'i Ruins",
               value:"br4"
+            },
+            {
+              name:"Barnacle & Dime",
+              value:"br5"
             }
           ]
         },
@@ -392,6 +396,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"2 - Gone Fission Hydroplant",
               value:"ew2"
+            },
+            {
+              name:"3 - Spawning Grounds",
+              value:"ew3"
             }
           ]
         },
@@ -420,42 +428,86 @@ export const DISPLAY_PROFILE_COMMAND = {
       type:6,
       required:true
     },
-    // {
-    //   name:"profile type",
-    //   description:"which scores to show",
-    //   type:4,
-    //   required:false,
-    //   choices:[
-    //     {
-    //       "name":"All",
-    //       value:0
-    //     },
-    //     {
-    //       "name":"S3",
-    //       value:1
-    //     },
-    //     {
-    //       "name":"S3 day",
-    //       value:2
-    //     },
-    //     {
-    //       "name":"S3 no events",
-    //       value:3
-    //     },
-    //     {
-    //       "name": "S2",
-    //       value:4
-    //     },
-    //     {
-    //       "name": "S2 day",
-    //       value:5
-    //     },
-    //     {
-    //       "name":"Special",
-    //       value:6
-    //     }
-    //   ]
-    // }    
+    {
+      name:"page",
+      description:"which scores to show",
+      type:4,
+      required:false,
+      choices:[
+        {
+          "name":"s3",
+          value:0
+        },
+        {
+          "name":"S3 Spawning Grounds",
+          value:1
+        },
+        {
+          "name":"S3 Marooner's Bay",
+          value:2
+        },
+        // {
+        //   "name":"S3 no events",
+        //   value:3
+        // },
+        {
+          "name": "S3 Salmonid Smokeyard",
+          value:4
+        },
+        // {
+        //   "name": "S2 day",
+        //   value:5
+        // },
+        {
+          "name":"S3 Sockeye Station",
+          value:6
+        },
+        {
+          "name":"S3 Gone Fission Hydroplant",
+          value:7
+        },
+        {
+          "name":"S3 Jammin' Salmon Junction",
+          value:8
+        },
+        {
+          "name":"S3 princess",
+          value:18
+        },
+        {
+          "name":"S3 Events",
+          value:19
+        },
+        {
+          "name":"S2",
+          value:20
+        },
+        {
+          "name":"S2 Spawning Grounds",
+          value:21
+        },
+        {
+          "name":"S2 Marooner's Bay",
+          value:22
+        },
+        {
+          "name":"S2 Lost Outpost",
+          value:23
+        },
+        {
+          "name":"S2 Salmonid Smokeyard",
+          value:24
+        },
+        {
+          "name":"S2 Ruins of Ark Polaris",
+          value:25
+        },
+        {
+          "name":"S2 Princess",
+          value:26
+        }
+      ]
+    }    
   ]
 }
 
@@ -467,7 +519,7 @@ export const IMPORT_FROM_ROLES_COMMAND = {
 }
 export const IMPORT_USER = {
   name:"forceimport",
-  default_member_permissions:"32",
+  default_member_permissions:1<<32,
   description:"import scores from a user's roles",
   dm_permission:"false",
   type:1,
@@ -488,7 +540,7 @@ export const REQUEST_SCORE_COMMAND = {
     {
       name: 's3',
       type:1,
-      // default_member_permissions:"32",
+      // default_member_permissions:"268435456",
       dm_permission:"false",
       description: 'request an s3 score',
       options: [
@@ -521,10 +573,6 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"Jammin' Salmon Junction",
               value:"jsj"
-            },
-            {
-              name:"Princess",
-              value:"princess"
             }
           ]
         },
@@ -621,10 +669,6 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"Ruins of Ark Polaris",
               value:"s2ap"
-            },
-            {
-              name:"Princess",
-              value:"s2princess"
             }
           ]
         },
@@ -715,6 +759,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"Umam'i Ruins",
               value:"br4"
+            },
+            {
+              name:"Barnacle & Dime",
+              value:"br5"
             }
           ]
         },  
@@ -757,6 +805,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"2 - Gone Fission Hydroplant",
               value:"ew2"
+            },
+            {
+              name:"3 - Spawning Grounds",
+              value:"ew3"
             }
           ]
         },

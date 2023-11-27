@@ -114,8 +114,10 @@ router.all('*', () => new Response('Not Found.', { status: 404 }));
 // holy hell. what the hell. AAAAAAAA
 
 async function showProfile(interaction,env){
-  let user = interaction.data.options[0].value;
-  // console.log(interaction.guild);
+  const user = interaction.data.options[0].value;
+
+  // console.log(interaction.data.resolved.users[user].avatar);
+
   let avi_url;
   if(interaction.data.resolved.users[user].avatar.substring(0,2) == "a_"){
     avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".gif";
@@ -123,7 +125,13 @@ async function showProfile(interaction,env){
     // console.log("test")
     avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".png";
   }
-  // console.log(avi_url);
+  // console.log("a");
+  const page = (interaction.data.options.length>=2) ? interaction.data.options[1].value : 0;
+  const usemax = data.layouts[page][0];
+  const title = data.layouts[page][1];
+  const layoutscores = data.layouts[page][2];
+  // console.log(interaction.guild);
+  console.log(data.layouts[page]);
   const config = {
     host: env.DATABASE_HOST,
     username: env.DATABASE_USERNAME,
@@ -131,9 +139,6 @@ async function showProfile(interaction,env){
   }
   const conn = connect(config);
   const output = await conn.execute("SELECT * from " + table + " where id = ?;", [user]);
-  // console.log(output);
-  // const old = await conn.execute("SELECT map2day from users where id = ?;", [user],{as:'array'});
-  // console.log(old);
   let row;
   if(output.rows.length >0){
     row = output.rows[0];
@@ -143,65 +148,78 @@ async function showProfile(interaction,env){
         content: "No profile detected for user <@"+user+">",
         flags: 1000000
     }});
-  }
-  // console.log(row);
+  } //checks if data exists for the user. if none exists, fails
   delete row.id;
-  // console.log(row);
-  // const keys = Object.keys(row);
-  // const values = Object.values(row);
   let fields = [];
-  // console.log(keys);
-  // console.log(values);
-  const layout = ["sst", "gfh","sg",
-  "mb", "jsj","ssy",
-"sstday","gfhday","sgday",
-"mbday","jsjday","ssyday",
-"princess","br1","br2",
-"br3","br4","ew1",
-"ew2","ew3","ew4",
-"s2sg","s2mb","s2lo",
-"s2ss","s2ap","s2princess",
-"s2sgday","s2mbday","s2loday",
-"s2ssday","s2apday"]
-  for(let i in layout){
-    // console.log(layout[i]);
-    const value = row[layout[i]];
-    // console.log(value);
-    if(true){ //there should be some logic for adding badges to scores
-      fields.push({
-        "name": layout[i], //change back to dict[layout[i]]
-        "value": value,
-        "inline":true
-      })
-    } else {
-      fields.push({
-        "name": layout[i], //this too
-        "value": "​",
-        "inline":true 
-      })
+  // console.log(usemax);
+  if(usemax){
+    // console.log(layoutscores);
+    for(let i of layoutscores){
+      if(i == ""){
+        console.log(i);
+        fields.push({
+          "name": "​", 
+          "value": "​",
+          "inline":true 
+        })
+        console.log("a")
+      }else {
+        console.log(i);
+        fields.push({
+          "name":dict[i],
+          "value":getStageMax(row,i),
+          "inline":true
+        })
+      }
+    }
+  } else{
+    let layout = []
+    console.log(layoutscores);
+    for(let i of layoutscores){
+      console.log(i);
+      console.log(data.col_groups[i]);
+      layout = layout.concat(data.col_groups[i]);
+      console.log(layout);
+    }
+    
+    for(let i of layout){
+    // console.log(i);
+      const value = row[i];
+      // console.log(value);
+      if(i != ""){ //there should be some logic for adding badges to scores
+        fields.push({
+          "name": dict[i], //change back to dict[i]
+          "value": value,
+          "inline":true
+        })
+      } else {
+        fields.push({
+          "name": "​", //this too
+          "value": "​",
+          "inline":true 
+        })
+      }
     }
   }
-  const events = ["br1", "br2","br3","br4","ew1","ew2","ew3"]
-  let awards = "​";
-  let first = true;
-  for(let i in events){
-    // console.log(row[events[i]]>=event_thresholds[events[i]]);
-    // console.log(events[i]);
+  
+  console.log(fields);
+  // const events = ["br1", "br2","br3","br4","ew1","ew2","ew3"]
+  // let awards = "​";
+  // let first = true;
+  // for(let i of events){
 
-    // console.log(dict["br1"])
-    if(row[events[i]]>=event_thresholds[events[i]]){
-      // console.log(events[i]);
-      // console.log(dict[events[i]])
-      awards = awards + (first ? "" : ", ")+  dict[events[i]];
-      first = false;
-    }
-  }
-  // console.log(awards);
-  fields.push({
-    "name":"Top 5% events",
-    "value": awards,
-    "inline": false
-  });
+  //   if(row[i]>=event_thresholds[i]){
+
+  //     awards = awards + (first ? "" : ", ")+  dict[i];
+  //     first = false;
+  //   }
+  // }
+  // // console.log(awards);
+  // fields.push({
+  //   "name":"Top 5% events",
+  //   "value": awards,
+  //   "inline": false
+  // });
   // console.log("here")
   // const layout2 = ["s2map0", "s2map1","s2map2",
   // "s2map0day","s2map1day","s2map2day",
@@ -247,7 +265,7 @@ async function showProfile(interaction,env){
           "color": 11714851,
           "fields": fields,
           "author": {
-            "name": "OF Scorecard",
+            "name": `OF Scorecard: ${title}`,
             // "url": "https://author.url",
             "icon_url": "" //guild_icon
           },
@@ -266,6 +284,18 @@ async function showProfile(interaction,env){
       ]
     }
   });
+}
+
+function getStageMax(row,stage){
+  // console.log("a");
+  let arr = [];
+  for(let i of data.col_groups[stage]){
+    arr.push(row[i])
+  }
+  return Math.max(...arr);
+}
+function getStageEmoji(stage,score){
+
 }
 
 // handles responding to super secret staff buttons/fields
@@ -682,7 +712,7 @@ function componentMaker(subcommand,score,rot_type,stage){
     ]
   };
   
-
+  
   if(!(data[subcommand].includes(stage))){
     return([stagerow]);
   } else if(subcommand == "bigrun" || subcommand == "eggstra") {
@@ -694,7 +724,9 @@ function componentMaker(subcommand,score,rot_type,stage){
         scorerow
       ]
     );
-  } else {
+  } else if(rot_type == "False"){
+    return([rotationrow]);
+  }else {
     console.log([
       approverow,
       subcommandrow,
@@ -923,7 +955,9 @@ async function requestScore(interaction,env){
     });
   }
   const components = componentMaker(subcommand,score,rot_type,stage);
-  const response = await fetch(`https://discord.com/api/v10/channels/${env.CHANNEL_ID}/messages`,{
+  const embeds = embedMaker(link,user,subcommand,score,rot_type,stage);
+  console.log(embeds);
+  const response = await fetch(`https://discord.com/api/v10/channels/1142653555895971943/messages`,{
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -931,12 +965,14 @@ async function requestScore(interaction,env){
     method:'POST',
     body: JSON.stringify({
       "content": "<@" + user + "> requested (" + subcommand + ") " + score + " on " + stage + " " + rot_type,
-      "embeds": embedMaker(link,user,subcommand,score,rot_type,stage),
+      "embeds": embeds,
       "components":components
     })
   })
   const data = await response.json()
+  console.log(data);
   if(data.id === undefined){
+    console.log(data);
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
