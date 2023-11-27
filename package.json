@@ -1,7 +1,7 @@
 {
-  "name": "awwbot",
-  "version": "1.0.0",
-  "description": "A simple discord bot that uses intents to post pictures from r/aww",
+  "name": "ofs-achievements",
+  "version": "0.1.0",
+  "description": "Achievements bot for salmon run overfishing server",
   "type": "module",
   "private": true,
   "main": "src/server.js",

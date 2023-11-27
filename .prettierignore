@@ -7,3 +7,8 @@ LICENSE
 .eslintrc.json
 .github
 src/register.js
+.dev2.vars
+.dev3.vars
+src/register2.js
+package.json
+package-lock.json
