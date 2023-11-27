@@ -125,14 +125,13 @@
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
   type:1,
-  default_member_permissions:"268435456",
+  default_member_permissions:1<<32,
   dm_permission:"false",
   description: 'update a user\'s event achievement',
   options: [
     {
       name: 's3',
       type:1,
-      default_member_permissions:"268435456",
       dm_permission:"false",
       description: 'update a user\'s score',
       options: [
@@ -230,7 +229,6 @@ export const UPDATE_EVENT_COMMAND = {
     {
       name: 's2',
       type:1,
-      default_member_permissions:"268435456",
       dm_permission:"false",
       description: 'update a user\'s score (s2)',
       options: [

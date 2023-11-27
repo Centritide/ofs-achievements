@@ -531,11 +531,11 @@ function mapField(subcommand){
               "value": "br4",
               // "description": "ez map",
             },
-            // {
-            //   "label": "whaoo",
-            //   "value": "whaoo",
-            //   // "description": "ez map",
-            // },
+            {
+              "label": "Big Run #5 - Barnacle & Dime",
+              "value": "br5",
+              // "description": "ez map",
+            },
           ]
         }]
       };
@@ -941,8 +941,14 @@ async function requestScore(interaction,env){
   // });
   // const msg = await get_message.json();
   // console.log(msg);
-  const img = await fetch(link);
-  const real = await img.status;
+  let real;
+  if(link.substring(0,27)=="https://cdn.discordapp.com/"){
+    real = 200;
+  } else {
+    const img = await fetch(link);
+    real = await img.status;
+  }
+  
   if(real==200){
 
   } else {
@@ -957,7 +963,7 @@ async function requestScore(interaction,env){
   const components = componentMaker(subcommand,score,rot_type,stage);
   const embeds = embedMaker(link,user,subcommand,score,rot_type,stage);
   console.log(embeds);
-  const response = await fetch(`https://discord.com/api/v10/channels/1142653555895971943/messages`,{
+  const response = await fetch(`https://discord.com/api/v10/channels/1178115595296841848/messages`,{
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
