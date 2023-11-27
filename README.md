@@ -6,27 +6,24 @@ database hosted on planetscale
 Bot for recording and displaying achievements in the salmon run overfishing server
 
 ## features
-- record scores for user (s3, event, and s2 scores) in a database
-- display scores for a user (this keeps breaking. i need to make it better anyway)
+- record scores for user (s3, event, and s2 scores), in 8 flavors + princess in a database
+- display scores for a user (16 page options) (ugly)
 - it works
 - at any time i can say i have 300 eggs day only and no one can dispute it
 - permission locking some commands
 - command to automatically record scores for a user into the database based on OFS roles
 
 ## future features (?)
-- added to OFS
 - allow user to delete some/all of their scores
 - add badges (emoji) to the profile
-- allow user to automatically choose their discord role badge based on scores in their profile, and add ofs roles based on profile
-- profile command options with different layouts
-
+- allow user to automatically choose their discord role badge based on scores in their profile
 - feature suggestions?
+- clean up spaghetti code (profile command especially)
 
 ## anything further down probably will not happen
 
 - additional achievements like average or challenge categories, or single waves, etc
 - other fun badges like tournaments. i am become sendou.ink
-- clean up spaghetti code
 - i actually understand the code
 
 ## database schema
