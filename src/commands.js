@@ -3,124 +3,6 @@
  * and registration.
  */
 
-// export const UPDATE_SCORE_COMMAND = {
-//   name: 'score',
-//   type:1,
-//   default_member_permissions:"32",
-//   dm_permission:"false",
-//   description: 'update a user\'s score',
-//   options: [
-//     {
-//       name:"user",
-//       description:"user",
-//       type:6,
-//       required:true
-//     },
-//     {
-//       name:"stage",
-//       description:"stage",
-//       type:4,
-//       required: true,
-//       choices: [
-//         {
-//           name:"Spawning Grounds",
-//           value:0
-//         },
-//         {
-//           name:"Marooner's Bay",
-//           value:1
-//         },
-//         {
-//           name:"Sockeye Station",
-//           value:5
-//         },
-//         {
-//           name:"Gone Fission Hydroplant",
-//           value:6
-//         },
-//         {
-//           name:"Jammin' Salmon Junction",
-//           value:7
-//         },
-//         {
-//           name:"Princess",
-//           value:100
-//         }
-//       ]
-//     },
-//     {
-//       name:"score",
-//       description:"score",
-//       type:4,
-//       required: true
-//     },
-//     {
-//       name:"dayonly",
-//       description:"true if day only",
-//       type:5
-//     }
-    
-//   ]
-// };
-
-// export const UPDATE_SCORE_COMMAND_2 = {
-//   name: 'score_s2',
-//   type:1,
-//   default_member_permissions:"32",
-//   dm_permission:"false",
-//   description: 'update a user\'s score (s2)',
-//   options: [
-//     {
-//       name:"user",
-//       description:"user",
-//       type:6,
-//       required:true
-//     },
-//     {
-//       name:"stage",
-//       description:"stage",
-//       type:4,
-//       required: true,
-//       choices: [
-//         {
-//           name:"Spawning Grounds",
-//           value:0
-//         },
-//         {
-//           name:"Marooner's Bay",
-//           value:1
-//         },
-//         {
-//           name:"Lost Outpost",
-//           value:2
-//         },
-//         {
-//           name:"Salmonid Smokeyard",
-//           value:3
-//         },
-//         {
-//           name:"Ruins of Ark Polaris",
-//           value:4
-//         },
-//         {
-//           name:"Princess",
-//           value:100
-//         }
-//       ]
-//     },
-//     {
-//       name:"score",
-//       description:"score",
-//       type:4,
-//       required: true
-//     },
-//     {
-//       name:"dayonly",
-//       description:"true if day only",
-//       type:5
-//     }
-//   ]
-// }
 
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
@@ -264,10 +146,6 @@ export const UPDATE_EVENT_COMMAND = {
               name:"Ruins of Ark Polaris",
               value:"s2ap"
             },
-            {
-              name:"Princess",
-              value:"s2princess"
-            }
           ]
         },
         {
@@ -618,6 +496,10 @@ export const REQUEST_SCORE_COMMAND = {
               name:"All Gold Random (Day Only)",
               value:"golden_randomday"
             },
+            {
+              name:"Princess",
+              value:"princess"
+            }
           ]
         },
         {
@@ -714,6 +596,10 @@ export const REQUEST_SCORE_COMMAND = {
               name:"All Gold Random (Day Only)",
               value:"golden_randomday"
             },
+            {
+              name:"Princess",
+              value:"princess"
+            }
           ]
         },
         {
