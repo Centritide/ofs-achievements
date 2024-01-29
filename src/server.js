@@ -25,7 +25,7 @@ class JsonResponse extends Response {
     super(jsonBody, init);
   }
 }
-const test = false;
+
 const router = Router();
 
 /**
@@ -116,7 +116,7 @@ router.all('*', () => new Response('Not Found.', { status: 404 }));
 async function showProfile(interaction,env){
   const user = interaction.data.options[0].value;
 
-  console.log(interaction.data.resolved.users[user].avatar);
+  // console.log(interaction.data.resolved.users[user].avatar);
 
   let avi_url;
   if(interaction.data.resolved.users[user].avatar === null){
@@ -133,7 +133,7 @@ async function showProfile(interaction,env){
   const title = data.layouts[page][1];
   const layoutscores = data.layouts[page][2];
   // console.log(interaction.guild);
-  console.log(data.layouts[page]);
+  // console.log(data.layouts[page]);
   const config = {
     host: env.DATABASE_HOST,
     username: env.DATABASE_USERNAME,
@@ -169,24 +169,23 @@ async function showProfile(interaction,env){
         console.log(i);
         fields.push({
           "name":dict[i],
-          "value":getStageMax(row,i),
+          "value":(getStageMax(row,i)==0)?"-":getStageMax(row,i),
           "inline":true
         })
       }
     }
   } else{
-    let layout = []
-    console.log(layoutscores);
+    let layout = [];
     for(let i of layoutscores){
-      console.log(i);
+      // console.log(i);
       // console.log(data.col_groups[i]);
       layout = layout.concat(data.col_groups[i]);
       // console.log(data.col_groups[i].length%3);
-      for(let j = 0; j<3-(data.col_groups[i].length%3);j++){
+      for(let j = 0; data.col_groups[i].length%3>0 && j<(3-(data.col_groups[i].length%3));j++){
         layout.push("");
       }
     }
-    console.log(layout);
+    // console.log(layout);
     for(let i of layout){
     // console.log(i);
       const value = row[i];
@@ -200,14 +199,14 @@ async function showProfile(interaction,env){
       } else { //there should be some logic for adding badges to scores
         fields.push({
           "name": dict[i], //change back to dict[i]
-          "value": value,
+          "value": value==0?"-":value,
           "inline":true
         })
       }
     }
   }
   
-  console.log(fields);
+  // console.log(fields);
   // const events = ["br1", "br2","br3","br4","ew1","ew2","ew3"]
   // let awards = "​";
   // let first = true;
@@ -314,7 +313,7 @@ async function componentResponse(interaction,env){
   let rot_type = interaction.message.embeds[0].fields[3].value;
   let stage = interaction.message.embeds[0].fields[4].value;
   const link = interaction.message.embeds[0].image.url;
-  
+  const content = interaction.message.content;
   switch(interaction.data.custom_id.toLowerCase()){
     case "approve":
       
@@ -326,7 +325,7 @@ async function componentResponse(interaction,env){
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: "Updated score for <@" + user + ">. " + column + " score: " + newscore,
+          content: content + "\nUpdated score for <@" + user + ">. " + column + " score: " + newscore,
           components:[]
         }
       });
@@ -334,7 +333,7 @@ async function componentResponse(interaction,env){
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content:"denied",
+          content: content + "\ndenied",
           embeds:[interaction.message.embeds[0]],
           components:[]
         }
@@ -940,7 +939,7 @@ async function requestScore(interaction,env){
     // console.log(parts);
     const channel_id = parts[5];
     const msg_id = parts[6];
-    console.log(channel_id);
+    // console.log(channel_id);
     // console.log(msg_id);
     const get_message = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages/` + msg_id, {
       headers: {
@@ -948,7 +947,7 @@ async function requestScore(interaction,env){
         Authorization: `Bot ${env.DISCORD_TOKEN}`,
       }
     }).then((response)=> response.json());
-    console.log(get_message);
+    // console.log(get_message);
     // for(let i of get_message.attachments){
     //   attachments.push({"id":i.id});
     // }
@@ -958,7 +957,12 @@ async function requestScore(interaction,env){
       link = get_message.attachments[0].url;
     }
     
-  } 
+  } else if (link.substring(0,17) ==="https://stat.ink/"){
+    const parts = link.split("/");
+    const id = parts[5];
+    link = `https://s3-img-gen.stats.ink/salmon/en-US/${id}.jpg`;
+    console.log(link);
+  }
   // console.log(attachments);
   if(real==200){
 
@@ -974,6 +978,7 @@ async function requestScore(interaction,env){
   const components = componentMaker(subcommand,score,rot_type,stage);
   const embeds = embedMaker(link,user,subcommand,score,rot_type,stage);
   // console.log(embeds);
+  const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
   const channel_id = (test) ? "1142653555895971943" : "1178115595296841848";
   console.log(channel_id);
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`,{
@@ -1075,7 +1080,7 @@ async function importFromRoles(id,interaction,env){
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      "content": `Imported ${response.rowsAffected} scores`,
+      "content": `Imported scores`,
       "embeds":[{
         "description":"<:bunger:886046158034710559>        "
       }],

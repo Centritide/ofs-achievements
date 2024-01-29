@@ -7,7 +7,7 @@
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
   type:1,
-  default_member_permissions:1<<32,
+  default_member_permissions:1<<28,
   dm_permission:"false",
   description: 'update a user\'s event achievement',
   options: [
@@ -347,7 +347,23 @@ export const DISPLAY_PROFILE_COMMAND = {
           value:8
         },
         {
-          "name":"S3 princess",
+          "name":"S3 Normal",
+          value:14
+        },
+        {
+          "name":"S3 Green Random",
+          value:15
+        },
+        {
+          "name":"S3 One Green Random",
+          value:16
+        },
+        {
+          "name":"S3 Gold Random",
+          value:17
+        },
+        {
+          "name":"S3 Princess",
           value:18
         },
         {
@@ -381,6 +397,22 @@ export const DISPLAY_PROFILE_COMMAND = {
         {
           "name":"S2 Princess",
           value:26
+        },
+        {
+          "name":"S2 Normal",
+          value:27
+        },
+        {
+          "name":"S2 Green Random",
+          value:28
+        },
+        {
+          "name":"S2 One Green Random",
+          value:29
+        },
+        {
+          "name":"S2 Gold Random",
+          value:30
         }
       ]
     }    
@@ -436,7 +468,7 @@ export const REQUEST_SCORE_COMMAND = {
             },
             {
               name:"Salmonid Smokeyard",
-              value:"ss"
+              value:"ssy"
             },
             {
               name:"Sockeye Station",
