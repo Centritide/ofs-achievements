@@ -564,6 +564,16 @@ function mapField(subcommand){
               "value": "ew2",
               "description": "Heavy Splatling, Slosher, Splat Dualies, Splat Brella",
             },
+            {
+              "label": "Eggstra Work #3 - Spawning Grounds",
+              "value": "ew3",
+              "description": "Flingza Roller, Tri-Stringer, Splatana Wiper, .52 Gal",
+            },
+            {
+              "label": "Eggstra Work #4 - Marooner's Bay",
+              "value": "ew4",
+              "description": "Classic Squiffer, Splash-o-matic, S-Blast '92, Dynamo Roller",
+            },
           ]
         }]
       };
@@ -980,7 +990,12 @@ async function requestScore(interaction,env){
   // console.log(embeds);
   const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
   const channel_id = (test) ? "1142653555895971943" : "1178115595296841848";
-  console.log(channel_id);
+  // console.log(JSON.stringify({
+  //   "content": content,
+  //   "embeds": embeds,
+  //   "components":components,
+  //   "attachments":[]
+  // }));
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`,{
     headers: {
       'Content-Type': 'application/json',

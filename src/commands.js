@@ -6,6 +6,7 @@
 
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
+  id:"1178119204302491779",
   type:1,
   default_member_permissions:1<<28,
   dm_permission:"false",
@@ -276,6 +277,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"3 - Spawning Grounds",
               value:"ew3"
+            },
+            {
+              name:"4 - Marooner's Bay",
+              value:"ew4"
             }
           ]
         },
@@ -295,6 +300,7 @@ export const UPDATE_EVENT_COMMAND = {
 export const DISPLAY_PROFILE_COMMAND = {
   name:"profile",
   type:1,
+  id:"1178119204302491780",
   dm_permission:"false",
   description:"see user profile",
   options:[
@@ -421,12 +427,14 @@ export const DISPLAY_PROFILE_COMMAND = {
 
 export const IMPORT_FROM_ROLES_COMMAND = {
   name:"import",
+  id:"1178119204302491781",
   description:"import scores from your roles",
   dm_permission:"false",
   type:1
 }
 export const IMPORT_USER = {
   name:"forceimport",
+  id:"1178119204302491782",
   default_member_permissions:1<<32,
   description:"import scores from a user's roles",
   dm_permission:"false",
@@ -443,6 +451,7 @@ export const REQUEST_SCORE_COMMAND = {
   name:"request",
   type:1,
   dm_permission:false,
+  id:"1178119204302491783",
   description:"request a score with a message link",
   options: [
     {
@@ -725,6 +734,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"3 - Spawning Grounds",
               value:"ew3"
+            },
+            {
+              name:"4 - Marooner's Bay",
+              value:"ew4"
             }
           ]
         },

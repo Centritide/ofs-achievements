@@ -57,7 +57,7 @@
 "s2sggolden_randomday":"SG (S2)<:s2_gold:1178572957610688542>☀️","s2mbgolden_randomday":"MB (S2)<:s2_gold:1178572957610688542>☀️","s2logolden_randomday":"LO (S2)<:s2_gold:1178572957610688542>☀️","s2ssgolden_randomday":"SS (S2)<:s2_gold:1178572957610688542>☀️","s2apgolden_randomday":"AP (S2)<:s2_gold:1178572957610688542>☀️",
 "s2sgprincess":"SG (S2)👑","s2mbprincess":"MB (S2)👑","s2loprincess":"LO (S2)👑","s2ssprincess":"SS (S2)👑","s2apprincess":"AP (S2)👑",
 "br1":"Big Run 1","br2":"Big Run 2","br3":"Big Run 3","br4":"Big Run 4","br5":"Big Run 5",
-"ew1":"Eggstra Work 1","ew2":"Eggstra Work 2","ew3":"Eggstra Work 3",
+"ew1":"Eggstra Work 1","ew2":"Eggstra Work 2","ew3":"Eggstra Work 3","ew4":"Eggstra Work 4",
 "princess":"S3 👑","s2princess":"S2 👑"
     },
     "map_roleids":{
@@ -190,7 +190,7 @@
         "ew1": 203,
         "ew2": 217,
         "ew3": 205,
-        "ew4": 0
+        "ew4": 218
     },
     "col_groups":{
         "sst":["sstnormal",
@@ -322,7 +322,7 @@
         "s2single_randomday":["sgsingle_randomday","mbsingle_randomday","losingle_randomday","sssingle_randomday","apsingle_randomday"],
         "s2golden_randomday":["sggolden_randomday","mbgolden_randomday","logolden_randomday","ssgolden_randomday","apgolden_randomday"],
         "br":["br1","br2","br3","br4","br5"],
-        "ew":["ew1","ew2","ew3"]
+        "ew":["ew1","ew2","ew3","ew4"]
         
     },
     "emoji":{
