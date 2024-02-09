@@ -8,7 +8,7 @@ export const UPDATE_EVENT_COMMAND = {
   name: 'score',
   id:"1178119204302491779",
   type:1,
-  default_member_permissions:1<<28,
+  default_member_permissions:1<<32,
   dm_permission:"false",
   description: 'update a user\'s event achievement',
   options: [

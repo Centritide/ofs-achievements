@@ -936,13 +936,8 @@ async function requestScore(interaction,env){
   // const dayonly = (interaction.data.options.length >=4) ? interaction.data.options[3].value : false;
   const content = "<@" + user + "> requested (" + subcommand + ") " + score + " on " + stage + " " + rot_type + " " + link;
   let real;
+  let attachments=[];
   
-  if(link.substring(0,27)=="https://cdn.discordapp.com/"){
-    real = 200;
-  } else {
-    const img = await fetch(link);
-    real = await img.status;
-  }
   // let attachments = [];
   if(link.substring(0,29) === "https://discord.com/channels/"){
     const parts = link.split("/");
@@ -957,14 +952,19 @@ async function requestScore(interaction,env){
         Authorization: `Bot ${env.DISCORD_TOKEN}`,
       }
     }).then((response)=> response.json());
-    // console.log(get_message);
+    // console.log(get_message.attachments.length==0);
     // for(let i of get_message.attachments){
     //   attachments.push({"id":i.id});
     // }
-    if(get_message.attachments == null){
+    if(get_message.attachments.length == 0){
+      console.log("dumb");
       real = 20040234;
     } else {
       link = get_message.attachments[0].url;
+      attachments=get_message.attachments;
+      // const img = await fetch(link);
+      real = 200;
+      // console.log(real);
     }
     
   } else if (link.substring(0,17) ==="https://stat.ink/"){
@@ -972,6 +972,15 @@ async function requestScore(interaction,env){
     const id = parts[5];
     link = `https://s3-img-gen.stats.ink/salmon/en-US/${id}.jpg`;
     console.log(link);
+    const img = await fetch(link);
+    real = await img.status;
+  } else if(link.substring(0,27)=="https://cdn.discordapp.com/"){
+    // const img = await fetch(link);
+    // real = await img.status;
+    real = 200; 
+  } else {
+    const img = await fetch(link);
+    real = await img.status;
   }
   // console.log(attachments);
   if(real==200){
@@ -987,6 +996,11 @@ async function requestScore(interaction,env){
   }
   const components = componentMaker(subcommand,score,rot_type,stage);
   const embeds = embedMaker(link,user,subcommand,score,rot_type,stage);
+  for(let i in attachments){
+    if(i>0){embeds.push({"image": {
+      "url": attachments[i].url
+    }})}
+  }
   // console.log(embeds);
   const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
   const channel_id = (test) ? "1142653555895971943" : "1178115595296841848";
