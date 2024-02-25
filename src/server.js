@@ -158,18 +158,26 @@ async function showProfile(interaction,env){
     // console.log(layoutscores);
     for(let i of layoutscores){
       if(i == ""){
-        console.log(i);
+        // console.log(i);
         fields.push({
           "name": "​", 
           "value": "​",
           "inline":true 
         })
-        console.log("a")
-      }else {
-        console.log(i);
+      }else if(typeof i === 'string'){
+        // console.log(i);
+        console.log(getStageMax(row,i));
         fields.push({
           "name":dict[i],
           "value":(getStageMax(row,i)==0)?"-":getStageMax(row,i),
+          "inline":true
+        })
+      } else {
+        // console.log(i);
+        // console.log(getStageMax(row,i));
+        fields.push({
+          "name": "🌙"+dict[i[0]]+"/☀️",
+          "value":((getStageMax(row,i[0])==0)?"-":getStageMax(row,i[0]))+"/"+((getStageMax(row,i[1])==0)?"-":getStageMax(row,i[1])),
           "inline":true
         })
       }
@@ -314,6 +322,18 @@ async function componentResponse(interaction,env){
   let stage = interaction.message.embeds[0].fields[4].value;
   const link = interaction.message.embeds[0].image.url;
   const content = interaction.message.content;
+  const response = await fetch(`https://discord.com/api/v10/users/@me/channels`,{
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method:'POST',
+    body: JSON.stringify({
+      "recipient_id": user
+    })
+  })
+  const dmchannel = await response.json();
+  // await console.log(dmchannel.id);
   switch(interaction.data.custom_id.toLowerCase()){
     case "approve":
       
@@ -322,6 +342,20 @@ async function componentResponse(interaction,env){
       // console.log();
       let newscore = await updateScore(user,score,column,env);
       // console.log("hello");
+      
+      const acceptresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`,{
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method:'POST',
+        body: JSON.stringify({
+          "content": "Updated your score:" + dict[column] + " score: " + newscore,
+          "embeds": interaction.message.embeds,
+        })
+      })
+      const acceptdata = await acceptresponse.json()
+      // console.log(acceptdata);
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
@@ -330,11 +364,24 @@ async function componentResponse(interaction,env){
         }
       });
     case "deny":
+      const denyresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`,{
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method:'POST',
+        body: JSON.stringify({
+          "content": "Your score request was denied.",
+          "embeds": interaction.message.embeds,
+        })
+      })
+      const denydata = await denyresponse.json()
+      // console.log(denydata);
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
           content: content + "\ndenied",
-          embeds:[interaction.message.embeds[0]],
+          embeds:interaction.message.embeds,
           components:[]
         }
       });
@@ -888,7 +935,7 @@ async function requestScore(interaction,env){
   const options = interaction.data.options[0].options;
   // console.log(options);
   let link, score,stage;
-  let rot_type = false;
+  let rot_type = "event";
   for(const i of options) {
     // console.log(i);
     switch (i.name.toLowerCase()){
@@ -971,7 +1018,7 @@ async function requestScore(interaction,env){
     const parts = link.split("/");
     const id = parts[5];
     link = `https://s3-img-gen.stats.ink/salmon/en-US/${id}.jpg`;
-    console.log(link);
+    // console.log(link);
     const img = await fetch(link);
     real = await img.status;
   } else if(link.substring(0,27)=="https://cdn.discordapp.com/"){
@@ -1026,7 +1073,7 @@ async function requestScore(interaction,env){
   const data = await response.json()
   // console.log(data);
   if(data.id === undefined){
-    console.log(data);
+    // console.log(data);
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {

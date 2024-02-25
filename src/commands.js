@@ -53,6 +53,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"Jammin' Salmon Junction",
               value:"jsj"
+            },
+            {
+              name:"Bonerattle Arena",
+              value:"bra"
             }
           ]
         },
@@ -317,7 +321,7 @@ export const DISPLAY_PROFILE_COMMAND = {
       required:false,
       choices:[
         {
-          "name":"s3",
+          "name":"S3",
           value:0
         },
         {
@@ -351,6 +355,10 @@ export const DISPLAY_PROFILE_COMMAND = {
         {
           "name":"S3 Jammin' Salmon Junction",
           value:8
+        },
+        {
+          name:"Bonerattle Arena",
+          value:9
         },
         {
           "name":"S3 Normal",
@@ -490,6 +498,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"Jammin' Salmon Junction",
               value:"jsj"
+            },
+            {
+              name:"Bonerattle Arena",
+              value:"bra"
             }
           ]
         },
