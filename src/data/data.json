@@ -20,7 +20,8 @@
         "br2",
         "br3",
         "br4",
-        "br5"
+        "br5",
+        "br6"
     ],
     "eggstra":[
         "ew1",
@@ -57,7 +58,7 @@
 "s2sgsingle_randomday":"SG (S2)☀️","s2mbsingle_randomday":"MB (S2)<:s2_partial:1178572917248901220>☀️","s2losingle_randomday":"LO (S2)<:s2_partial:1178572917248901220>☀️","s2sssingle_randomday":"SS (S2)<:s2_partial:1178572917248901220>☀️","s2apsingle_randomday":"AP (S2)<:s2_partial:1178572917248901220>☀️",
 "s2sggolden_randomday":"SG (S2)<:s2_gold:1178572957610688542>☀️","s2mbgolden_randomday":"MB (S2)<:s2_gold:1178572957610688542>☀️","s2logolden_randomday":"LO (S2)<:s2_gold:1178572957610688542>☀️","s2ssgolden_randomday":"SS (S2)<:s2_gold:1178572957610688542>☀️","s2apgolden_randomday":"AP (S2)<:s2_gold:1178572957610688542>☀️",
 "s2sgprincess":"SG (S2)👑","s2mbprincess":"MB (S2)👑","s2loprincess":"LO (S2)👑","s2ssprincess":"SS (S2)👑","s2apprincess":"AP (S2)👑",
-"br1":"Big Run 1","br2":"Big Run 2","br3":"Big Run 3","br4":"Big Run 4","br5":"Big Run 5",
+"br1":"Big Run 1","br2":"Big Run 2","br3":"Big Run 3","br4":"Big Run 4","br5":"Big Run 5", "br6":"Big Run 6",
 "ew1":"Eggstra Work 1","ew2":"Eggstra Work 2","ew3":"Eggstra Work 3","ew4":"Eggstra Work 4",
 "princess":"S3 👑📥","s2princess":"S2 👑📥",
 "princessc":"S3 👑","s2princessc":"S2 👑","sgc":"SG (S3)",
@@ -166,6 +167,7 @@
         "1117607486892015707":["br3",150],
         "1146542041552130088":["br4",156],
         "1181031697895145574":["br5",165],
+        "":["br6",0],
         "1093689259963199559":["ew1",203],
         "1093689436367237130":["ew2",217],
         "1093689727305134101":["ew3",205],
@@ -196,6 +198,7 @@
         "br3": 150,
         "br4": 156,
         "br5": 165,
+        "br6":0,
         "ew1": 203,
         "ew2": 217,
         "ew3": 205,
@@ -338,7 +341,7 @@
         "s2green_randomday":["s2sggreen_randomday","s2mbgreen_randomday","s2logreen_randomday","s2ssgreen_randomday","s2apgreen_randomday"],
         "s2single_randomday":["s2sgsingle_randomday","s2mbsingle_randomday","s2losingle_randomday","s2sssingle_randomday","s2apsingle_randomday"],
         "s2golden_randomday":["s2sggolden_randomday","s2mbgolden_randomday","s2logolden_randomday","s2ssgolden_randomday","s2apgolden_randomday"],
-        "br":["br1","br2","br3","br4","br5"],
+        "br":["br1","br2","br3","br4","br5","br6"],
         "ew":["ew1","ew2","ew3","ew4"]
         
     },

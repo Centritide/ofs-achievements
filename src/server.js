@@ -1114,7 +1114,7 @@ async function importFromRoles(id,interaction,env){
   let query;
   let vals;
   const old = await conn.execute("SELECT * from " + table + " where id = ?;", [id],{as:"array"});
-  console.log("yo");
+  // console.log("yo");
   let hits = 0;
   if(old.rows.length <= 0){
     query = `INSERT INTO ${table} (id,`;
@@ -1130,11 +1130,14 @@ async function importFromRoles(id,interaction,env){
     query = query.replace(/,\s*$/, "");
     vals = vals.replace(/,\s*$/, "");
     query = `${query}) ${vals});`
+    // console.log("awa");
   } else {
+    console.log(old.headers);
+    //only strictly increase event roles - if pair[1]> old.rows[0][0] or something
     query = `UPDATE ${table} set `;;
     for(let i in user.roles){
       const pair = data.roleid_mapscores[user.roles[i]];
-      if(pair!=undefined){
+      if(pair!=undefined && pair[1]>old.rows[0][old.headers.indexOf(pair[0])]){
         query = query + `${pair[0]}=${pair[1]}, `;
         hits +=1;
       } 

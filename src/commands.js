@@ -241,6 +241,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"Barnacle & Dime",
               value:"br5"
+            },
+            {
+              name:"Eeltail Alley",
+              value:"br6"
             }
           ]
         },
@@ -700,6 +704,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"Barnacle & Dime",
               value:"br5"
+            },
+            {
+              name:"Eeltail Alley",
+              value:"br6"
             }
           ]
         },  
