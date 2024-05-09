@@ -11,3 +11,4 @@ src/register.js
 .dev3.vars
 package.json
 package-lock.json
+.wrangler
