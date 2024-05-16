@@ -289,7 +289,12 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"4 - Marooner's Bay",
               value:"ew4"
+            },
+            {
+              name:"5 - Jammin' Salmon Junction",
+              value:"ew5"
             }
+            
           ]
         },
         
@@ -758,6 +763,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"4 - Marooner's Bay",
               value:"ew4"
+            },
+            {
+              name:"5 - Jammin' Salmon Junction",
+              value:"ew5"
             }
           ]
         },

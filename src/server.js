@@ -168,7 +168,7 @@ async function showProfile(interaction,env){
           "value":(getStageMax(row,i)==0)?"-":getStageMax(row,i),
           "inline":true
         })
-      } else {
+      } else { //TODO there should be some logic for adding badges to scores
         fields.push({
           "name": "🌙"+dict[i[0]]+"/☀️",
           "value":((getStageMax(row,i[0])==0)?"-":getStageMax(row,i[0]))+"/"+((getStageMax(row,i[1])==0)?"-":getStageMax(row,i[1])),
@@ -193,9 +193,9 @@ async function showProfile(interaction,env){
           "value": "​",
           "inline":true 
         })
-      } else { //there should be some logic for adding badges to scores
+      } else { //TODO there should be some logic for adding badges to scores
         fields.push({
-          "name": dict[i], //change back to dict[i]
+          "name": dict[i], 
           "value": value==0?"-":value,
           "inline":true
         })
@@ -203,6 +203,7 @@ async function showProfile(interaction,env){
     }
   }
   client.end();
+  console.log(fields)
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
       "content": "",
@@ -244,7 +245,7 @@ function getStageMax(row,stage){
   return Math.max(...arr);
 }
 function getStageEmoji(stage,score){
-
+  //TODO
 }
 
 // handles responding to super secret staff buttons/fields
@@ -441,6 +442,11 @@ function mapField(subcommand){
               "value": "jsj",
               // "description": "ez map",
             },
+            {
+              "label": "Bonerattle Arena",
+              "value": "bra",
+              // "description": "ez map",
+            }
           ]
         }]
       };
@@ -517,6 +523,11 @@ function mapField(subcommand){
               "value": "br5",
               // "description": "ez map",
             },
+            {
+              "label": "Big Run #6 - Eeltail Alley",
+              "value": "br6",
+              // "description": "ez map",
+            },
           ]
         }]
       };
@@ -549,6 +560,11 @@ function mapField(subcommand){
               "label": "Eggstra Work #4 - Marooner's Bay",
               "value": "ew4",
               "description": "Classic Squiffer, Splash-o-matic, S-Blast '92, Dynamo Roller",
+            },
+            {
+              "label": "Eggstra Work #5 - Jammin' Salmon Junction",
+              "value": "ew5",
+              "description": "Splattershot Jr., Sloshing Machine, Rapid Blaster, Hydra Splatling",
             },
           ]
         }]

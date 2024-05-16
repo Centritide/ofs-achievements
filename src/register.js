@@ -8,7 +8,7 @@ import process from 'node:process';
  * to be run once.
  */
 
-dotenv.config({ path: '.dev.vars' });
+dotenv.config({ path: '.dev2.vars' });
 
 const token = process.env.DISCORD_TOKEN;
 const applicationId = process.env.DISCORD_APPLICATION_ID;
