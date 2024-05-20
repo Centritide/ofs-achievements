@@ -3,7 +3,7 @@
 [Based on cloudflare workers slash command bot tutorial](https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers)
 database hosted on supabase
 
-Bot for recording and displaying achievements in the salmon run overfishing server
+Discord bot for recording and displaying achievements in the salmon run overfishing server
 
 ## features
 - record scores for user (s3, event, and s2 scores), in 8 flavors + princess in a database
