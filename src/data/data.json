@@ -28,7 +28,8 @@
         "ew2",
         "ew3",
         "ew4",
-        "ew5"
+        "ew5",
+        "ew6"
     ],
     "dict": {
         "sg":"SG (S3)📥",
@@ -42,7 +43,7 @@
         "ssynormal":"SSy (S3)","sstnormal":"SSt (S3)","gfhnormal":"GFH (S3)","jsjnormal":"JSJ (S3)","branormal":"BrA (S3)",
 "sggreen_random":"SG (S3)<:s3_green:1178574271996510249>","mbgreen_random":"MB (S3)<:s3_green:1178574271996510249>","ssygreen_random":"SSy (S3)<:s3_green:1178574271996510249>","sstgreen_random":"SSt (S3)<:s3_green:1178574271996510249>","gfhgreen_random":"GFH (S3)<:s3_green:1178574271996510249>","jsjgreen_random":"JSJ (S3)<:s3_green:1178574271996510249>","bragreen_random":"BrA (S3)<:s3_green:1178574271996510249>",
 "sgsingle_random":"SG (S3)<:s3_partial:1178574255500308552>","mbsingle_random":"MB (S3)<:s3_partial:1178574255500308552>","ssysingle_random":"SSy (S3)<:s3_partial:1178574255500308552>","sstsingle_random":"SSt (S3)<:s3_partial:1178574255500308552>","gfhsingle_random":"GFH (S3)<:s3_partial:1178574255500308552>","jsjsingle_random":"JSJ (S3)<:s3_partial:1178574255500308552>","brasingle_random":"BrA (S3)<:s3_partial:1178574255500308552>",
-"sggolden_random":"SG (S3)<:s3_gold:1178574233526345749>","mbgolden_random":"MB (S3)<:s3_gold:1178574233526345749>","ssygolden_random":"SSy (S3)<:s3_gold:1178574233526345749>","sstgolden_random":"SSt (S3)<:s3_gold:1178574233526345749>","gfhgolden_random":"GFH (S3<:s3_gold:1178574233526345749>)","jsjgolden_random":"JSJ (S3)<:s3_gold:1178574233526345749>","bragolden_random":"BrA (S3)<:s3_gold:1178574233526345749>",
+"sggolden_random":"SG (S3)<:s3_gold:1178574233526345749>","mbgolden_random":"MB (S3)<:s3_gold:1178574233526345749>","ssygolden_random":"SSy (S3)<:s3_gold:1178574233526345749>","sstgolden_random":"SSt (S3)<:s3_gold:1178574233526345749>","gfhgolden_random":"GFH (S3)<:s3_gold:1178574233526345749>","jsjgolden_random":"JSJ (S3)<:s3_gold:1178574233526345749>","bragolden_random":"BrA (S3)<:s3_gold:1178574233526345749>",
 "sgnormalday":"SG (S3)☀️","mbnormalday":"MB (S3)☀️","ssynormalday":"SSy (S3)☀️","sstnormalday":"SSt (S3)☀️","gfhnormalday":"GFH (S3)☀️","jsjnormalday":"JSJ (S3)☀️","branormalday":"BrA (S3)☀️",
 "sggreen_randomday":"SG (S3)<:s3_green:1178574271996510249>☀️","mbgreen_randomday":"MB (S3)<:s3_green:1178574271996510249>☀️","ssygreen_randomday":"SSy (S3)<:s3_green:1178574271996510249>☀️","sstgreen_randomday":"SSt (S3)<:s3_green:1178574271996510249>☀️","gfhgreen_randomday":"GFH (S3)<:s3_green:1178574271996510249>☀️","jsjgreen_randomday":"JSJ (S3)<:s3_green:1178574271996510249>☀️","bragreen_randomday":"BrA (S3)<:s3_green:1178574271996510249>☀️",
 "sgsingle_randomday":"SG (S3)<:s3_partial:1178574255500308552>☀️","mbsingle_randomday":"MB (S3)<:s3_partial:1178574255500308552>☀️","ssysingle_randomday":"SSy (S3)<:s3_partial:1178574255500308552>☀️","sstsingle_randomday":"SSt (S3)<:s3_partial:1178574255500308552>☀️","gfhsingle_randomday":"GFH (S3)<:s3_partial:1178574255500308552>☀️","jsjsingle_randomday":"JSJ (S3)<:s3_partial:1178574255500308552>☀️","brasingle_randomday":"BrA (S3)<:s3_partial:1178574255500308552>☀️",
@@ -60,7 +61,7 @@
 "s2sggolden_randomday":"SG (S2)<:s2_gold:1178572957610688542>☀️","s2mbgolden_randomday":"MB (S2)<:s2_gold:1178572957610688542>☀️","s2logolden_randomday":"LO (S2)<:s2_gold:1178572957610688542>☀️","s2ssgolden_randomday":"SS (S2)<:s2_gold:1178572957610688542>☀️","s2apgolden_randomday":"AP (S2)<:s2_gold:1178572957610688542>☀️",
 "s2sgprincess":"SG (S2)👑","s2mbprincess":"MB (S2)👑","s2loprincess":"LO (S2)👑","s2ssprincess":"SS (S2)👑","s2apprincess":"AP (S2)👑",
 "br1":"Big Run 1","br2":"Big Run 2","br3":"Big Run 3","br4":"Big Run 4","br5":"Big Run 5", "br6":"Big Run 6",
-"ew1":"Eggstra Work 1","ew2":"Eggstra Work 2","ew3":"Eggstra Work 3","ew4":"Eggstra Work 4","ew5":"Eggstra Work 5",
+"ew1":"Eggstra Work 1","ew2":"Eggstra Work 2","ew3":"Eggstra Work 3","ew4":"Eggstra Work 4","ew5":"Eggstra Work 5","ew6":"Eggstra Work 6",
 "princess":"S3 👑📥","s2princess":"S2 👑📥",
 "princessc":"S3 👑","s2princessc":"S2 👑","sgc":"SG (S3)",
 "mbc":"MB (S3)",
@@ -151,6 +152,8 @@
         "1032010250515120159":["gfh",180],"1032010285776633937":["gfh",170],"1032010322963333250":["gfh",160],"1032010449409028126":["gfh",150],
         "1032009289017077801":["sst",220],"1032008939853852675":["sst",210],"1032008874246553631":["sst",200],"1032008609430786108":["sst",190],
         "1032008663872835584":["sst",180],"1032007869589114890":["sst",170],"1032008125655560292":["sst",160],"1031743433984987247":["sst",150],
+        "1212566381787086900":["bra",220],"1212566322752389190":["bra",210],"1212566254490222633":["bra",200],"1212566186353500171":["bra",190],
+        "1212566109891465286":["bra",180],"1212566033232171028":["bra",170],"1212556171656036403":["bra",160],"1212565861366370344":["bra",150],
         "1146545455719796897":["ssyday",200],"1146545124084564001":["ssyday",190],"1146544834182648029":["ssyday",180],
         "1146544401150119937":["ssyday",170],"1146543245434826833":["ssyday",160],"1146542918107152536":["ssyday",150],
         "1113958510003240970":["jsjday",200],"1113957592344035338":["jsjday",190],"1113956636093054996":["jsjday",180],
@@ -163,16 +166,20 @@
         "1032017695220183080":["gfhday",170],"1032017708973301832":["gfhday",160],"1032017774890995753":["gfhday",150],
         "1032017959142576150":["sstday",200],"1032017981686947890":["sstday",190],"1032018139271155794":["sstday",180],
         "1032018174591373444":["sstday",170],"1032018205897670738":["sstday",160],"1032018234653810771":["sstday",150],
+        "1212566535634292886":["braday",200],"1212566621475045417":["braday",190],"1212566702882291772":["braday",180],
+        "1212566769580113982":["bra",170],"1212566839369146410":["bra",160],"1212566903248396308":["bra",150],
         "1051378984006451243":["br1",137],
         "1081351957945532438":["br2",141],
         "1117607486892015707":["br3",150],
         "1146542041552130088":["br4",156],
         "1181031697895145574":["br5",165],
-        "":["br6",0],
+        "1215777380501553182":["br6",156],
         "1093689259963199559":["ew1",203],
         "1093689436367237130":["ew2",217],
         "1093689727305134101":["ew3",205],
         "1093689918548611163":["ew4",218],
+        "1239118127577698315":["ew5",236],
+        "750372931682435174":["ew6",227],
         "745392275097518150":["s2sg",200],"745392251601027122":["s2sg",190],"745392223042142332":["s2sg",180],
         "745392206776500395":["s2sg",170],"745392188791193661":["s2sg",160],"745392165714395187":["s2sg",150],
         "863699069389373440":["s2sg",140],"863699017912156220":["s2sg",130],"863698802581700618":["s2sg",120],
@@ -191,7 +198,7 @@
         "1047647515912183858":["princess",180],"1047648003302887424":["princess",170],"1047648308732100608":["princess",160],
         "1047648319419191316":["princess",150],"1047648337895108729":["princess",140],"1047648606330560582":["princess",130],"1047648590421557358":["princess",120],
         "750373234561515542":["s2princess",150],"750373202609438740":["s2princess",140],"750373121067843685":["s2princess",130],
-        "750373087630983179":["s2princess",120],"750373053879550072":["s2princess",110],"750372931682435174":["s2princess",110]
+        "750373087630983179":["s2princess",120],"750373053879550072":["s2princess",110]
     },
     "event_thresholds":{
         "br1": 137,
@@ -199,12 +206,13 @@
         "br3": 150,
         "br4": 156,
         "br5": 165,
-        "br6":0,
+        "br6":156,
         "ew1": 203,
         "ew2": 217,
         "ew3": 205,
         "ew4": 218,
-        "ew5": 250
+        "ew5": 236,
+        "ew6": 227
     },
     "col_groups":{
         "sstc":["sstnormal",
@@ -344,7 +352,7 @@
         "s2single_randomday":["s2sgsingle_randomday","s2mbsingle_randomday","s2losingle_randomday","s2sssingle_randomday","s2apsingle_randomday"],
         "s2golden_randomday":["s2sggolden_randomday","s2mbgolden_randomday","s2logolden_randomday","s2ssgolden_randomday","s2apgolden_randomday"],
         "br":["br1","br2","br3","br4","br5","br6"],
-        "ew":["ew1","ew2","ew3","ew4","ew5"]
+        "ew":["ew1","ew2","ew3","ew4","ew5","ew6"]
         
     },
     "emoji":{

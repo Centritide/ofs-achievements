@@ -176,4 +176,5 @@ Discord bot for recording and displaying achievements in the salmon run overfish
 	bragolden_randomday int DEFAULT '0',
 	braprincess int DEFAULT '0',
 	PRIMARY KEY (id)
-);```
+);
+```

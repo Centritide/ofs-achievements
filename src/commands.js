@@ -293,8 +293,11 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"5 - Jammin' Salmon Junction",
               value:"ew5"
+            },
+            {
+              name:"6 - Salmonid Smokeyard",
+              value:"ew6"
             }
-            
           ]
         },
         
@@ -767,6 +770,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"5 - Jammin' Salmon Junction",
               value:"ew5"
+            },
+            {
+              name:"6 - Salmonid Smokeyard",
+              value:"ew6"
             }
           ]
         },

@@ -566,6 +566,11 @@ function mapField(subcommand){
               "value": "ew5",
               "description": "Splattershot Jr., Sloshing Machine, Rapid Blaster, Hydra Splatling",
             },
+            {
+              "label": "Eggstra Work #6 - Salmonid Smokeyard",
+              "value": "ew6",
+              "description": "N-ZAP '85, Squeezer, Carbon Roller, Tenta Brella",
+            },
           ]
         }]
       };
@@ -1043,7 +1048,7 @@ async function importFromRoles(id,interaction,env){
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "No score roles found.",
+        "content": "No new score roles found.",
         "flags":1000000
       }
     });
