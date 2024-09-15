@@ -227,7 +227,7 @@ async function showProfile(interaction,env){
             "url": avi_url
           },
           "footer": {
-            "text": "what should i write here",
+            "text": "what should i write here 😔",
             "icon_url": ""
           },
           // "timestamp": "<t:"+Date.now()":d>"
@@ -526,6 +526,11 @@ function mapField(subcommand){
             {
               "label": "Big Run #6 - Eeltail Alley",
               "value": "br6",
+              // "description": "ez map",
+            },
+            {
+              "label": "Big Run #7 - Grand Splatlands Bowl",
+              "value": "br7",
               // "description": "ez map",
             },
           ]

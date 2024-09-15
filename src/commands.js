@@ -245,6 +245,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"Eeltail Alley",
               value:"br6"
+            },
+            {
+              name:"Grand Splatlands Bowl",
+              value:"br7"
             }
           ]
         },
@@ -369,7 +373,7 @@ export const DISPLAY_PROFILE_COMMAND = {
           value:8
         },
         {
-          name:"Bonerattle Arena",
+          name:"S3 Bonerattle Arena",
           value:9
         },
         {
@@ -716,6 +720,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"Eeltail Alley",
               value:"br6"
+            },
+            {
+              name:"Grand Splatlands Bowl",
+              value:"br7"
             }
           ]
         },  
