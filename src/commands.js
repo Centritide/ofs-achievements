@@ -9,7 +9,7 @@ export const UPDATE_EVENT_COMMAND = {
   id:"1178119204302491779",
   type:1,
   default_member_permissions:1<<32,
-  dm_permission:"false",
+  dm_permission:true,
   description: 'update a user\'s event achievement',
   options: [
     {
@@ -301,6 +301,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"6 - Salmonid Smokeyard",
               value:"ew6"
+            },
+            {
+              name:"7 - Bonerattle Arena",
+              value:"ew7"
             }
           ]
         },
@@ -782,6 +786,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"6 - Salmonid Smokeyard",
               value:"ew6"
+            },
+            {
+              name:"7 - Bonerattle Arena",
+              value:"ew7"
             }
           ]
         },
@@ -804,6 +812,82 @@ export const REQUEST_SCORE_COMMAND = {
           required:false
         },
       ]
+    },
+  ]
+}
+
+export const INFO_COMMAND = {
+  name:"info",
+  type:1,
+  dm_permission:true,
+  "id":"1322754954653597696",
+  description:"explains how to use the bot",
+  options: [
+    {
+      name:"command",
+      description:"explain the given command",
+      type:3,
+      required:false,
+      choices:[
+        {
+          name:"request",
+          value:"request"
+        },
+        {
+          name:"profile",
+          value:"profile"
+        },
+        {
+          name:"import",
+          value:"import"
+        }
+      ]
+    }
+  ]
+}
+
+export const SUBMIT_TOURNEY_COMMAND = {
+  name:"submit",
+  id: "1322802982596771851",
+  description:"submit a score for a tournament (placeholder)",
+  dm_permission:false,
+  type:1,
+  options:[
+    {
+      name:"score",
+      description:"score",
+      type:4,
+      required:true
+    },
+    {
+      name:"teammate1",
+      description:"first teammate",
+      type:6,
+      required:true
+    },
+    {
+      name:"teammate2",
+      description:"second teammate",
+      type:6,
+      required:true
+    },
+    {
+      name:"teammate3",
+      description:"third teammate",
+      type:6,
+      required:true
+    },
+    {
+      name:"link",
+      description:"link to image proof",
+      type:3,
+      required:false
+    },
+    {
+      name:"attachment",
+      description:"link to image proof",
+      type:11,
+      required:false
     },
   ]
 }

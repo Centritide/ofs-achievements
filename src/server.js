@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -80,6 +80,8 @@ router.post('/', async (request, env) => {
         
       case REQUEST_SCORE_COMMAND.name.toLowerCase():
         return requestScore(interaction,env);
+      case INFO_COMMAND.name.toLowerCase():
+        return help(interaction,env);
       case TEST_COMMAND.name.toLowerCase():
         
         return new JsonResponse({
@@ -111,6 +113,25 @@ router.all('*', () => new Response('Not Found.', { status: 404 }));
 
 // holy hell. what the hell. AAAAAAAA
 
+async function help(interaction,env){
+  // if(!Object.hasOwn(interaction.data,"options"))
+  // return new JsonResponse({
+  //   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+  //   data: {
+  //     content: "aaaaaa",
+  //     flags: 1000000
+  //   }});
+  const info = (Object.hasOwn(interaction.data,"options")) ? interaction.data.options[0].value : "default";
+  
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      content: data.infos[info],
+      flags: 1000000
+    }
+  });
+}
+
 async function showProfile(interaction,env){
   const user = interaction.data.options[0].value;
 
@@ -134,7 +155,8 @@ async function showProfile(interaction,env){
     port: 6543,
     database: env.PG_NAME 
   });
-
+  let daysum = 0;
+  let nightsum=0;
   await client.connect();
   const output = await client.query(`SELECT * from ${table} where id = ${user}`);
   let row;
@@ -169,6 +191,8 @@ async function showProfile(interaction,env){
           "inline":true
         })
       } else { //TODO there should be some logic for adding badges to scores
+        daysum += getStageMax(row,i[1]);
+        nightsum += getStageMax(row,i[0]);
         fields.push({
           "name": "🌙"+dict[i[0]]+"/☀️",
           "value":((getStageMax(row,i[0])==0)?"-":getStageMax(row,i[0]))+"/"+((getStageMax(row,i[1])==0)?"-":getStageMax(row,i[1])),
@@ -227,7 +251,7 @@ async function showProfile(interaction,env){
             "url": avi_url
           },
           "footer": {
-            "text": "what should i write here 😔",
+            "text": (daysum > 0 || nightsum > 0) ? "sums: " + nightsum + "/" + daysum:"what should i write here 😔",
             "icon_url": ""
           },
           // "timestamp": "<t:"+Date.now()":d>"
@@ -239,6 +263,7 @@ async function showProfile(interaction,env){
 
 function getStageMax(row,stage){
   let arr = [];
+  console.log(stage);
   for(let i of data.col_groups[stage]){
     arr.push(row[i])
   }
@@ -576,6 +601,11 @@ function mapField(subcommand){
               "value": "ew6",
               "description": "N-ZAP '85, Squeezer, Carbon Roller, Tenta Brella",
             },
+            {
+              "label": "Eggstra Work #7 - Bonerattle Arena",
+              "value": "ew7",
+              "description": "Splattershot, Octobrush, Nautilus 47, Explosher",
+            }
           ]
         }]
       };
@@ -688,6 +718,10 @@ function componentMaker(subcommand,score,rot_type,stage){
           label:"All Gold Random (Day Only)",
           value:"golden_randomday"
         },
+        {
+          label:"Princess",
+          value:"princess"
+        }
       ]
     }]
   }
