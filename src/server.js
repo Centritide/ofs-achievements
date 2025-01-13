@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -56,7 +56,7 @@ router.post('/', async (request, env) => {
       type: InteractionResponseType.PONG,
     });
   }
-  
+
   if (interaction.type === InteractionType.APPLICATION_COMMAND) {
     // Most user commands will come as `APPLICATION_COMMAND`.
     switch (interaction.data.name.toLowerCase()) {
@@ -68,22 +68,26 @@ router.post('/', async (request, env) => {
             return update(interaction,env);
           case UPDATE_EVENT_COMMAND.options[1].name.toLowerCase():
             return update(interaction,env);
-          default: 
+          default:
             return updateEvent(interaction,env);
         }
       case IMPORT_FROM_ROLES_COMMAND.name.toLowerCase():
         return importFromRoles(interaction.member.user.id,interaction,env);
       case IMPORT_USER.name.toLowerCase():
         return importFromRoles(interaction.data.options[0].value,interaction,env);
-      
+
       // case PROFILE_TO_ROLES_COMMAND.name.toLowerCase():
-        
+
       case REQUEST_SCORE_COMMAND.name.toLowerCase():
         return requestScore(interaction,env);
       case INFO_COMMAND.name.toLowerCase():
-        return help(interaction,env);
+            return help(interaction, env);
+      case START_TOURNEY_COMMAND.name.toLowerCase():
+            return startTourney(interaction, env);
+      case SUBMIT_TOURNEY_COMMAND.name.toLowerCase():
+            return submitTourney(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
-        
+
         return new JsonResponse({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data:{
@@ -97,14 +101,21 @@ router.post('/', async (request, env) => {
           }
         })
         break;
-      
+
       default:
         return new JsonResponse({ error: 'Unknown Type' + interaction.data.name.toLowerCase() }, { status: 400 });
     }
   }
   if (interaction.type === InteractionType.MESSAGE_COMPONENT){
-    return await componentResponse(interaction,env);
-  } 
+    // if channel is secret channel, componentResponse
+    //if channel is secret tourney channel, tourneyResponse
+    if  (interaction.message.channel_id == "1178115595296841848"){
+      return await componentResponse(interaction, env);
+
+    } else if (interaction.message.channel_id == "1178115595296841848") {
+      return await tourneyResponse(interaction, env);
+    }
+  }
   console.error('Unknown Type');
   return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
 });
@@ -122,7 +133,7 @@ async function help(interaction,env){
   //     flags: 1000000
   //   }});
   const info = (Object.hasOwn(interaction.data,"options")) ? interaction.data.options[0].value : "default";
-  
+
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
@@ -153,7 +164,7 @@ async function showProfile(interaction,env){
     password: env.PG_PW ,
     host: env.PG_HOST ,
     port: 6543,
-    database: env.PG_NAME 
+    database: env.PG_NAME
   });
   let daysum = 0;
   let nightsum=0;
@@ -179,9 +190,9 @@ async function showProfile(interaction,env){
       if(i == ""){
         // console.log(i);
         fields.push({
-          "name": "​", 
+          "name": "​",
           "value": "​",
-          "inline":true 
+          "inline":true
         })
       }else if(typeof i === 'string'){
         // console.log(getStageMax(row,i));
@@ -215,11 +226,11 @@ async function showProfile(interaction,env){
         fields.push({
           "name": "​", //this too
           "value": "​",
-          "inline":true 
+          "inline":true
         })
       } else { //TODO there should be some logic for adding badges to scores
         fields.push({
-          "name": dict[i], 
+          "name": dict[i],
           "value": value==0?"-":value,
           "inline":true
         })
@@ -296,11 +307,11 @@ async function componentResponse(interaction,env){
   const dmchannel = await response.json();
   switch(interaction.data.custom_id.toLowerCase()){
     case "approve":
-      
+
       let column = stage + ((subcommand == "bigrun" || subcommand == "eggstra") ? "":rot_type);
 
       let newscore = await updateScore(user,score,column,env);
-      
+
       const acceptresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`,{
         headers: {
           'Content-Type': 'application/json',
@@ -345,14 +356,14 @@ async function componentResponse(interaction,env){
       });
     case "change subcommand":
       subcommand = interaction.data.values[0];
-      
+
     case "change map":
       stage = interaction.data.values[0];
       break;
     case "change rotation type":
       rot_type = interaction.data.values[0];
       break;
-    
+
     case "add 1":
       score = score + 1;
       break;
@@ -386,6 +397,85 @@ async function componentResponse(interaction,env){
     }
   });
 }
+
+async function tourneyResponse(interaction, env) {
+  const user = interaction.message.embeds[0].fields[0].value
+  const score = Number(interaction.message.embeds[0].fields[1].value);
+  const tourney_id = Number(interaction.message.embeds[0].fields[2].value);
+  const team = interaction.message.embeds[0].fields[3].value;
+  const link = interaction.message.embeds[0].image.url;
+  const content = interaction.message.content;
+  const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "recipient_id": user
+    })
+  });
+  const dmchannel = await response.json();
+  switch (interaction.data.custom_id.toLowerCase()) {
+    case "approve":
+
+      const client = new Client({
+        user: env.PG_USER,
+        password: env.PG_PW,
+        host: env.PG_HOST,
+        port: 6543,
+        database: env.PG_NAME
+      });
+
+      const output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score) VALUES(${tourney_id}, ${team}, ${score})`);
+      client.end();
+      // console.log(output);
+
+      const acceptresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": "Accepted your submission for tournament " + tourney_id + " with score " + score,
+          "embeds": interaction.message.embeds,
+        })
+      });
+      const acceptdata = await acceptresponse.json();
+      // console.log(acceptdata);
+      return new JsonResponse({
+        type: InteractionResponseType.UPDATE_MESSAGE,
+        data: {
+          content: content + "\nAdded submission for <@" + user + ">. " + " score: " + score,
+          components: []
+        }
+      });
+    case "deny":
+      const denyresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": "Your FSR submission was denied.",
+          "embeds": interaction.message.embeds,
+        })
+      });
+      const denydata = await denyresponse.json();
+      // console.log(denydata);
+      return new JsonResponse({
+        type: InteractionResponseType.UPDATE_MESSAGE,
+        data: {
+          content: content + "\ndenied",
+          embeds: interaction.message.embeds,
+          components: []
+        }
+      });
+  }
+}
+
 
 //formatting for the super secret staff messages
 
@@ -429,7 +519,7 @@ function mapField(subcommand){
   let map_event_field;
   switch(subcommand){
     case REQUEST_SCORE_COMMAND.options[0].name.toLowerCase(): //s3
-      map_event_field = 
+      map_event_field =
       {
         type:1,
         components:[{
@@ -477,7 +567,7 @@ function mapField(subcommand){
       };
       break;
     case REQUEST_SCORE_COMMAND.options[1].name.toLowerCase(): //s2
-      map_event_field = 
+      map_event_field =
       {
         type:1,
         components:[{
@@ -515,7 +605,7 @@ function mapField(subcommand){
       };
       break;
     case REQUEST_SCORE_COMMAND.options[2].name.toLowerCase(): //bigrun
-      map_event_field = 
+      map_event_field =
       {
         type:1,
         components:[{
@@ -563,7 +653,7 @@ function mapField(subcommand){
       };
       break;
     case REQUEST_SCORE_COMMAND.options[3].name.toLowerCase(): //eggstra
-      map_event_field = 
+      map_event_field =
       {
         type:1,
         components:[{
@@ -652,6 +742,44 @@ function componentMaker(subcommand,score,rot_type,stage){
       }
     ]
   };
+  const scorerow = {
+    type: 1,
+    components: [
+      {
+        type: 2,
+        label: "-1",
+        style: 2,
+        custom_id: "sub 1"
+      },
+      {
+        type: 2,
+        label: "-2",
+        style: 2,
+        custom_id: "sub 2"
+      },
+      {
+        type: 2,
+        label: "-5",
+        style: 2,
+        custom_id: "sub 5"
+      },
+      {
+        type: 2,
+        label: "-10",
+        style: 2,
+        custom_id: "sub 10"
+      },
+      {
+        type: 2,
+        label: "+10",
+        style: 2,
+        custom_id: "add 10"
+      }
+    ]
+  };
+  if (subcommand == "tourney") {
+    return ([approverow, scorerow]);
+  }
   const subcommandrow = {
     type:1,
     components:[{
@@ -725,43 +853,7 @@ function componentMaker(subcommand,score,rot_type,stage){
       ]
     }]
   }
-  const scorerow = {
-    type:1,
-    components:[
-      {
-        type:2,
-        label:"-1",
-        style:2,
-        custom_id:"sub 1"
-      },
-      {
-        type:2,
-        label:"-2",
-        style:2,
-        custom_id:"sub 2"
-      },
-      {
-        type:2,
-        label:"-5",
-        style:2,
-        custom_id:"sub 5"
-      },
-      {
-        type:2,
-        label:"-10",
-        style:2,
-        custom_id:"sub 10"
-      },
-      {
-        type:2,
-        label:"+10",
-        style:2,
-        custom_id:"add 10"
-      }
-    ]
-  };
-  
-  
+
   if(!(data[subcommand].includes(stage))){
     return([stagerow]);
   } else if(subcommand == "bigrun" || subcommand == "eggstra") {
@@ -798,15 +890,15 @@ function componentMaker(subcommand,score,rot_type,stage){
 //three functions that all update a score. well done. very normal
 
 async function updateScore(user,score,column,env,strict_increase = true){
- 
+
   // console.log(user +" " + score+ " " + column);
- 
+
   const client = new Client({
     user: env.PG_USER ,
     password: env.PG_PW ,
     host: env.PG_HOST ,
     port: 6543,
-    database: env.PG_NAME 
+    database: env.PG_NAME
   });
   try {
     await client.connect();
@@ -820,7 +912,7 @@ async function updateScore(user,score,column,env,strict_increase = true){
     if(old.rows.length>0 && (old.rows[0][column]<score)){
       try{
         await client.query(`UPDATE ${table} set ${column} = ${score} where id = ${user};`)
-        
+
         old_score = old.rows[0][column];
       } catch{
       }
@@ -847,7 +939,7 @@ async function updateScore(user,score,column,env,strict_increase = true){
     client.end();
     return old_score;
   }
-  
+
 }
 
 async function updateEvent(interaction,env){
@@ -855,7 +947,7 @@ async function updateEvent(interaction,env){
   const user = interaction.data.options[0].options[0].value;
   const event = interaction.data.options[0].options[1].value;
   const score = interaction.data.options[0].options[2].value;
-  
+
   const old_score = await updateScore(user, score, event,env,false);
   if(old_score ===undefined){
     return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -927,7 +1019,7 @@ async function requestScore(interaction,env){
             }
           });
         }
-        
+
         break;
     }
   }
@@ -943,7 +1035,7 @@ async function requestScore(interaction,env){
   const content = "<@" + user + "> requested (" + subcommand + ") " + score + " on " + stage + " " + rot_type + " " + link;
   let real;
   let attachments=[];
-    if(link.substring(0,29) === "https://discord.com/channels/"){
+  if(link.substring(0,29) === "https://discord.com/channels/"){
     const parts = link.split("/");
     const channel_id = parts[5];
     const msg_id = parts[6];
@@ -961,18 +1053,18 @@ async function requestScore(interaction,env){
       attachments=get_message.attachments;
       real = 200;
     }
-    
+
   } else if (link.substring(0,17) ==="https://stat.ink/"){
     const parts = link.split("/");
     const id = parts[5];
     link = `https://s3-img-gen.stats.ink/salmon/en-US/${id}.jpg`;
     const img = await fetch(link);
-    real = await img.status;
+    real = img.status;
   } else if(link.substring(0,27)=="https://cdn.discordapp.com/"){
-    real = 200; 
+    real = 200;
   } else {
     const img = await fetch(link);
-    real = await img.status;
+    real = img.status;
   }
   if(real==200){
 
@@ -1046,7 +1138,7 @@ async function importFromRoles(id,interaction,env){
     password: env.PG_PW ,
     host: env.PG_HOST ,
     port: 6543,
-    database: env.PG_NAME 
+    database: env.PG_NAME
   });
   await client.connect();
   let query;
@@ -1062,7 +1154,7 @@ async function importFromRoles(id,interaction,env){
         query = query + `\`${pair[0]}\`, `;
         vals = vals + `${pair[1]}, `;
         hits +=1;
-      } 
+      }
     }
     query = query.replace(/,\s*$/, "");
     vals = vals.replace(/,\s*$/, "");
@@ -1077,7 +1169,7 @@ async function importFromRoles(id,interaction,env){
       if(pair!=undefined && pair[1]>old.rows[0][pair[0]]){
         query = query + `${pair[0]}=${pair[1]}, `;
         hits +=1;
-      } 
+      }
     }
     query = query.replace(/,\s*$/, "");
     query = query + ` WHERE id=${id}`
@@ -1107,6 +1199,201 @@ async function importFromRoles(id,interaction,env){
   });
 }
 
+// starts tournament, sends message in tournament channel
+async function startTourney(interaction, env) {
+  // check if there's an ongoing tournament by using the database and looking for the latest tournament
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  // database has a table called tournaments with columns id, scenario, and start_time.
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  const date = new Date();
+  if (output.rows.length > 0) {
+    // check if the latest tournament has ended, which is 15 minutes after the start time
+    const start_time = output.rows[0].start_time;
+    if (date.getTime() < start_time + 900000) {
+      client.end();
+      return new JsonResponse({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          "content": "There is already an ongoing tournament. Please wait until it ends before starting a new one.",
+          "flags": 1000000
+        }
+      });
+    }
+  }
+  // if there's no ongoing tournament, start a new one
+
+  const scenario = interaction.data.options[0].value;
+
+  // insert the new tournament into the database
+  output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ('${scenario}', ${date.getTime()});`);
+  client.end();
+
+  const channel_id = "REPLACE WITH TOURNAMENT CHANNEL ID";
+  // the date 15 minutes from now with discord timestamps
+  const date_15 = "<t:" + Math.floor((date.getTime() + 900000) / 1000) + ":R>";
+  const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": `Fastest Salmon Running in the West ${output.id} has started! You'll have until ${date_15} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by uploading an image or including a link to a message. Good luck!`
+    })
+  });
+  const data = await response.json();
+  // console.log(data);
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "Tournament started!",
+      "flags": 1000000
+    }
+  });
+}
+
+// checks submission for validity, adds to database, sends message in private channel for approval
+
+async function submitTourney(interaction, env) {
+  // check if there's an ongoing tournament by using the database and looking for the latest tournament
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  // database has a table called tournaments with columns id, scenario, and start_time.
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  const date = new Date();
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no ongoing event. Please wait until an event starts before submitting a score.",
+        "flags": 1000000
+      }
+    });
+  }
+  // check if the latest tournament has ended, which is 15 minutes after the start time
+  const start_time = output.rows[0].start_time;
+  if (date.getTime() > start_time + 900000) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Fastest Salmon Run in the West " + output.rows[0].id + " has ended. Please wait until the next event starts before submitting a score.",
+        "flags": 1000000
+      }
+    });
+  }
+  // check if the user or any teammates have already submitted a score
+  const team = [interaction.member.user.id, interaction.data.options[1].value, interaction.data.options[2].value, interaction.data.options[3].value];
+  output2 = await client.query('SELECT * FROM submissions WHERE tournament_id = $1 AND team_members && $2::TEXT[];', [output.rows[0].id, team]);
+  if (output2.rows.length > 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      // need to allow some way to delete wrong submissions in the future
+      data: {
+        "content": "You or one of your teammates have already submitted a score for this event. For now, there is no way to submit another score - a method to delete wrong submissions will be added in the future.",
+        "flags": 1000000
+      }
+    });
+  }
+  const score = interaction.data.options[0].value;
+  const image = interaction.data.options[4].value;
+  // only image attachment is allowed, so unsure if additional checks are needed like checking undefined
+  if (interaction.data.resolved.attachments[image].content_type.substring(0, 5) === "image") {
+      link = interaction.data.resolved.attachments[image].url;
+  } else {
+      return new JsonResponse({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+              "content": "Please only attach images",
+              "flags": 1000000
+          }
+      });
+  }
+  let real;
+  if (link.substring(0, 27) == "https://cdn.discordapp.com/") {
+    real = 200;
+  } else {
+    const img = await fetch(link);
+    real = img.status;
+  }
+  if (real != 200) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Please link a valid image",
+        "flags": 1000000
+      }
+    });
+  }
+
+  const channel_id = "REPLACE WITH APPROVAL CHANNEL ID";
+  const components = componentMaker("tourney", score, null, null);
+  const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
+      headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      },
+      method: 'POST',
+      body: JSON.stringify({
+      "content": `<@${team[0]}> submitted ${score} for FSR${output.rows[0].id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`,
+      "embeds": [
+        {
+          "author": {
+            "name": ""
+          },
+          "image": {
+              "url": link
+          },
+          "fields": [
+            {
+              "name": "user",
+              "value": user
+            },
+            {
+              "name": "score",
+              "value": score
+            },
+            {
+              "name": "tourney id",
+              "value": output.rows[0].id
+            },
+            {
+              "name": "team",
+              "value": team
+            }
+          ]
+        }
+        ],
+        "components": components,
+        "attachments": []
+      })
+  });
+  const data = await response.json();
+  // console.log(data);
+  return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+      "content": "Score submitted! https://discord.com/channels/" + interaction.guild_id + "/" + data.channel_id + "/" + data.id,
+      "flags": 1000000
+      }
+  });
+}
+
 //idk what the stuff after here is
 async function verifyDiscordRequest(request, env) {
   const signature = request.headers.get('x-signature-ed25519');
@@ -1127,6 +1414,6 @@ const server = {
   fetch: async function (request, env) {
     return router.handle(request, env);
   },
-  
+
 };
 export default server;

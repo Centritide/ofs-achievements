@@ -110,7 +110,7 @@ export const UPDATE_EVENT_COMMAND = {
             }
           ]
         }
-        
+
       ]
     },
     {
@@ -252,7 +252,7 @@ export const UPDATE_EVENT_COMMAND = {
             }
           ]
         },
-        
+
         {
           name:"score",
           description:"score",
@@ -308,7 +308,7 @@ export const UPDATE_EVENT_COMMAND = {
             }
           ]
         },
-        
+
         {
           name:"score",
           description:"score",
@@ -317,7 +317,7 @@ export const UPDATE_EVENT_COMMAND = {
         }
       ]
     },
-    
+
   ]
 };
 
@@ -449,7 +449,7 @@ export const DISPLAY_PROFILE_COMMAND = {
           value:30
         }
       ]
-    }    
+    }
   ]
 }
 
@@ -586,7 +586,7 @@ export const REQUEST_SCORE_COMMAND = {
           description:"link to image proof",
           type:11,
           required:false
-        },        
+        },
       ]
     },
     {
@@ -596,7 +596,7 @@ export const REQUEST_SCORE_COMMAND = {
       dm_permission:"false",
       description: 'request an s2 score',
       options: [
-        
+
         {
           name:"stage",
           description:"stage",
@@ -694,7 +694,7 @@ export const REQUEST_SCORE_COMMAND = {
       description: 'request a big run achievement',
       type:1,
       options:[
-        
+
         {
           name:"stage",
           description:"map",
@@ -730,7 +730,7 @@ export const REQUEST_SCORE_COMMAND = {
               value:"br7"
             }
           ]
-        },  
+        },
         {
           name:"score",
           description:"score",
@@ -756,7 +756,7 @@ export const REQUEST_SCORE_COMMAND = {
       description: 'request an eggstra achievement',
       type:1,
       options:[
-        
+
         {
           name:"stage",
           description:"event",
@@ -878,18 +878,30 @@ export const SUBMIT_TOURNEY_COMMAND = {
       required:true
     },
     {
-      name:"link",
-      description:"link to image proof",
-      type:3,
-      required:false
-    },
-    {
       name:"attachment",
       description:"link to image proof",
       type:11,
-      required:false
+      required:true
     },
   ]
+}
+
+// start tourney command, one required option that is a string with description "scenario code"
+
+export const START_TOURNEY_COMMAND = {
+    name:"start",
+    id: "1322802982596771852", // replace later
+    description:"start a tournament",
+    dm_permission:false,
+    type:1,
+    options:[
+        {
+        name:"scenario",
+        description:"scenario code",
+        type:3,
+        required:true
+        }
+    ]
 }
 
 // export const PROFILE_TO_ROLES_COMMAND = {
@@ -944,7 +956,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
 //           description:"true if day only",
 //           type:5
 //         }
-        
+
 //       ]
 //     },
 //     {
@@ -1043,7 +1055,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
 //         }
 //       ]
 //     },
-    
+
 //   ]
 // }
 
