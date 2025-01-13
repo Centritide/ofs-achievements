@@ -1201,6 +1201,17 @@ async function importFromRoles(id,interaction,env){
 
 // starts tournament, sends message in tournament channel
 async function startTourney(interaction, env) {
+  // check if user has the correct permissions
+  if (!interaction.member.roles.includes("REPLACE WITH TOURNAMENT ROLE ID")) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You do not have permissions to use this command.",
+        "flags": 1000000
+      }
+    });
+  }
+
   // check if there's an ongoing tournament by using the database and looking for the latest tournament
   const client = new Client({
     user: env.PG_USER,
