@@ -6,7 +6,7 @@
 
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
-  // id:"1178119204302491779",
+  id:"1178119204302491779",
   type:1,
   default_member_permissions:1<<32,
   dm_permission:true,
@@ -324,7 +324,7 @@ export const UPDATE_EVENT_COMMAND = {
 export const DISPLAY_PROFILE_COMMAND = {
   name:"profile",
   type:1,
-  // id:"1178119204302491780",
+  id:"1178119204302491780",
   dm_permission:"false",
   description:"see user profile",
   options:[
@@ -455,14 +455,14 @@ export const DISPLAY_PROFILE_COMMAND = {
 
 export const IMPORT_FROM_ROLES_COMMAND = {
   name:"import",
-  // id:"1178119204302491781",
+  id:"1178119204302491781",
   description:"import scores from your roles",
   dm_permission:"false",
   type:1
 }
 export const IMPORT_USER = {
   name:"forceimport",
-  // id:"1178119204302491782",
+  id:"1178119204302491782",
   default_member_permissions:1<<32,
   description:"import scores from a user's roles",
   dm_permission:"false",
@@ -479,7 +479,7 @@ export const REQUEST_SCORE_COMMAND = {
   name:"request",
   type:1,
   dm_permission:false,
-  // id:"1178119204302491783",
+  id:"1178119204302491783",
   description:"request a score with a message link",
   options: [
     {
@@ -820,7 +820,7 @@ export const INFO_COMMAND = {
   name:"info",
   type:1,
   dm_permission:true,
-  // "id":"1322754954653597696",
+  "id":"1322754954653597696",
   description:"explains how to use the bot",
   options: [
     {
@@ -848,7 +848,7 @@ export const INFO_COMMAND = {
 
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
-  // id: "1322802982596771851",
+  id: "1322802982596771851",
   description:"submit a score for Fastest Salmon Run in the West",
   dm_permission:false,
   type:1,
@@ -890,7 +890,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
 
 export const START_TOURNEY_COMMAND = {
     name:"start",
-    // id: "1322802982596771852", // replace later
+    id: "1322802982596771852", // replace later
     description:"start a tournament",
     dm_permission:false,
     type:1,
@@ -906,7 +906,7 @@ export const START_TOURNEY_COMMAND = {
 
 export const STOP_TOURNEY_COMMAND = {
     name: "stop",
-    // id: "1322802982596771853", // replace later
+    id: "1322802982596771853", // replace later
     description: "stop a tournament",
     dm_permission: false,
     type: 1

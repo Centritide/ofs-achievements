@@ -115,7 +115,7 @@ router.post('/', async (request, env) => {
     if  (interaction.message.channel_id == "1178115595296841848"){
       return await componentResponse(interaction, env);
 
-    } else if (interaction.message.channel_id == "1142653555895971943") {
+    } else if (interaction.message.channel_id == "REPLACE ME") {
       return await tourneyResponse(interaction, env);
     }
   }
@@ -404,7 +404,6 @@ async function componentResponse(interaction,env){
 //handles the super secret tourney buttons/fields, sends leaderboard once 3 submissions are approved
 
 async function tourneyResponse(interaction, env) {
-  console.log("a");
   const id = interaction.message.embeds[0].fields[0].value;
   const user = interaction.message.embeds[0].fields[1].value
   const score = Number(interaction.message.embeds[0].fields[2].value);
@@ -432,8 +431,8 @@ async function tourneyResponse(interaction, env) {
   let output, output2;
   switch (interaction.data.custom_id.toLowerCase()) {
     case "approve":
-      output = await client.query(`UPDATE submissions SET submission_status = 'accepted' WHERE id = ${id};`);
-      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status = 'accepted';`);
+      output = await client.query(`UPDATE submissions SET submission_status = accepted WHERE id = ${id};`);
+      output2 = await client.query(`SELECT * FROM submissions WHERE tourney_id = ${tourney_id} AND submission_status = accepted;`);
       client.end();
       // if there are 3 accepted submissions, send leaderboard
       if (output2.rows.length >= 3) {
@@ -491,7 +490,7 @@ async function tourneyResponse(interaction, env) {
     case "deny":
       // delete submission
       output = await client.query(`DELETE FROM submissions WHERE id = ${id};`);
-      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status IS NULL ORDER BY score DESC LIMIT 1;`);
+      output2 = await client.query(`SELECT * FROM submissions WHERE tourney_id = ${tourney_id} AND submission_status IS NULL ORDER BY score DESC LIMIT 1;`);
       client.end();
       // console.log(output);
       if (output2.rows.length == 0) {
@@ -1256,7 +1255,7 @@ async function importFromRoles(id,interaction,env){
 // starts tournament, sends message in tournament channel
 async function startTourney(interaction, env) {
   // check if user has the correct permissions
-  if (!interaction.member.roles.includes("1118691602819452958")) {
+  if (!interaction.member.roles.includes("REPLACE WITH TOURNAMENT ROLE ID")) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1327,7 +1326,7 @@ async function startTourney(interaction, env) {
 
 async function stopTourney(interaction, env) {
   // check if user has the correct permissions
-  if (!interaction.member.roles.includes("1118691602819452958")) {
+  if (!interaction.member.roles.includes("REPLACE WITH TOURNAMENT ROLE ID")) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1360,21 +1359,19 @@ async function stopTourney(interaction, env) {
       }
     });
   }
-  //commented for testing
-  // if (!output.rows[0].is_active) {
-  //   client.end();
-  //   return new JsonResponse({
-  //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-  //     data: {
-  //       "content": "Fastest Salmon Run in the West " + tourney_id + " has already ended.",
-  //       "flags": 1000000
-  //     }
-  //   });
-  // }
 
-  if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
-    // console.log(date.getTime());
-    // console.log(output.rows[0].start_time + tourney_length);
+  if (!output.rows[0].is_active) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Fastest Salmon Run in the West " + tourney_id + " has already ended.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  if (date.getTime() < output.rows[0].start_time + tourney_length) {
     client.end();
     const mins = tourney_length / 60000;
     return new JsonResponse({
@@ -1391,14 +1388,13 @@ async function stopTourney(interaction, env) {
 
   // get the top 3 scores
   const top3 = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC LIMIT 3;`);
-  // console.log(top3.rows.length);
+
   for (let i = 0; i < top3.rows.length; i++) {
     const team = top3.rows[i].team_members;
     const score = top3.rows[i].score;
     const link = top3.rows[i].link;
     const id = top3.rows[i].id;
-    // console.log("a");
-    await handleSubmission(env, id, score, team, tourney_id, link);
+    handleSubmission(env, id, score, team, tourney_id, link);
   }
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1495,8 +1491,7 @@ async function submitTourney(interaction, env) {
   }
 
   // insert the new submission into the database
-  // console.log(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, '{${team[0]} ${team[1]} ${team[2]} ${team[3]}}', ${score}, '${link})';`)
-  output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, '{${team[0]} ${team[1]} ${team[2]} ${team[3]}}', ${score}, '${link}');`);
+  output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, '{${team}}', ${score}, ${link});`);
   client.end();
 
   return new JsonResponse({
@@ -1509,7 +1504,7 @@ async function submitTourney(interaction, env) {
 }
 
 async function handleSubmission(env, id, score, team, tourney_id, link) {
-  const channel_id = "1142653555895971943";
+  const channel_id = "REPLACE WITH APPROVAL CHANNEL ID";
   const components = componentMaker("tourney", score, null, null);
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
     headers: {
@@ -1518,7 +1513,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `<@${team[0].split(" ")[0]}> submitted ${score} for FSR${tourney_id} with <@${team[0].split(" ")[1]}>,<@${team[0].split(" ")[2]}>,and <@${team[0].split(" ")[3]}>.\n${link}`,
+      "content": `<@${team[0]}> submitted ${score} for FSR${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`,
       "embeds": [
         {
           "author": {
@@ -1534,7 +1529,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
             },
             {
               "name": "user",
-              "value": team[0].split(" ")[0]
+              "value": user
             },
             {
               "name": "score",
@@ -1546,31 +1541,16 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
             },
             {
               "name": "team",
-              "value": team[0]
+              "value": team
             }
           ]
         }
       ],
       "components": components,
-      // "attachments": []
+      "attachments": []
     })
   });
-  // fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`,{
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Authorization: `Bot ${env.DISCORD_TOKEN}`,
-  //   },
-  //   method:'POST',
-  //   body: JSON.stringify({
-  //     "content": content,
-  //     "embeds": embeds,
-  //     "components":components,
-  //     "attachments":[]
-  //   })
-  // })
-  
-  const data = await console.log(response.json());
-  // console.log(data);
+  const data = await response.json();
   // console.log(data);
   return data;
 }
