@@ -9,11 +9,12 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
 const table = "users";
+const tourney_length = 15*60*1000; // 15 minutes
 class JsonResponse extends Response {
   constructor(body, init) {
     const jsonBody = JSON.stringify(body);
@@ -81,11 +82,13 @@ router.post('/', async (request, env) => {
       case REQUEST_SCORE_COMMAND.name.toLowerCase():
         return requestScore(interaction,env);
       case INFO_COMMAND.name.toLowerCase():
-            return help(interaction, env);
+        return help(interaction, env);
       case START_TOURNEY_COMMAND.name.toLowerCase():
-            return startTourney(interaction, env);
+        return startTourney(interaction, env);
       case SUBMIT_TOURNEY_COMMAND.name.toLowerCase():
-            return submitTourney(interaction, env);
+        return submitTourney(interaction, env);
+      case STOP_TOURNEY_COMMAND.name.toLowerCase():
+        return stopTourney(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
 
         return new JsonResponse({
@@ -398,12 +401,13 @@ async function componentResponse(interaction,env){
   });
 }
 
+//handles the super secret tourney buttons/fields, sends leaderboard once 3 submissions are approved
+
 async function tourneyResponse(interaction, env) {
-  const user = interaction.message.embeds[0].fields[0].value
-  const score = Number(interaction.message.embeds[0].fields[1].value);
-  const tourney_id = Number(interaction.message.embeds[0].fields[2].value);
-  const team = interaction.message.embeds[0].fields[3].value;
-  const link = interaction.message.embeds[0].image.url;
+  const id = interaction.message.embeds[0].fields[0].value;
+  const user = interaction.message.embeds[0].fields[1].value
+  const score = Number(interaction.message.embeds[0].fields[2].value);
+  const tourney_id = interaction.message.embeds[0].fields[3].value;
   const content = interaction.message.content;
   const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
     headers: {
@@ -416,33 +420,65 @@ async function tourneyResponse(interaction, env) {
     })
   });
   const dmchannel = await response.json();
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output, output2;
   switch (interaction.data.custom_id.toLowerCase()) {
     case "approve":
-
-      const client = new Client({
-        user: env.PG_USER,
-        password: env.PG_PW,
-        host: env.PG_HOST,
-        port: 6543,
-        database: env.PG_NAME
-      });
-
-      const output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score) VALUES(${tourney_id}, ${team}, ${score})`);
+      output = await client.query(`UPDATE submissions SET submission_status = accepted WHERE id = ${id};`);
+      output2 = await client.query(`SELECT * FROM submissions WHERE tourney_id = ${tourney_id} AND submission_status = accepted;`);
       client.end();
+      // if there are 3 accepted submissions, send leaderboard
+      if (output2.rows.length >= 3) {
+        const leaderboard = output2.rows;
+        let leaderboardstring = "## Top 3 for Fastest Salmon Run in the West " + tourney_id + ":\n";
+        const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
+        for (let i = 0; i < 3; i++) {
+          let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
+          leaderboardstring += `${place[i]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+        }
+        const tourney_channel = "REPLACE_ME";
+        const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bot ${env.DISCORD_TOKEN}`,
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            "content": leaderboardstring
+          })
+        });
+        // const tourney_data = await tourney_response.json();
+        // console.log(tourney_data);
+        return new JsonResponse({
+          type: InteractionResponseType.UPDATE_MESSAGE,
+          data: {
+            content: content + "\nAdded submission for<@" + user + " >. " + " score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
+          }
+        })
+      }
+
       // console.log(output);
 
-      const acceptresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bot ${env.DISCORD_TOKEN}`,
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          "content": "Accepted your submission for tournament " + tourney_id + " with score " + score,
-          "embeds": interaction.message.embeds,
-        })
-      });
-      const acceptdata = await acceptresponse.json();
+      // only need to send response if no leaderboard
+      //const acceptresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
+      //  headers: {
+      //    'Content-Type': 'application/json',
+      //    Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      //  },
+      //  method: 'POST',
+      //  body: JSON.stringify({
+      //    "content": "Accepted your submission for tournament " + tourney_id + " with score " + score,
+      //    "embeds": interaction.message.embeds,
+      //  })
+      //});
+      // const acceptdata = await acceptresponse.json();
       // console.log(acceptdata);
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
@@ -452,6 +488,23 @@ async function tourneyResponse(interaction, env) {
         }
       });
     case "deny":
+      // delete submission
+      output = await client.query(`DELETE FROM submissions WHERE id = ${id};`);
+      output2 = await client.query(`SELECT * FROM submissions WHERE tourney_id = ${tourney_id} AND submission_status IS NULL ORDER BY score DESC LIMIT 1;`);
+      client.end();
+      // console.log(output);
+      if (output2.rows.length == 0) {
+        return new JsonResponse({
+          type: InteractionResponseType.UPDATE_MESSAGE,
+          data: {
+            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score,
+            components: []
+          }
+        });
+      }
+      row = output2.rows[0];
+
+      handleSubmission(env, row.id, row.score, row.team_members, row.tournament_id, row.link);
       const denyresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
         headers: {
           'Content-Type': 'application/json',
@@ -1225,9 +1278,8 @@ async function startTourney(interaction, env) {
   let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
   const date = new Date();
   if (output.rows.length > 0) {
-    // check if the latest tournament has ended, which is 15 minutes after the start time
-    const start_time = output.rows[0].start_time;
-    if (date.getTime() < start_time + 900000) {
+    // check if the latest tournament has ended
+    if (output.rows[0].is_active) {
       client.end();
       return new JsonResponse({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1247,8 +1299,8 @@ async function startTourney(interaction, env) {
   client.end();
 
   const channel_id = "REPLACE WITH TOURNAMENT CHANNEL ID";
-  // the date 15 minutes from now with discord timestamps
-  const date_15 = "<t:" + Math.floor((date.getTime() + 900000) / 1000) + ":R>";
+  // the date tourney_length from now with discord timestamps
+  const date_end = "<t:" + Math.floor((date.getTime() + tourney_length) / 1000) + ":R>";
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
     headers: {
       'Content-Type': 'application/json',
@@ -1256,7 +1308,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `Fastest Salmon Running in the West ${output.id} has started! You'll have until ${date_15} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by uploading an image or including a link to a message. Good luck!`
+      "content": `Fastest Salmon Running in the West ${output.id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!`
     })
   });
   const data = await response.json();
@@ -1270,7 +1322,90 @@ async function startTourney(interaction, env) {
   });
 }
 
-// checks submission for validity, adds to database, sends message in private channel for approval
+// stops tournament, sends the 3 fastest times in secret channel for approval
+
+async function stopTourney(interaction, env) {
+  // check if user has the correct permissions
+  if (!interaction.member.roles.includes("REPLACE WITH TOURNAMENT ROLE ID")) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You do not have permissions to use this command.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  // check if there's an ongoing tournament by using the database and looking for the latest tournament
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  const tourney_id = output.rows[0].id;
+  const date = new Date();
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no ongoing event. Please wait until an event starts before ending it.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  if (!output.rows[0].is_active) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Fastest Salmon Run in the West " + tourney_id + " has already ended.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  if (date.getTime() < output.rows[0].start_time + tourney_length) {
+    client.end();
+    const mins = tourney_length / 60000;
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Fastest Salmon Run in the West " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  // end the tournament
+  let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
+
+  // get the top 3 scores
+  const top3 = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC LIMIT 3;`);
+
+  for (let i = 0; i < top3.rows.length; i++) {
+    const team = top3.rows[i].team_members;
+    const score = top3.rows[i].score;
+    const link = top3.rows[i].link;
+    const id = top3.rows[i].id;
+    handleSubmission(env, id, score, team, tourney_id, link);
+  }
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "Tournament ended. The top " + top3.rows.length + " scores have been sent for approval.",
+      "flags": 1000000
+    }
+  });
+}
+
+// checks submission for validity, adds to database
 
 async function submitTourney(interaction, env) {
   // check if there's an ongoing tournament by using the database and looking for the latest tournament
@@ -1295,21 +1430,23 @@ async function submitTourney(interaction, env) {
       }
     });
   }
-  // check if the latest tournament has ended, which is 15 minutes after the start time
+  // check if the latest tournament has ended, which is tourney_length after the start time
   const start_time = output.rows[0].start_time;
-  if (date.getTime() > start_time + 900000) {
+  const is_active = output.rows[0].is_active;
+  const tourney_id = output.rows[0].id;
+  if (!is_active || date.getTime() > start_time + tourney_length) {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "Fastest Salmon Run in the West " + output.rows[0].id + " has ended. Please wait until the next event starts before submitting a score.",
+        "content": "Fastest Salmon Run in the West " + tourney_id + " has ended. Please wait until the next event starts before submitting a score.",
         "flags": 1000000
       }
     });
   }
   // check if the user or any teammates have already submitted a score
   const team = [interaction.member.user.id, interaction.data.options[1].value, interaction.data.options[2].value, interaction.data.options[3].value];
-  output2 = await client.query('SELECT * FROM submissions WHERE tournament_id = $1 AND team_members && $2::TEXT[];', [output.rows[0].id, team]);
+  let output2 = await client.query('SELECT * FROM submissions WHERE tournament_id = $1 AND team_members && $2::TEXT[];', [tourney_id, team]);
   if (output2.rows.length > 0) {
     client.end();
     return new JsonResponse({
@@ -1324,6 +1461,7 @@ async function submitTourney(interaction, env) {
   const score = interaction.data.options[0].value;
   const image = interaction.data.options[4].value;
   // only image attachment is allowed, so unsure if additional checks are needed like checking undefined
+  let link;
   if (interaction.data.resolved.attachments[image].content_type.substring(0, 5) === "image") {
       link = interaction.data.resolved.attachments[image].url;
   } else {
@@ -1352,25 +1490,43 @@ async function submitTourney(interaction, env) {
     });
   }
 
+  // insert the new submission into the database
+  output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, '{${team}}', ${score}, ${link});`);
+  client.end();
+
+  return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+      "content": "Score submitted successfully!",
+      "flags": 1000000
+      }
+  });
+}
+
+async function handleSubmission(env, id, score, team, tourney_id, link) {
   const channel_id = "REPLACE WITH APPROVAL CHANNEL ID";
   const components = componentMaker("tourney", score, null, null);
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
-      headers: {
+    headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
-      },
-      method: 'POST',
-      body: JSON.stringify({
-      "content": `<@${team[0]}> submitted ${score} for FSR${output.rows[0].id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": `<@${team[0]}> submitted ${score} for FSR${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`,
       "embeds": [
         {
           "author": {
             "name": ""
           },
           "image": {
-              "url": link
+            "url": link
           },
           "fields": [
+            {
+              "name": "id",
+              "value": id
+            },
             {
               "name": "user",
               "value": user
@@ -1381,7 +1537,7 @@ async function submitTourney(interaction, env) {
             },
             {
               "name": "tourney id",
-              "value": output.rows[0].id
+              "value": tourney_id
             },
             {
               "name": "team",
@@ -1389,20 +1545,14 @@ async function submitTourney(interaction, env) {
             }
           ]
         }
-        ],
-        "components": components,
-        "attachments": []
-      })
+      ],
+      "components": components,
+      "attachments": []
+    })
   });
   const data = await response.json();
   // console.log(data);
-  return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-      "content": "Score submitted! https://discord.com/channels/" + interaction.guild_id + "/" + data.channel_id + "/" + data.id,
-      "flags": 1000000
-      }
-  });
+  return data;
 }
 
 //idk what the stuff after here is

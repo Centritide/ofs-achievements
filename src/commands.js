@@ -849,7 +849,7 @@ export const INFO_COMMAND = {
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
   id: "1322802982596771851",
-  description:"submit a score for a tournament (placeholder)",
+  description:"submit a score for Fastest Salmon Run in the West",
   dm_permission:false,
   type:1,
   options:[
@@ -902,6 +902,14 @@ export const START_TOURNEY_COMMAND = {
         required:true
         }
     ]
+}
+
+export const STOP_TOURNEY_COMMAND = {
+    name: "stop",
+    id: "1322802982596771853", // replace later
+    description: "stop a tournament",
+    dm_permission: false,
+    type: 1
 }
 
 // export const PROFILE_TO_ROLES_COMMAND = {
