@@ -111,11 +111,11 @@ router.post('/', async (request, env) => {
   }
   if (interaction.type === InteractionType.MESSAGE_COMPONENT){
     // if channel is secret channel, componentResponse
-    //if channel is secret tourney channel, tourneyResponse
+    // if channel is secret tourney channel, tourneyResponse
     if  (interaction.message.channel_id == "1178115595296841848"){
       return await componentResponse(interaction, env);
 
-    } else if (interaction.message.channel_id == "1178115595296841848") {
+    } else if (interaction.message.channel_id == "REPLACE ME") {
       return await tourneyResponse(interaction, env);
     }
   }

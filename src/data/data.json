@@ -3,7 +3,10 @@
         "default":"How to use <@1135411894262435881> :\n\n</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type. Similar commands exist for Splatoon 2, Splatoon 3 Big Run and Splatoon 3 Eggstra Work.\n\n</profile:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores.\n\n</import:1178119204302491781> : If you have scores from roles, this command imports them to your score card.",
         "request":"</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image link to a job on stat.ink, link to an image on the web, or upload a file. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type.\n</request s2:1178119204302491783> : the same for s2.\n</request bigrun:1178119204302491783> : the same for big run. No need to specify rotation type.\n</request eggstra:1178119204302491783> : The same for eggstra work.\nAfter your score request is approved/denied, you will receive a DM along with additional details.\nA day-only score qualifies to be counted as a normal score (non-day-only) if you submit with the same proof, but users may choose not to do so.",
         "profile":"</profile:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores.",
-        "import":"</import:1178119204302491781>\nIf you have scores from roles, this command imports them to your score card. this will only record the lowest possible score for that role, so please `/request` the exact score if you would like to."
+        "import":"</import:1178119204302491781>\nIf you have scores from roles, this command imports them to your score card. this will only record the lowest possible score for that role, so please `/request` the exact score if you would like to.",
+        "submit":"</submit:1322802982596771851>\nSubmit a score for Fastest Salmon Run in the west. Include your score, @ mentions to all 3 of your teammates, and an attached screenshot of the shift from NSO.",
+        "start":"</start:REPLACEME>\nStarts FSR with the specified code. The 15 minute timer will begin immediately, so please ensure you have announced the event already to give time for people to form teams.",
+        "stop":"</stop:REPLACEME>\nStops FSR after submissions are closed. Triggers the top 3 scores to be sent for approval, after which they will be announced."
     },
     "s3":[
         "sg",
@@ -132,13 +135,13 @@
             745392491477467287,745392468845133935,745392450620883074,745392433235230942,745392413194846208,745392351244976149,863699259671969822,863699236633313290,863699210733355009
         ],
         "s2lo":[
-            745392670079189072,745392653503430696,745392636260646953,745392618199973949,745392597656141865,745392552529625198,863699352530190337,863699328819789834,863699306857758720            
+            745392670079189072,745392653503430696,745392636260646953,745392618199973949,745392597656141865,745392552529625198,863699352530190337,863699328819789834,863699306857758720
         ],
         "s2ss":[
             745392858441449562,745392837788434563,745392806541131886,745393090277408818,745392789415788714,745392771602448465,863699516242001940,863699472767778817,863699431404470303
         ],
         "s2ap":[
-            745393032425242755,745393013236170863,745392995469361342,745392978075451452,745392958928453702,745392940775637113,863699622941294612,863699597779140650,863699575653924864            
+            745393032425242755,745393013236170863,745392995469361342,745392978075451452,745392958928453702,745392940775637113,863699622941294612,863699597779140650,863699575653924864
         ],
         "princess":[
             1047647515912183858,1047648003302887424,1047648308732100608,1047648319419191316,1047648337895108729,1047648606330560582,1047648590421557358
@@ -363,7 +366,7 @@
         "s2golden_randomday":["s2sggolden_randomday","s2mbgolden_randomday","s2logolden_randomday","s2ssgolden_randomday","s2apgolden_randomday"],
         "br":["br1","br2","br3","br4","br5","br6","br7"],
         "ew":["ew1","ew2","ew3","ew4","ew5","ew6","ew7"]
-        
+
     },
     "emoji":{
         "sun":"☀",
