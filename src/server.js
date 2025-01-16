@@ -443,7 +443,7 @@ async function tourneyResponse(interaction, env) {
           let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
           leaderboardstring += `${place[i]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
         }
-        const tourney_channel = "REPLACE_ME";
+        const tourney_channel = "753255233056145528"; // tournaments and events channel
         const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
           headers: {
             'Content-Type': 'application/json',
@@ -1298,7 +1298,7 @@ async function startTourney(interaction, env) {
   output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ('${scenario}', ${date.getTime()});`);
   client.end();
 
-  const channel_id = "REPLACE WITH TOURNAMENT CHANNEL ID";
+  const channel_id = "753255233056145528";
   // the date tourney_length from now with discord timestamps
   const date_end = "<t:" + Math.floor((date.getTime() + tourney_length) / 1000) + ":R>";
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
