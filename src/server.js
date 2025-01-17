@@ -112,10 +112,10 @@ router.post('/', async (request, env) => {
   if (interaction.type === InteractionType.MESSAGE_COMPONENT){
     // if channel is secret channel, componentResponse
     // if channel is secret tourney channel, tourneyResponse
-    if  (interaction.message.channel_id == "1178115595296841848"){
+    if  (interaction.message.channel_id == env.CHANNEL_ID){
       return await componentResponse(interaction, env);
 
-    } else if (interaction.message.channel_id == "1142653555895971943") {
+    } else if (interaction.message.channel_id == env.TOUR_CHANNEL_ID) {
       return await tourneyResponse(interaction, env);
     }
   }
@@ -147,7 +147,8 @@ async function help(interaction,env){
 }
 
 async function showProfile(interaction,env){
-  const user = interaction.data.options[0].value;
+  // console.log(interaction);
+  const user = interaction.data.options[0].options[0].value;
 
 
   let avi_url;
@@ -158,7 +159,8 @@ async function showProfile(interaction,env){
   }else{
     avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".png";
   }
-  const page = (interaction.data.options.length>=2) ? interaction.data.options[1].value : 0;
+  const page = (interaction.data.options[0].options.length>=2) ? interaction.data.options[0].options[1].value : 0;
+  // console.log(interaction.data.options[0].options);
   const usemax = data.layouts[page][0];
   const title = data.layouts[page][1];
   const layoutscores = data.layouts[page][2];
@@ -217,7 +219,7 @@ async function showProfile(interaction,env){
   } else{
     let layout = [];
     for(let i of layoutscores){
-
+      // console.log(i);
       layout = layout.concat(data.col_groups[i]);
       for(let j = 0; data.col_groups[i].length%3>0 && j<(3-(data.col_groups[i].length%3));j++){
         layout.push("");
@@ -225,6 +227,8 @@ async function showProfile(interaction,env){
     }
     for(let i of layout){
       const value = row[i];
+      // console.log(row["fsr_1st"]);
+
       if(i == ""){
         fields.push({
           "name": "​", //this too
@@ -277,7 +281,7 @@ async function showProfile(interaction,env){
 
 function getStageMax(row,stage){
   let arr = [];
-  console.log(stage);
+  // console.log(stage);
   for(let i of data.col_groups[stage]){
     arr.push(row[i])
   }
@@ -433,18 +437,26 @@ async function tourneyResponse(interaction, env) {
   switch (interaction.data.custom_id.toLowerCase()) {
     case "approve":
       output = await client.query(`UPDATE submissions SET submission_status = 'accepted' WHERE id = ${id};`);
-      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status = 'accepted';`);
-      client.end();
+      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status = 'accepted' ORDER BY score DESC;`);
+      
+      
       // if there are 3 accepted submissions, send leaderboard
       if (output2.rows.length >= 3) {
         const leaderboard = output2.rows;
+        console.log(leaderboard[0].team_members[0]);
         let leaderboardstring = "## Top 3 for Fastest Salmon Run in the West " + tourney_id + ":\n";
         const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
+        const fsr_cols = ['fsr_1st','fsr_2nd','fsr_3rd'];
         for (let i = 0; i < 3; i++) {
-          let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
+          let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
           leaderboardstring += `${place[i]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+          for (let j in leaderboard[i].team_members[0].split(" ")){
+            // console.log(`UPDATE users SET ${fsr_cols[i]} = ${fsr_cols[i]} + 1 WHERE id = ${j}`);
+            let output3 = await client.query(`UPDATE users SET ${fsr_cols[i]} = ${fsr_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
+          }
+
         }
-        const tourney_channel = "753255233056145528"; // tournaments and events channel
+        const tourney_channel = "1329610164390727680"; // tournaments and events channel
         const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
           headers: {
             'Content-Type': 'application/json',
@@ -464,7 +476,7 @@ async function tourneyResponse(interaction, env) {
           }
         })
       }
-
+      client.end();
       // console.log(output);
 
       // only need to send response if no leaderboard
@@ -1138,8 +1150,7 @@ async function requestScore(interaction,env){
       "url": attachments[i].url
     }})}
   }
-  const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
-  const channel_id = (test) ? "1142653555895971943" : "1178115595296841848";
+  const channel_id = env.CHANNEL_ID;
 
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`,{
     headers: {
@@ -1298,11 +1309,13 @@ async function startTourney(interaction, env) {
   // insert the new tournament into the database
   output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ('${scenario}', ${date.getTime()});`);
   client.end();
+  // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
-  const channel_id = "753255233056145528";
+  const tour_announcement_channel = "753255233056145528";
+
   // the date tourney_length from now with discord timestamps
   const date_end = "<t:" + Math.floor((date.getTime() + tourney_length) / 1000) + ":R>";
-  const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
+  const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1360,31 +1373,28 @@ async function stopTourney(interaction, env) {
       }
     });
   }
-  //commented for testing
-  // if (!output.rows[0].is_active) {
-  //   client.end();
-  //   return new JsonResponse({
-  //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-  //     data: {
-  //       "content": "Fastest Salmon Run in the West " + tourney_id + " has already ended.",
-  //       "flags": 1000000
-  //     }
-  //   });
-  // }
-
-  if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
-    // console.log(date.getTime());
-    // console.log(output.rows[0].start_time + tourney_length);
+  if (!output.rows[0].is_active) {
     client.end();
-    const mins = tourney_length / 60000;
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "Fastest Salmon Run in the West " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
+        "content": "Fastest Salmon Run in the West " + tourney_id + " has already ended.",
         "flags": 1000000
       }
     });
   }
+
+  // if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
+  //   client.end();
+  //   const mins = tourney_length / 60000;
+  //   return new JsonResponse({
+  //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+  //     data: {
+  //       "content": "Fastest Salmon Run in the West " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
+  //       "flags": 1000000
+  //     }
+  //   });
+  // }
 
   // end the tournament
   let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
@@ -1509,7 +1519,10 @@ async function submitTourney(interaction, env) {
 }
 
 async function handleSubmission(env, id, score, team, tourney_id, link) {
-  const channel_id = "1142653555895971943";
+  // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
+  const channel_id = env.TOUR_CHANNEL_ID
+
+
   const components = componentMaker("tourney", score, null, null);
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
     headers: {

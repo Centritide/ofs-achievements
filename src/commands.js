@@ -329,124 +329,160 @@ export const DISPLAY_PROFILE_COMMAND = {
   description:"see user profile",
   options:[
     {
-      name:"user",
-      description:"user to search",
-      type:6,
-      required:true
+      name: 's2s3',
+      type:1,
+      // default_member_permissions:"268435456",
+      dm_permission:"false",
+      description: 'see user s2s3 profile',
+      options: [
+        {
+          name:"user",
+          description:"user to search",
+          type:6,
+          required:true
+        },
+        {
+          name:"page",
+          description:"which scores to show",
+          type:4,
+          required:false,
+          choices:[
+            {
+              "name":"S3",
+              value:0
+            },
+            {
+              "name":"S3 Spawning Grounds",
+              value:1
+            },
+            {
+              "name":"S3 Marooner's Bay",
+              value:2
+            },
+            // {
+            //   "name":"S3 no events",
+            //   value:3
+            // },
+            {
+              "name": "S3 Salmonid Smokeyard",
+              value:4
+            },
+            // {
+            //   "name": "S2 day",
+            //   value:5
+            // },
+            {
+              "name":"S3 Sockeye Station",
+              value:6
+            },
+            {
+              "name":"S3 Gone Fission Hydroplant",
+              value:7
+            },
+            {
+              "name":"S3 Jammin' Salmon Junction",
+              value:8
+            },
+            {
+              name:"S3 Bonerattle Arena",
+              value:9
+            },
+            {
+              "name":"S3 Normal",
+              value:14
+            },
+            {
+              "name":"S3 Green Random",
+              value:15
+            },
+            {
+              "name":"S3 One Green Random",
+              value:16
+            },
+            {
+              "name":"S3 Gold Random",
+              value:17
+            },
+            {
+              "name":"S3 Princess",
+              value:18
+            },
+            {
+              "name":"S3 Events",
+              value:19
+            },
+            {
+              "name":"S2",
+              value:20
+            },
+            {
+              "name":"S2 Spawning Grounds",
+              value:21
+            },
+            {
+              "name":"S2 Marooner's Bay",
+              value:22
+            },
+            {
+              "name":"S2 Lost Outpost",
+              value:23
+            },
+            {
+              "name":"S2 Salmonid Smokeyard",
+              value:24
+            },
+            {
+              "name":"S2 Ruins of Ark Polaris",
+              value:25
+            },
+            {
+              "name":"S2 Princess",
+              value:26
+            },
+            {
+              "name":"S2 Normal",
+              value:27
+            },
+            {
+              "name":"S2 Green Random",
+              value:28
+            },
+            {
+              "name":"S2 One Green Random",
+              value:29
+            },
+            {
+              "name":"S2 Gold Random",
+              value:30
+            }
+          ]
+        }
+      ]
     },
     {
-      name:"page",
-      description:"which scores to show",
-      type:4,
-      required:false,
-      choices:[
+      name: 'fsr',
+      type:1,
+      // default_member_permissions:"268435456",
+      dm_permission:"false",
+      description: 'see user FSR profile',
+      options: [
         {
-          "name":"S3",
-          value:0
+          name:"user",
+          description:"user to search",
+          type:6,
+          required:true
         },
         {
-          "name":"S3 Spawning Grounds",
-          value:1
-        },
-        {
-          "name":"S3 Marooner's Bay",
-          value:2
-        },
-        // {
-        //   "name":"S3 no events",
-        //   value:3
-        // },
-        {
-          "name": "S3 Salmonid Smokeyard",
-          value:4
-        },
-        // {
-        //   "name": "S2 day",
-        //   value:5
-        // },
-        {
-          "name":"S3 Sockeye Station",
-          value:6
-        },
-        {
-          "name":"S3 Gone Fission Hydroplant",
-          value:7
-        },
-        {
-          "name":"S3 Jammin' Salmon Junction",
-          value:8
-        },
-        {
-          name:"S3 Bonerattle Arena",
-          value:9
-        },
-        {
-          "name":"S3 Normal",
-          value:14
-        },
-        {
-          "name":"S3 Green Random",
-          value:15
-        },
-        {
-          "name":"S3 One Green Random",
-          value:16
-        },
-        {
-          "name":"S3 Gold Random",
-          value:17
-        },
-        {
-          "name":"S3 Princess",
-          value:18
-        },
-        {
-          "name":"S3 Events",
-          value:19
-        },
-        {
-          "name":"S2",
-          value:20
-        },
-        {
-          "name":"S2 Spawning Grounds",
-          value:21
-        },
-        {
-          "name":"S2 Marooner's Bay",
-          value:22
-        },
-        {
-          "name":"S2 Lost Outpost",
-          value:23
-        },
-        {
-          "name":"S2 Salmonid Smokeyard",
-          value:24
-        },
-        {
-          "name":"S2 Ruins of Ark Polaris",
-          value:25
-        },
-        {
-          "name":"S2 Princess",
-          value:26
-        },
-        {
-          "name":"S2 Normal",
-          value:27
-        },
-        {
-          "name":"S2 Green Random",
-          value:28
-        },
-        {
-          "name":"S2 One Green Random",
-          value:29
-        },
-        {
-          "name":"S2 Gold Random",
-          value:30
+          name:"page",
+          description:"which scores to show",
+          type:4,
+          required:true,
+          choices:[
+            {
+              "name":"fsr",
+              value:10
+            }
+          ]
         }
       ]
     }
