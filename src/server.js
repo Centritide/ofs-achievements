@@ -437,12 +437,12 @@ async function tourneyResponse(interaction, env) {
   switch (interaction.data.custom_id.toLowerCase()) {
     case "approve":
       output = await client.query(`UPDATE submissions SET submission_status = 'accepted' WHERE id = ${id};`);
-      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status = 'accepted' ORDER BY score DESC;`);
-      
-      
-      // if there are 3 accepted submissions, send leaderboard
-      if (output2.rows.length >= 3) {
-        const leaderboard = output2.rows;
+      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
+      const requested = output2.rows.filter((row) => row.submission_status == 'requested');
+
+      // if there are no more requested submissions, send leaderboard
+      if (requested.rows.length == 0) {
+        const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
         console.log(leaderboard[0].team_members[0]);
         let leaderboardstring = "## Top 3 for Fastest Salmon Run in the West " + tourney_id + ":\n";
         const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
@@ -504,7 +504,6 @@ async function tourneyResponse(interaction, env) {
       // delete submission
       output = await client.query(`DELETE FROM submissions WHERE id = ${id};`);
       output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status IS NULL ORDER BY score DESC LIMIT 1;`);
-      client.end();
       // console.log(output);
       if (output2.rows.length == 0) {
         return new JsonResponse({
@@ -516,8 +515,9 @@ async function tourneyResponse(interaction, env) {
         });
       }
       row = output2.rows[0];
-
-      handleSubmission(env, row.id, row.score, row.team_members, row.tournament_id, row.link);
+      await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${row.id};`);
+      client.end();
+      await handleSubmission(env, row.id, row.score, row.team_members, row.tournament_id, row.link);
       const denyresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
         headers: {
           'Content-Type': 'application/json',
@@ -1408,8 +1408,10 @@ async function stopTourney(interaction, env) {
     const link = top3.rows[i].link;
     const id = top3.rows[i].id;
     // console.log("a");
+    await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${id};`);
     await handleSubmission(env, id, score, team, tourney_id, link);
   }
+  client.end();
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
@@ -1581,7 +1583,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
   //     "attachments":[]
   //   })
   // })
-  
+
   const data = await console.log(response.json());
   // console.log(data);
   // console.log(data);
