@@ -249,7 +249,7 @@ async function showProfile(interaction,env){
     }
   }
   client.end();
-  console.log(fields)
+  // console.log(fields)
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
       "content": "",
@@ -273,7 +273,7 @@ async function showProfile(interaction,env){
             "url": avi_url
           },
           "footer": {
-            "text": (daysum > 0 || nightsum > 0) ? `total: ${nightsum} / ${daysum} ☀️ | avg: ${(nightsum/hasnightnum) || 0} / ${(daysum/hasdaynum) || 0} ☀️ `:"what should i write here 😔",
+            "text": (daysum > 0 || nightsum > 0) ? `total: ${nightsum} / ${daysum} ☀️ | avg: ${((nightsum/hasnightnum) || 0).toFixed(1)} / ${((daysum/hasdaynum) || 0).toFixed(1)} ☀️ `:"what should i write here 😔",
             "icon_url": ""
           },
           // "timestamp": "<t:"+Date.now()":d>"
@@ -412,7 +412,7 @@ async function componentResponse(interaction,env){
 //handles the super secret tourney buttons/fields, sends leaderboard once 3 submissions are approved
 
 async function tourneyResponse(interaction, env) {
-  console.log("a");
+  // console.log("a");
   const id = interaction.message.embeds[0].fields[0].value;
   const user = interaction.message.embeds[0].fields[1].value
   const score = Number(interaction.message.embeds[0].fields[2].value);
@@ -447,7 +447,7 @@ async function tourneyResponse(interaction, env) {
       // if there are no more requested submissions, send leaderboard
       if (requested.rows.length == 0) {
         const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
-        console.log(leaderboard[0].team_members[0]);
+        // console.log(leaderboard[0].team_members[0]);
         let leaderboardstring = "## Top 3 for Fastest Salmon Run in the West " + tourney_id + ":\n";
         const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
         const fsr_cols = ['fsr_1st','fsr_2nd','fsr_3rd'];
@@ -1001,7 +1001,7 @@ async function updateScore(user,score,column,env,strict_increase = true){
       await client.query(`INSERT INTO ${table} (id,${column}) VALUES (${user},${score});`);
     } else {
       try{
-        console.log(await client.query(`UPDATE ${table} set ${column} = ${score} where id = ${user};`));
+        // console.log(await client.query(`UPDATE ${table} set ${column} = ${score} where id = ${user};`));
         old_score = old.rows[0][column];
       } catch{
       }
@@ -1588,7 +1588,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
   //   })
   // })
 
-  const data = await console.log(response.json());
+  const data = await response.json();
   // console.log(data);
   // console.log(data);
   return data;
