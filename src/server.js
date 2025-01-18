@@ -173,6 +173,8 @@ async function showProfile(interaction,env){
   });
   let daysum = 0;
   let nightsum=0;
+  let hasdaynum = 0;
+  let hasnightnum = 0;
   await client.connect();
   const output = await client.query(`SELECT * from ${table} where id = ${user}`);
   let row;
@@ -209,6 +211,8 @@ async function showProfile(interaction,env){
       } else { //TODO there should be some logic for adding badges to scores
         daysum += getStageMax(row,i[1]);
         nightsum += getStageMax(row,i[0]);
+        if (getStageMax(row,i[1])>0) hasdaynum += 1;
+        if (getStageMax(row,i[0])>0) hasnightnum += 1;
         fields.push({
           "name": "🌙"+dict[i[0]]+"/☀️",
           "value":((getStageMax(row,i[0])==0)?"-":getStageMax(row,i[0]))+"/"+((getStageMax(row,i[1])==0)?"-":getStageMax(row,i[1])),
@@ -269,7 +273,7 @@ async function showProfile(interaction,env){
             "url": avi_url
           },
           "footer": {
-            "text": (daysum > 0 || nightsum > 0) ? "sums: " + nightsum + "/" + daysum:"what should i write here 😔",
+            "text": (daysum > 0 || nightsum > 0) ? `total: ${nightsum} / ${daysum} ☀️ | avg: ${(nightsum/hasnightnum) || 0} / ${(daysum/hasdaynum) || 0} ☀️ `:"what should i write here 😔",
             "icon_url": ""
           },
           // "timestamp": "<t:"+Date.now()":d>"

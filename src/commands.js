@@ -876,6 +876,18 @@ export const INFO_COMMAND = {
         {
           name:"import",
           value:"import"
+        },
+        {
+          name:"submit",
+          value:"submit"
+        },
+        {
+          name:"start",
+          value:"start"
+        },
+        {
+          name:"stop",
+          value:"stop"
         }
       ]
     }
