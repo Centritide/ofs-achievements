@@ -462,7 +462,7 @@ export const IMPORT_FROM_ROLES_COMMAND = {
 }
 export const IMPORT_USER = {
   name:"forceimport",
-  id:"1178119204302491782",
+  // id:"1178119204302491782",
   default_member_permissions:1<<32,
   description:"import scores from a user's roles",
   dm_permission:"false",
@@ -848,7 +848,7 @@ export const INFO_COMMAND = {
 
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
-  id: "1322802982596771851",
+  // id: "1322802982596771851",
   description:"submit a score for Fastest Salmon Run in the West",
   dm_permission:false,
   type:1,
@@ -890,7 +890,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
 
 export const START_TOURNEY_COMMAND = {
     name:"start",
-    id: "1322802982596771852", // replace later
+    // id: "1329965467837792419", // replace later
     description:"start a tournament",
     dm_permission:false,
     type:1,
@@ -906,7 +906,7 @@ export const START_TOURNEY_COMMAND = {
 
 export const STOP_TOURNEY_COMMAND = {
     name: "stop",
-    id: "1322802982596771853", // replace later
+    // id: "1329965467837792420", // replace later
     description: "stop a tournament",
     dm_permission: false,
     type: 1
