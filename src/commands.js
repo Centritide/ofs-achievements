@@ -6,7 +6,7 @@
 
 export const UPDATE_EVENT_COMMAND = {
   name: 'score',
-  id:"1178119204302491779",
+  // id:"1178119204302491779",
   type:1,
   default_member_permissions:1<<32,
   dm_permission:true,
@@ -324,129 +324,165 @@ export const UPDATE_EVENT_COMMAND = {
 export const DISPLAY_PROFILE_COMMAND = {
   name:"profile",
   type:1,
-  id:"1178119204302491780",
+  // id:"1178119204302491780",
   dm_permission:"false",
   description:"see user profile",
   options:[
     {
-      name:"user",
-      description:"user to search",
-      type:6,
-      required:true
+      name: 's2s3',
+      type:1,
+      // default_member_permissions:"268435456",
+      dm_permission:"false",
+      description: 'see user s2s3 profile',
+      options: [
+        {
+          name:"user",
+          description:"user to search",
+          type:6,
+          required:true
+        },
+        {
+          name:"page",
+          description:"which scores to show",
+          type:4,
+          required:false,
+          choices:[
+            {
+              "name":"S3",
+              value:0
+            },
+            {
+              "name":"S3 Spawning Grounds",
+              value:1
+            },
+            {
+              "name":"S3 Marooner's Bay",
+              value:2
+            },
+            // {
+            //   "name":"S3 no events",
+            //   value:3
+            // },
+            {
+              "name": "S3 Salmonid Smokeyard",
+              value:4
+            },
+            // {
+            //   "name": "S2 day",
+            //   value:5
+            // },
+            {
+              "name":"S3 Sockeye Station",
+              value:6
+            },
+            {
+              "name":"S3 Gone Fission Hydroplant",
+              value:7
+            },
+            {
+              "name":"S3 Jammin' Salmon Junction",
+              value:8
+            },
+            {
+              name:"S3 Bonerattle Arena",
+              value:9
+            },
+            {
+              "name":"S3 Normal",
+              value:14
+            },
+            {
+              "name":"S3 Green Random",
+              value:15
+            },
+            {
+              "name":"S3 One Green Random",
+              value:16
+            },
+            {
+              "name":"S3 Gold Random",
+              value:17
+            },
+            {
+              "name":"S3 Princess",
+              value:18
+            },
+            {
+              "name":"S3 Events",
+              value:19
+            },
+            {
+              "name":"S2",
+              value:20
+            },
+            {
+              "name":"S2 Spawning Grounds",
+              value:21
+            },
+            {
+              "name":"S2 Marooner's Bay",
+              value:22
+            },
+            {
+              "name":"S2 Lost Outpost",
+              value:23
+            },
+            {
+              "name":"S2 Salmonid Smokeyard",
+              value:24
+            },
+            {
+              "name":"S2 Ruins of Ark Polaris",
+              value:25
+            },
+            {
+              "name":"S2 Princess",
+              value:26
+            },
+            {
+              "name":"S2 Normal",
+              value:27
+            },
+            {
+              "name":"S2 Green Random",
+              value:28
+            },
+            {
+              "name":"S2 One Green Random",
+              value:29
+            },
+            {
+              "name":"S2 Gold Random",
+              value:30
+            }
+          ]
+        }
+      ]
     },
     {
-      name:"page",
-      description:"which scores to show",
-      type:4,
-      required:false,
-      choices:[
+      name: 'fsr',
+      type:1,
+      // default_member_permissions:"268435456",
+      dm_permission:"false",
+      description: 'see user FSR profile',
+      options: [
         {
-          "name":"S3",
-          value:0
+          name:"user",
+          description:"user to search",
+          type:6,
+          required:true
         },
         {
-          "name":"S3 Spawning Grounds",
-          value:1
-        },
-        {
-          "name":"S3 Marooner's Bay",
-          value:2
-        },
-        // {
-        //   "name":"S3 no events",
-        //   value:3
-        // },
-        {
-          "name": "S3 Salmonid Smokeyard",
-          value:4
-        },
-        // {
-        //   "name": "S2 day",
-        //   value:5
-        // },
-        {
-          "name":"S3 Sockeye Station",
-          value:6
-        },
-        {
-          "name":"S3 Gone Fission Hydroplant",
-          value:7
-        },
-        {
-          "name":"S3 Jammin' Salmon Junction",
-          value:8
-        },
-        {
-          name:"S3 Bonerattle Arena",
-          value:9
-        },
-        {
-          "name":"S3 Normal",
-          value:14
-        },
-        {
-          "name":"S3 Green Random",
-          value:15
-        },
-        {
-          "name":"S3 One Green Random",
-          value:16
-        },
-        {
-          "name":"S3 Gold Random",
-          value:17
-        },
-        {
-          "name":"S3 Princess",
-          value:18
-        },
-        {
-          "name":"S3 Events",
-          value:19
-        },
-        {
-          "name":"S2",
-          value:20
-        },
-        {
-          "name":"S2 Spawning Grounds",
-          value:21
-        },
-        {
-          "name":"S2 Marooner's Bay",
-          value:22
-        },
-        {
-          "name":"S2 Lost Outpost",
-          value:23
-        },
-        {
-          "name":"S2 Salmonid Smokeyard",
-          value:24
-        },
-        {
-          "name":"S2 Ruins of Ark Polaris",
-          value:25
-        },
-        {
-          "name":"S2 Princess",
-          value:26
-        },
-        {
-          "name":"S2 Normal",
-          value:27
-        },
-        {
-          "name":"S2 Green Random",
-          value:28
-        },
-        {
-          "name":"S2 One Green Random",
-          value:29
-        },
-        {
-          "name":"S2 Gold Random",
-          value:30
+          name:"page",
+          description:"which scores to show",
+          type:4,
+          required:true,
+          choices:[
+            {
+              "name":"fsr",
+              value:10
+            }
+          ]
         }
       ]
     }
@@ -455,14 +491,14 @@ export const DISPLAY_PROFILE_COMMAND = {
 
 export const IMPORT_FROM_ROLES_COMMAND = {
   name:"import",
-  id:"1178119204302491781",
+  // id:"1178119204302491781",
   description:"import scores from your roles",
   dm_permission:"false",
   type:1
 }
 export const IMPORT_USER = {
   name:"forceimport",
-  id:"1178119204302491782",
+  // id:"1178119204302491782",
   default_member_permissions:1<<32,
   description:"import scores from a user's roles",
   dm_permission:"false",
@@ -479,7 +515,7 @@ export const REQUEST_SCORE_COMMAND = {
   name:"request",
   type:1,
   dm_permission:false,
-  id:"1178119204302491783",
+  // id:"1178119204302491783",
   description:"request a score with a message link",
   options: [
     {
@@ -820,7 +856,7 @@ export const INFO_COMMAND = {
   name:"info",
   type:1,
   dm_permission:true,
-  "id":"1322754954653597696",
+  // "id":"1322754954653597696",
   description:"explains how to use the bot",
   options: [
     {
@@ -848,7 +884,7 @@ export const INFO_COMMAND = {
 
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
-  id: "1322802982596771851",
+  // id: "1322802982596771851",
   description:"submit a score for Fastest Salmon Run in the West",
   dm_permission:false,
   type:1,
@@ -890,7 +926,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
 
 export const START_TOURNEY_COMMAND = {
     name:"start",
-    id: "1322802982596771852", // replace later
+    // id: "1322802982596771852", // replace later
     description:"start a tournament",
     dm_permission:false,
     type:1,
@@ -906,7 +942,7 @@ export const START_TOURNEY_COMMAND = {
 
 export const STOP_TOURNEY_COMMAND = {
     name: "stop",
-    id: "1322802982596771853", // replace later
+    // id: "1322802982596771853", // replace later
     description: "stop a tournament",
     dm_permission: false,
     type: 1

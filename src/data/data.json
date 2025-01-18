@@ -4,7 +4,7 @@
         "request":"</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image link to a job on stat.ink, link to an image on the web, or upload a file. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type.\n</request s2:1178119204302491783> : the same for s2.\n</request bigrun:1178119204302491783> : the same for big run. No need to specify rotation type.\n</request eggstra:1178119204302491783> : The same for eggstra work.\nAfter your score request is approved/denied, you will receive a DM along with additional details.\nA day-only score qualifies to be counted as a normal score (non-day-only) if you submit with the same proof, but users may choose not to do so.",
         "profile":"</profile:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores.",
         "import":"</import:1178119204302491781>\nIf you have scores from roles, this command imports them to your score card. this will only record the lowest possible score for that role, so please `/request` the exact score if you would like to.",
-        "submit":"</submit:1322802982596771851>\nSubmit a score for Fastest Salmon Run in the west. Include your score, @ mentions to all 3 of your teammates, and an attached screenshot of the shift from NSO.",
+        "submit":"</submit:1322802982596771851>\nSubmit a score for Fastest Salmon Run in the West. Include your score, @ mentions to all 3 of your teammates, and an attached screenshot of the shift from NSO.",
         "start":"</start:REPLACEME>\nStarts FSR with the specified code. The 15 minute timer will begin immediately, so please ensure you have announced the event already to give time for people to form teams.",
         "stop":"</stop:REPLACEME>\nStops FSR after submissions are closed. Triggers the top 3 scores to be sent for approval, after which they will be announced."
     },
@@ -41,6 +41,11 @@
         "ew5",
         "ew6",
         "ew7"
+    ],
+    "fsr":[
+        "fsr_1st",
+        "fsr_2nd",
+        "fsr_3rd"
     ],
     "dict": {
         "sg":"SG (S3)📥",
@@ -81,7 +86,8 @@
 "mbdayc":"MB (S3)☀️",
 "ssydayc":"SSy (S3)☀️","sstdayc":"SSt (S3)☀️","gfhdayc":"GFH (S3)☀️","jsjdayc":"JSJ (S3)☀️","bradayc":"BrA (S3)☀️",
 "s2sgc":"SG (S2)","s2mbc":"MB (S2)","s2loc":"LO (S2)","s2ssc":"SS (S2)","s2apc":"AP (S2)",
-"s2sgdayc":"SG (S2)☀️","s2mbdayc":"MB (S2)☀️","s2lodayc":"LO (S2)☀️","s2ssdayc":"SS (S2)☀️","s2apdayc":"AP (S2)☀️"
+"s2sgdayc":"SG (S2)☀️","s2mbdayc":"MB (S2)☀️","s2lodayc":"LO (S2)☀️","s2ssdayc":"SS (S2)☀️","s2apdayc":"AP (S2)☀️",
+"fsr_1st":"1st Place FSR Finishes","fsr_2nd":"2nd Place FSR Finishes","fsr_3rd":"3rd Place FSR Finishes"
     },
     "map_roleids":{
         "ssy":[
@@ -365,7 +371,8 @@
         "s2single_randomday":["s2sgsingle_randomday","s2mbsingle_randomday","s2losingle_randomday","s2sssingle_randomday","s2apsingle_randomday"],
         "s2golden_randomday":["s2sggolden_randomday","s2mbgolden_randomday","s2logolden_randomday","s2ssgolden_randomday","s2apgolden_randomday"],
         "br":["br1","br2","br3","br4","br5","br6","br7"],
-        "ew":["ew1","ew2","ew3","ew4","ew5","ew6","ew7"]
+        "ew":["ew1","ew2","ew3","ew4","ew5","ew6","ew7"],
+        "fsr":["fsr_1st","fsr_2nd","fsr_3rd"]
 
     },
     "emoji":{
@@ -405,6 +412,7 @@
         "7":[false,"S3 Gone Fission Hydroplant",["gfhc","gfhdayc"]],
         "8":[false,"S3 Jammin' Salmon Junction",["jsjc","jsjdayc"]],
         "9":[false,"S3 Bonerattle Arena",["brac","bradayc"]],
+        "10":[false,"Fastest Salmon Run in the West",["fsr"]],
         "14":[false,"S3 Normal",["normal","normalday"]],
         "15":[false,"S3 Green Random",["green_random","green_randomday"]],
         "16":[false,"S3 One Green Random",["single_random","single_randomday"]],
