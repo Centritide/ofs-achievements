@@ -441,7 +441,7 @@ async function tourneyResponse(interaction, env) {
         const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
         for (let i = 0; i < 3; i++) {
           let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
-          leaderboardstring += `${place[i]}\n<:OFS4a_goldenegg:737492285998104688> x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+          leaderboardstring += `${place[i]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
         }
         const tourney_channel = "753255233056145528"; // tournaments and events channel
         const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
@@ -1204,7 +1204,7 @@ async function importFromRoles(id,interaction,env){
     for(let i in user.roles){
       const pair = data.roleid_mapscores[user.roles[i]];
       if(pair!=undefined){
-        query = query + `${pair[0]}, `;
+        query = query + `\`${pair[0]}\`, `;
         vals = vals + `${pair[1]}, `;
         hits +=1;
       }
