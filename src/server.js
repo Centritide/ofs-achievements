@@ -225,13 +225,15 @@ async function showProfile(interaction,env){
     for(let i of layoutscores){
       // console.log(i);
       layout = layout.concat(data.col_groups[i]);
+      // console.log("helloooo");
+      // console.log((3-(data.col_groups[i].length%3)));
       for(let j = 0; data.col_groups[i].length%3>0 && j<(3-(data.col_groups[i].length%3));j++){
         layout.push("");
       }
     }
     for(let i of layout){
       const value = row[i];
-      // console.log(row["fsr_1st"]);
+      // console.log(row[i] || 0);
 
       if(i == ""){
         fields.push({
@@ -240,6 +242,7 @@ async function showProfile(interaction,env){
           "inline":true
         })
       } else { //TODO there should be some logic for adding badges to scores
+        // console.log(`${i} ${dict[i]}`)
         fields.push({
           "name": dict[i],
           "value": value==0?"-":value,

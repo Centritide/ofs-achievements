@@ -365,7 +365,7 @@
         "s2normal":["s2sgnormal","s2mbnormal","s2lonormal","s2ssnormal","s2apnormal"],
         "s2green_random":["s2sggreen_random","s2mbgreen_random","s2logreen_random","s2ssgreen_random","s2apgreen_random"],
         "s2single_random":["s2sgsingle_random","s2mbsingle_random","s2losingle_random","s2sssingle_random","s2apsingle_random"],
-        "s2golden_random":["s2sggolden_random","s2mbgolden_random","s2logolden_random","s2ssgolden_random","as2pgolden_random"],
+        "s2golden_random":["s2sggolden_random","s2mbgolden_random","s2logolden_random","s2ssgolden_random","s2apgolden_random"],
         "s2normalday":["s2sgnormalday","s2mbnormalday","s2lonormalday","s2ssnormalday","s2apnormalday"],
         "s2green_randomday":["s2sggreen_randomday","s2mbgreen_randomday","s2logreen_randomday","s2ssgreen_randomday","s2apgreen_randomday"],
         "s2single_randomday":["s2sgsingle_randomday","s2mbsingle_randomday","s2losingle_randomday","s2sssingle_randomday","s2apsingle_randomday"],
@@ -428,7 +428,7 @@
         "26":[false,"S2 Princess",["s2princessc"]],
         "27":[false,"S2 Normal",["s2normal","s2normalday"]],
         "28":[false,"S2 Green Random",["s2green_random","s2green_randomday"]],
-        "29":[false,"S2 One Green Random",["s2single_random","s2single_random"]],
-        "30":[false,"S2 Gold Random",["s2golden_random","s2golden_random"]]
+        "29":[false,"S2 One Green Random",["s2single_random","s2single_randomday"]],
+        "30":[false,"S2 Gold Random",["s2golden_random","s2golden_randomday"]]
     }
 }
