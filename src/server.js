@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND, LEADERBOARD_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -89,6 +89,8 @@ router.post('/', async (request, env) => {
         return submitTourney(interaction, env);
       case STOP_TOURNEY_COMMAND.name.toLowerCase():
         return stopTourney(interaction, env);
+      case LEADERBOARD_COMMAND.name.toLowerCase():
+        return leaderboard(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
 
         return new JsonResponse({
@@ -451,15 +453,15 @@ async function tourneyResponse(interaction, env) {
       if (requested.rows.length == 0) {
         const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
         // console.log(leaderboard[0].team_members[0]);
-        let leaderboardstring = "## Top 3 for Fastest Salmon Run in the West " + tourney_id + ":\n";
+        let leaderboardstring = "## Top 3 for One Shot Showdown " + tourney_id + "\n";
         const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
-        const fsr_cols = ['fsr_1st','fsr_2nd','fsr_3rd'];
+        const oss_cols = ['oss_1st','oss_2nd','oss_3rd'];
         for (let i = 0; i < 3; i++) {
           let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
           leaderboardstring += `${place[i]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
           for (let j in leaderboard[i].team_members[0].split(" ")){
-            // console.log(`UPDATE users SET ${fsr_cols[i]} = ${fsr_cols[i]} + 1 WHERE id = ${j}`);
-            let output3 = await client.query(`UPDATE users SET ${fsr_cols[i]} = ${fsr_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
+            // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
+            let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
           }
 
         }
@@ -1329,7 +1331,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `Fastest Salmon Running in the West ${output.id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!`
+      "content": `One Shot Showdown ${output.id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!`
     })
   });
   const data = await response.json();
@@ -1385,7 +1387,7 @@ async function stopTourney(interaction, env) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "Fastest Salmon Run in the West " + tourney_id + " has already ended.",
+        "content": "One Shot Showdown " + tourney_id + " has already ended.",
         "flags": 1000000
       }
     });
@@ -1397,7 +1399,7 @@ async function stopTourney(interaction, env) {
   //   return new JsonResponse({
   //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
   //     data: {
-  //       "content": "Fastest Salmon Run in the West " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
+  //       "content": "One Shot Showdown " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
   //       "flags": 1000000
   //     }
   //   });
@@ -1462,7 +1464,7 @@ async function submitTourney(interaction, env) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "Fastest Salmon Run in the West " + tourney_id + " has ended. Please wait until the next event starts before submitting a score.",
+        "content": "One Shot Showdown " + tourney_id + " has ended. Please wait until the next event starts before submitting a score.",
         "flags": 1000000
       }
     });
@@ -1595,6 +1597,47 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
   // console.log(data);
   // console.log(data);
   return data;
+}
+
+// sends leaderboard of OSS
+async function leaderboard(interaction, env) {
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let tourney_id;
+  if (Object.hasOwn(interaction.data, "options")) {
+    tourney_id = interaction.data.options[0].value;
+  } else {
+    let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+    tourney_id = output.rows[0].id;
+  }
+  output = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
+  client.end();
+  if (output.rows.length == 0) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "No submissions found for OSS " + tourney_id,
+        "flags": 1000000
+      }
+    });
+  }
+  let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n";
+  for (let i = 0; i < output.rows.length; i++) {
+    content += `${i + 1}. ${output.rows[i].score}\n`;
+  }
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": content,
+      "flags": 1000000
+    }
+  });
 }
 
 //idk what the stuff after here is

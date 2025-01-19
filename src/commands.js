@@ -460,11 +460,11 @@ export const DISPLAY_PROFILE_COMMAND = {
       ]
     },
     {
-      name: 'fsr',
+      name: 'oss',
       type:1,
       // default_member_permissions:"268435456",
       dm_permission:"false",
-      description: 'see user FSR profile',
+      description: 'see user OSS profile',
       options: [
         {
           name:"user",
@@ -479,7 +479,7 @@ export const DISPLAY_PROFILE_COMMAND = {
           required:true,
           choices:[
             {
-              "name":"fsr",
+              "name":"oss",
               value:10
             }
           ]
@@ -897,7 +897,7 @@ export const INFO_COMMAND = {
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
   // id: "1322802982596771851",
-  description:"submit a score for Fastest Salmon Run in the West",
+  description:"submit a score for One Shot Showdown",
   dm_permission:false,
   type:1,
   options:[
@@ -958,6 +958,22 @@ export const STOP_TOURNEY_COMMAND = {
     description: "stop a tournament",
     dm_permission: false,
     type: 1
+}
+
+export const LEADERBOARD_COMMAND = {
+    name: "leaderboard",
+    // id: "1322802982596771854", // replace later
+    description: "get unofficial leaderboard for One Shot Showdown",
+    dm_permission: false,
+    type: 1,
+    options: [
+        {
+            name: "event-number",
+            description: "number of the OSS event",
+            type: 4,
+            required: false
+        }
+    ]
 }
 
 // export const PROFILE_TO_ROLES_COMMAND = {
