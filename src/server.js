@@ -465,7 +465,7 @@ async function tourneyResponse(interaction, env) {
           }
 
         }
-        const tourney_channel = "1329610164390727680"; // tournaments and events channel
+        const tourney_channel = "1330632032014827550"; // oss-announcements
         const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
           headers: {
             'Content-Type': 'application/json',
@@ -1285,6 +1285,21 @@ async function startTourney(interaction, env) {
       }
     });
   }
+  // check if the scenario is in the correct format
+  let scenario = interaction.data.options[0].value.toUpperCase();
+  const validDashedFormat = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+  const validUndashedFormat = /^[A-Z0-9]{16}$/;
+  if (validUndashedFormat.test(scenario)) {
+    scenario = scenario.match(/.{4}/g).join("-");
+  } else if (!validDashedFormat.test(scenario)) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
+        "flags": 1000000
+      }
+    });
+  }
 
   // check if there's an ongoing tournament by using the database and looking for the latest tournament
   const client = new Client({
@@ -1313,14 +1328,12 @@ async function startTourney(interaction, env) {
   }
   // if there's no ongoing tournament, start a new one
 
-  const scenario = interaction.data.options[0].value;
-
   // insert the new tournament into the database
-  output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ('${scenario}', ${date.getTime()});`);
+  output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
   client.end();
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
-  const tour_announcement_channel = "753255233056145528";
+  const tour_announcement_channel = "1330632032014827550"; // oss-announcements
 
   // the date tourney_length from now with discord timestamps
   const date_end = "<t:" + Math.floor((date.getTime() + tourney_length) / 1000) + ":R>";
@@ -1331,7 +1344,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `One Shot Showdown ${output.id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!`
+      "content": `One Shot Showdown ${output.id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in <#746130457455886337> with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!\n<@&1330632674477473883>`
     })
   });
   const data = await response.json();

@@ -896,7 +896,7 @@ export const INFO_COMMAND = {
 
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
-  // id: "1322802982596771851",
+  // id: "1322802982596771851"
   description:"submit a score for One Shot Showdown",
   dm_permission:false,
   type:1,
@@ -938,7 +938,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
 
 export const START_TOURNEY_COMMAND = {
     name:"start",
-    // id: "1322802982596771852", // replace later
+    // id: "1329965467837792419"
     description:"start a tournament",
     dm_permission:false,
     type:1,
@@ -954,7 +954,7 @@ export const START_TOURNEY_COMMAND = {
 
 export const STOP_TOURNEY_COMMAND = {
     name: "stop",
-    // id: "1322802982596771853", // replace later
+    // id: "1329965467837792420"
     description: "stop a tournament",
     dm_permission: false,
     type: 1
