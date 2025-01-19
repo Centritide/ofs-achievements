@@ -948,6 +948,12 @@ export const START_TOURNEY_COMMAND = {
         description:"scenario code",
         type:3,
         required:true
+        },
+        {
+          name: "check",
+          description: "check if the scenario is valid",
+          type: 5,
+          required: false
         }
     ]
 }

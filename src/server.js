@@ -1300,8 +1300,6 @@ async function startTourney(interaction, env) {
       }
     });
   }
-
-  // check if there's an ongoing tournament by using the database and looking for the latest tournament
   const client = new Client({
     user: env.PG_USER,
     password: env.PG_PW,
@@ -1310,8 +1308,35 @@ async function startTourney(interaction, env) {
     database: env.PG_NAME
   });
   await client.connect();
+  let output;
+  // if the option for check is true, only check if the scenario is valid
+  if (interaction.data.options[1].value) {
+    output = await client.query(`SELECT 1 from tournaments WHERE scenario = $1;`, [scenario]);
+    if (output.rows.length > 0) {
+      client.end();
+      return new JsonResponse({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          "content": "Scenario has already been used before.",
+          "flags": 1000000
+        }
+      });
+    } else {
+      client.end();
+      return new JsonResponse({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          "content": "Scenario is valid.",
+          "flags": 1000000
+        }
+      });
+    }
+  }
+
+  // check if there's an ongoing tournament by using the database and looking for the latest tournament
+
   // database has a table called tournaments with columns id, scenario, and start_time.
-  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
   const date = new Date();
   if (output.rows.length > 0) {
     // check if the latest tournament has ended
@@ -1329,7 +1354,18 @@ async function startTourney(interaction, env) {
   // if there's no ongoing tournament, start a new one
 
   // insert the new tournament into the database
-  output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
+  try {
+    output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
+  } catch (error) {
+    // will error if the scenario has been used before
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "The scenario has been used before in a previous tournament. Please use a different scenario. In the future, you can check the validity of the scenario beforehand by setting the check option to true when using this command.",
+        "flags": 1000000
+      }
+    });
+  }
   client.end();
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
