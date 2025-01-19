@@ -14,3 +14,4 @@ package-lock.json
 .wrangler
 ofs-achievements db backup - Sheet2.csv
 .DS_Store
+settings.json
