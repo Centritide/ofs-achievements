@@ -33,7 +33,7 @@ const router = Router();
  * A simple :wave: hello page to verify the worker is working.
  */
 router.get('/', (request, env) => {
-  return new Response(`👋 ${env.DISCORD_APPLICATION_ID}`);
+  return new Response(`👋 ${env.DISCORD_APPLICATION_ID} how did you get here. play beastieball`);
 });
 
 /**
@@ -303,6 +303,7 @@ function getStageEmoji(stage,score){
 // handles responding to super secret staff buttons/fields
 
 async function componentResponse(interaction,env){
+  const clicker = interaction.member.user.id;
   const user = interaction.message.embeds[0].fields[0].value;
   let subcommand = interaction.message.embeds[0].fields[1].value;
   let score = Number(interaction.message.embeds[0].fields[2].value);
@@ -344,7 +345,8 @@ async function componentResponse(interaction,env){
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: content + "\nUpdated score for <@" + user + ">. " + column + " score: " + newscore,
+          content: content + "\nUpdated score for <@" + user + ">. " + column + " score: " + newscore + `\nSigned by: <@${clicker}>`,
+          flags:1<<12,
           components:[]
         }
       });
@@ -365,7 +367,8 @@ async function componentResponse(interaction,env){
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: content + "\ndenied",
+          content: content + "\ndenied"+ `\nSigned by: <@${clicker}>`,
+          flags:1<<12,
           embeds:interaction.message.embeds,
           components:[]
         }
