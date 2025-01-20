@@ -1110,7 +1110,7 @@ async function requestScore(interaction,env){
   const content = "<@" + user + "> requested (" + subcommand + ") " + score + " on " + stage + " " + rot_type + " " + link;
   let real;
   let attachments=[];
-  if(link.substring(0,29) === "https://discord.com/channels/"){
+  if(link.substring(0,29) === "https://discord.com/channels/" || link.substring(0,33) === "https://ptb.discord.com/channels/" || link.substring(0,36) === "https://canary.discord.com/channels/"  ){
     const parts = link.split("/");
     const channel_id = parts[5];
     const msg_id = parts[6];
