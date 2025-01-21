@@ -426,6 +426,7 @@ async function tourneyResponse(interaction, env) {
   const score = Number(interaction.message.embeds[0].fields[2].value);
   const tourney_id = interaction.message.embeds[0].fields[3].value;
   const content = interaction.message.content;
+  const tourney_channel = "1330632032014827550"; // oss-announcements
   const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
     headers: {
       'Content-Type': 'application/json',
@@ -456,43 +457,7 @@ async function tourneyResponse(interaction, env) {
       if (requested.rows.length == 0) {
         const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
         // console.log(leaderboard[0].team_members[0]);
-        let leaderboardstring = "";
-        const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
-        const oss_cols = ['oss_1st','oss_2nd','oss_3rd'];
-        let prevScore = 0;
-        let i = 0;
-        let p = 0; // place index
-        while (i < leaderboard.length) {
-          if (leaderboard[i].score != prevScore) {
-            if (i > 2) {
-              break; // 3 scores have already been added
-            }
-            p = i;
-            prevScore = leaderboard[i].score;
-          }
-          // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
-          let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
-          leaderboardstring += `${place[p]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
-          for (let j in leaderboard[i].team_members[0].split(" ")){
-            // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
-            let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
-          }
-          i++;
-        }
-        leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}\n${leaderboardstring}`;
-        const tourney_channel = "1330632032014827550"; // oss-announcements
-        const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bot ${env.DISCORD_TOKEN}`,
-          },
-          method: 'POST',
-          body: JSON.stringify({
-            "content": leaderboardstring
-          })
-        });
-        // const tourney_data = await tourney_response.json();
-        // console.log(tourney_data);
+        await top3_leaderboard(leaderboard, client);
         return new JsonResponse({
           type: InteractionResponseType.UPDATE_MESSAGE,
           data: {
@@ -529,11 +494,38 @@ async function tourneyResponse(interaction, env) {
       output = await client.query(`DELETE FROM submissions WHERE id = ${id};`);
       output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status IS NULL ORDER BY score DESC LIMIT 1;`);
       // console.log(output);
+      // if there are no more submissions, send leaderboard
       if (output2.rows.length == 0) {
+        output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
+        const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
+        if (leaderboard.length > 0) {
+          await top3_leaderboard(leaderboard, client);
+        } else { // the only submissions were denied
+          const tour_announcement_channel = "1330632032014827550"; // oss-announcements
+          const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bot ${env.DISCORD_TOKEN}`,
+            },
+            method: 'POST',
+            body: JSON.stringify({
+              "content": `Unfortunately, One Shot Showdown ${output.id} did not have any submissions. We'll see you in the next one!`
+            })
+          });
+          // const data = await response.json();
+          // console.log(data);
+          return new JsonResponse({
+            type: InteractionResponseType.UPDATE_MESSAGE,
+            data: {
+              content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nNo submissions were valid.",
+              components: []
+            }
+          });
+        }
         return new JsonResponse({
           type: InteractionResponseType.UPDATE_MESSAGE,
           data: {
-            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score,
+            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
             components: []
           }
         });
@@ -565,7 +557,46 @@ async function tourneyResponse(interaction, env) {
       });
   }
 }
-
+// leaderboard helper function
+async function top3_leaderboard(leaderboard, client) {
+  let leaderboardstring = "";
+  const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
+  const oss_cols = ['oss_1st', 'oss_2nd', 'oss_3rd'];
+  let prevScore = 0;
+  let i = 0;
+  let p = 0; // place index
+  while (i < leaderboard.length) {
+    if (leaderboard[i].score != prevScore) {
+      if (i > 2) {
+        break; // 3 scores have already been added
+      }
+      p = i;
+      prevScore = leaderboard[i].score;
+    }
+    // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
+    let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
+    leaderboardstring += `${place[p]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+    for (let j in leaderboard[i].team_members[0].split(" ")) {
+      // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
+      let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
+    }
+    i++;
+  }
+  leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}\n${leaderboardstring}`;
+  const tourney_channel = "1330632032014827550"; // oss-announcements
+  const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": leaderboardstring
+    })
+  });
+  // const tourney_data = await tourney_response.json();
+  // console.log(tourney_data);
+}
 
 //formatting for the super secret staff messages
 
@@ -1477,17 +1508,6 @@ async function stopTourney(interaction, env) {
   // console.log(top3.rows.length);
   if (top3.rows.length == 0) {
     client.end();
-    const tour_announcement_channel = "1330632032014827550"; // oss-announcements
-    const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bot ${env.DISCORD_TOKEN}`,
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        "content": `Unfortunately, One Shot Showdown ${output.id} did not have any submissions. We'll see you in the next one!`
-      })
-    });
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
