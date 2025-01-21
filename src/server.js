@@ -492,48 +492,6 @@ async function tourneyResponse(interaction, env) {
     case "deny":
       // delete submission
       output = await client.query(`DELETE FROM submissions WHERE id = ${id};`);
-      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND submission_status IS NULL ORDER BY score DESC LIMIT 1;`);
-      // console.log(output);
-      // if there are no more submissions, send leaderboard
-      if (output2.rows.length == 0) {
-        output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
-        const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
-        if (leaderboard.length > 0) {
-          await top3_leaderboard(leaderboard, client);
-        } else { // the only submissions were denied
-          const tour_announcement_channel = "1330632032014827550"; // oss-announcements
-          const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bot ${env.DISCORD_TOKEN}`,
-            },
-            method: 'POST',
-            body: JSON.stringify({
-              "content": `Unfortunately, One Shot Showdown ${output.id} did not have any submissions. We'll see you in the next one!`
-            })
-          });
-          // const data = await response.json();
-          // console.log(data);
-          return new JsonResponse({
-            type: InteractionResponseType.UPDATE_MESSAGE,
-            data: {
-              content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nNo submissions were valid.",
-              components: []
-            }
-          });
-        }
-        return new JsonResponse({
-          type: InteractionResponseType.UPDATE_MESSAGE,
-          data: {
-            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
-            components: []
-          }
-        });
-      }
-      row = output2.rows[0];
-      await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${row.id};`);
-      client.end();
-      await handleSubmission(env, row.id, row.score, row.team_members, row.tournament_id, row.link);
       const denyresponse = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
         headers: {
           'Content-Type': 'application/json',
@@ -541,17 +499,72 @@ async function tourneyResponse(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": "Your FSR submission was denied.",
+          "content": "Your OSS submission was denied.",
           "embeds": interaction.message.embeds,
         })
       });
       const denydata = await denyresponse.json();
       // console.log(denydata);
+      output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
+      // grab the next highest score and send it for approval
+      const null_submissions = output2.rows.filter((row) => row.submission_status == null);
+      if (null_submissions.length != 0) {
+        row = null_submissions.rows[0];
+        await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${row.id};`);
+        client.end();
+        await handleSubmission(env, row.id, row.score, row.team_members, row.tournament_id, row.link);
+        return new JsonResponse({
+          type: InteractionResponseType.UPDATE_MESSAGE,
+          data: {
+            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nAnd requested next submission.",
+            components: []
+          }
+        });
+      }
+      // if there are no more non-requested or accepted submissions, check if there are any requested submissions
+      const requested_submissions = output2.rows.filter((row) => row.submission_status == 'requested');
+      // if there are still requested submissions, wait for them to be approved or denied
+      if (requested_submissions.length != 0) {
+        client.end();
+        return new JsonResponse({
+          type: InteractionResponseType.UPDATE_MESSAGE,
+          data: {
+            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score,
+            components: []
+          }
+        });
+      }
+      // if there are no more submissions, send leaderboard
+      const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
+      if (leaderboard.length > 0) {
+        await top3_leaderboard(leaderboard, client);
+        client.end();
+      } else { // the only submissions were denied
+        client.end();
+        const response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bot ${env.DISCORD_TOKEN}`,
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            "content": `Unfortunately, One Shot Showdown ${output.id} did not have any submissions. We'll see you in the next one!`
+          })
+        });
+        // const data = await response.json();
+        // console.log(data);
+        return new JsonResponse({
+          type: InteractionResponseType.UPDATE_MESSAGE,
+          data: {
+            content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nNo submissions were valid.",
+            components: []
+          }
+        });
+      }
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: content + "\ndenied",
-          embeds: interaction.message.embeds,
+          content: content + "\nDeleted submission for <@" + user + ">. " + " score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
           components: []
         }
       });
@@ -1654,7 +1667,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `<@${team[0].split(" ")[0]}> submitted ${score} for FSR${tourney_id} with <@${team[0].split(" ")[1]}>,<@${team[0].split(" ")[2]}>,and <@${team[0].split(" ")[3]}>.\n${link}`,
+      "content": `<@${team[0].split(" ")[0]}> submitted ${score} for OSS${tourney_id} with <@${team[0].split(" ")[1]}>,<@${team[0].split(" ")[2]}>,and <@${team[0].split(" ")[3]}>.\n${link}`,
       "embeds": [
         {
           "author": {
