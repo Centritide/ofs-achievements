@@ -456,18 +456,30 @@ async function tourneyResponse(interaction, env) {
       if (requested.rows.length == 0) {
         const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
         // console.log(leaderboard[0].team_members[0]);
-        let leaderboardstring = "## Top 3 for One Shot Showdown " + tourney_id + "\n";
+        let leaderboardstring = "";
         const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
         const oss_cols = ['oss_1st','oss_2nd','oss_3rd'];
-        for (let i = 0; i < 3; i++) {
+        let prevScore = 0;
+        let i = 0;
+        let p = 0; // place index
+        while (i < leaderboard.length) {
+          if (leaderboard[i].score != prevScore) {
+            if (i > 2) {
+              break; // 3 scores have already been added
+            }
+            p = i;
+            prevScore = leaderboard[i].score;
+          }
+          // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
           let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
-          leaderboardstring += `${place[i]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+          leaderboardstring += `${place[p]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
           for (let j in leaderboard[i].team_members[0].split(" ")){
             // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
             let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
           }
-
+          i++;
         }
+        leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}\n${leaderboardstring}`;
         const tourney_channel = "1330632032014827550"; // oss-announcements
         const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
           headers: {
@@ -1461,9 +1473,37 @@ async function stopTourney(interaction, env) {
   let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
 
   // get the top 3 scores
-  const top3 = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC LIMIT 3;`);
+  const top3 = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
   // console.log(top3.rows.length);
+  if (top3.rows.length == 0) {
+    client.end();
+    const tour_announcement_channel = "1330632032014827550"; // oss-announcements
+    const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        "content": `Unfortunately, One Shot Showdown ${output.id} did not have any submissions. We'll see you in the next one!`
+      })
+    });
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "No submissions have been made for One Shot Showdown " + tourney_id + ".",
+        "flags": 1000000
+      }
+    });
+  }
+  let min_score = 0;
+  if (top3.rows.length > 2) {
+    min_score = top3.rows[2].score;
+  }
   for (let i = 0; i < top3.rows.length; i++) {
+    if (i > 2 && top3.rows[i].score < min_score) {
+      break;
+    }
     const team = top3.rows[i].team_members;
     const score = top3.rows[i].score;
     const link = top3.rows[i].link;
@@ -1680,8 +1720,14 @@ async function leaderboard(interaction, env) {
     });
   }
   let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n";
+  let p = 1;
+  let prev_score = 0;
   for (let i = 0; i < output.rows.length; i++) {
-    content += `${i + 1}. ${output.rows[i].score}\n`;
+    if (output.rows[i].score != prev_score) {
+      p = i + 1;
+      prev_score = output.rows[i].score;
+    }
+    content += `${p}. ${output.rows[i].score}\n`;
   }
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
