@@ -1,15 +1,15 @@
 {
-    "infos":{
-        "default":"How to use <@1135411894262435881> :\n\n</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type. Similar commands exist for Splatoon 2, Splatoon 3 Big Run and Splatoon 3 Eggstra Work.\n\n</profile s2s3:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores.\n\n</import:1178119204302491781> : If you have scores from roles, this command imports them to your score card.",
-        "request":"</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image link to a job on stat.ink, link to an image on the web, or upload a file. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type.\n</request s2:1178119204302491783> : the same for s2.\n</request bigrun:1178119204302491783> : the same for big run. No need to specify rotation type.\n</request eggstra:1178119204302491783> : The same for eggstra work.\nAfter your score request is approved/denied, you will receive a DM along with additional details.\nA day-only score qualifies to be counted as a normal score (non-day-only) if you submit with the same proof, but users may choose not to do so.",
-        "profile":"</profile s2s3:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores. \n\n</profile oss:1178119204302491780> can be used to see tournament finishes.",
-        "import":"</import:1178119204302491781>\nIf you have scores from roles, this command imports them to your score card. this will only record the lowest possible score for that role, so please `/request` the exact score if you would like to.",
-        "submit":"</submit:1322802982596771851>\nSubmit a score for One Shot Showdown. Include your score, @ mentions to all 3 of your teammates, and an attached screenshot of the shift from NSO.",
-        "leaderboard":"</leaderboard:1322802982596771854>\nShows scores of all submissions for specified OSS or current OSS if none is specified. Unofficial leaderboard, as only the top 3 scores were verified.",
-        "start":"For TOs.\n</start:1329965467837792419>\nStarts OSS with the specified code. The 15 minute timer will begin immediately, so please ensure you have announced the event already to give time for people to form teams.\n\nYou can also set the check option to true to check if the scenario is valid beforehand, without sending the start message.",
-        "stop":"For TOs.\n</stop:1329965467837792420>\nStops OSS after submissions are closed. Triggers the top 3 scores to be sent for approval, after which they will be announced."
+    "infos": {
+        "default": "How to use <@1135411894262435881> :\n\n</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type. Similar commands exist for Splatoon 2, Splatoon 3 Big Run and Splatoon 3 Eggstra Work.\n\n</profile s2s3:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores.\n\n</import:1178119204302491781> : If you have scores from roles, this command imports them to your score card.",
+        "request": "</request s3:1178119204302491783> : requests a score from Splatoon 3 to be added to your score card. Please specify the stage, the rotation type (day only, green random, golden day only, etc.), your score, and attach proof in the form of a link to a message in <#747408376253775873>, or upload an image link to a job on stat.ink, link to an image on the web, or upload a file. Please use this command once for every score you want added.\n**For Princess Scores:** select Princess as the rotation type, regardless of the actual rotation type.\n</request s2:1178119204302491783> : the same for s2.\n</request bigrun:1178119204302491783> : the same for big run. No need to specify rotation type.\n</request eggstra:1178119204302491783> : The same for eggstra work.\nAfter your score request is approved/denied, you will receive a DM along with additional details.\nA day-only score qualifies to be counted as a normal score (non-day-only) if you submit with the same proof, but users may choose not to do so.",
+        "profile": "</profile s2s3:1178119204302491780> : displays a user's profile. Use the page option to view more detailed scores. \n\n</profile oss:1178119204302491780> can be used to see tournament finishes.",
+        "import": "</import:1178119204302491781>\nIf you have scores from roles, this command imports them to your score card. this will only record the lowest possible score for that role, so please `/request` the exact score if you would like to.",
+        "submit": "</submit:1322802982596771851>\nSubmit a score for One Shot Showdown. Include your score, @ mentions to all 3 of your teammates, and an attached screenshot of the shift from NSO.",
+        "leaderboard": "</leaderboard:1322802982596771854>\nShows scores of all submissions for specified OSS or current OSS if none is specified. Unofficial leaderboard, as only the top 3 scores were verified.",
+        "start": "For TOs.\n</start:1329965467837792419>\nStarts OSS with the specified code. The 15 minute timer will begin immediately, so please ensure you have announced the event already to give time for people to form teams.\n\nYou can also set the check option to true to check if the scenario is valid beforehand, without sending the start message.",
+        "stop": "For TOs.\n</stop:1329965467837792420>\nStops OSS after submissions are closed. Triggers the top 3 scores to be sent for approval, after which they will be announced."
     },
-    "s3":[
+    "s3": [
         "sg",
         "mb",
         "ssy",
@@ -18,14 +18,14 @@
         "jsj",
         "bra"
     ],
-    "s2":[
+    "s2": [
         "s2sg",
         "s2mb",
         "s2lo",
         "s2ss",
         "s2ap"
     ],
-    "bigrun":[
+    "bigrun": [
         "br1",
         "br2",
         "br3",
@@ -34,7 +34,7 @@
         "br6",
         "br7"
     ],
-    "eggstra":[
+    "eggstra": [
         "ew1",
         "ew2",
         "ew3",
@@ -43,189 +43,1058 @@
         "ew6",
         "ew7"
     ],
-    "oss":[
+    "oss": [
         "oss_1st",
         "oss_2nd",
         "oss_3rd"
     ],
     "dict": {
-        "sg":"SG (S3)📥",
-        "mb":"MB (S3)📥",
-        "ssy":"SSy (S3)📥","sst":"SSt (S3)📥","gfh":"GFH (S3)📥","jsj":"JSJ (S3)📥","bra":"BrA (S3)📥",
-        "sgday":"SG (S3)☀️📥",
-        "mbday":"MB (S3)☀️📥",
-        "ssyday":"SSy (S3)☀️📥","sstday":"SSt (S3)☀️📥","gfhday":"GFH (S3)☀️📥","jsjday":"JSJ (S3)☀️📥","braday":"BrA (S3)☀️📥",
-        "sgnormal":"SG (S3)",
-        "mbnormal":"MB (S3)",
-        "ssynormal":"SSy (S3)","sstnormal":"SSt (S3)","gfhnormal":"GFH (S3)","jsjnormal":"JSJ (S3)","branormal":"BrA (S3)",
-"sggreen_random":"SG (S3)<:s3_green:1178574271996510249>","mbgreen_random":"MB (S3)<:s3_green:1178574271996510249>","ssygreen_random":"SSy (S3)<:s3_green:1178574271996510249>","sstgreen_random":"SSt (S3)<:s3_green:1178574271996510249>","gfhgreen_random":"GFH (S3)<:s3_green:1178574271996510249>","jsjgreen_random":"JSJ (S3)<:s3_green:1178574271996510249>","bragreen_random":"BrA (S3)<:s3_green:1178574271996510249>",
-"sgsingle_random":"SG (S3)<:s3_partial:1178574255500308552>","mbsingle_random":"MB (S3)<:s3_partial:1178574255500308552>","ssysingle_random":"SSy (S3)<:s3_partial:1178574255500308552>","sstsingle_random":"SSt (S3)<:s3_partial:1178574255500308552>","gfhsingle_random":"GFH (S3)<:s3_partial:1178574255500308552>","jsjsingle_random":"JSJ (S3)<:s3_partial:1178574255500308552>","brasingle_random":"BrA (S3)<:s3_partial:1178574255500308552>",
-"sggolden_random":"SG (S3)<:s3_gold:1330226165679390792>","mbgolden_random":"MB (S3)<:s3_gold:1330226165679390792>","ssygolden_random":"SSy (S3)<:s3_gold:1330226165679390792>","sstgolden_random":"SSt (S3)<:s3_gold:1330226165679390792>","gfhgolden_random":"GFH (S3)<:s3_gold:1330226165679390792>","jsjgolden_random":"JSJ (S3)<:s3_gold:1330226165679390792>","bragolden_random":"BrA (S3)<:s3_gold:1330226165679390792>",
-"sgnormalday":"SG (S3)☀️","mbnormalday":"MB (S3)☀️","ssynormalday":"SSy (S3)☀️","sstnormalday":"SSt (S3)☀️","gfhnormalday":"GFH (S3)☀️","jsjnormalday":"JSJ (S3)☀️","branormalday":"BrA (S3)☀️",
-"sggreen_randomday":"SG (S3)<:s3_green:1178574271996510249>☀️","mbgreen_randomday":"MB (S3)<:s3_green:1178574271996510249>☀️","ssygreen_randomday":"SSy (S3)<:s3_green:1178574271996510249>☀️","sstgreen_randomday":"SSt (S3)<:s3_green:1178574271996510249>☀️","gfhgreen_randomday":"GFH (S3)<:s3_green:1178574271996510249>☀️","jsjgreen_randomday":"JSJ (S3)<:s3_green:1178574271996510249>☀️","bragreen_randomday":"BrA (S3)<:s3_green:1178574271996510249>☀️",
-"sgsingle_randomday":"SG (S3)<:s3_partial:1178574255500308552>☀️","mbsingle_randomday":"MB (S3)<:s3_partial:1178574255500308552>☀️","ssysingle_randomday":"SSy (S3)<:s3_partial:1178574255500308552>☀️","sstsingle_randomday":"SSt (S3)<:s3_partial:1178574255500308552>☀️","gfhsingle_randomday":"GFH (S3)<:s3_partial:1178574255500308552>☀️","jsjsingle_randomday":"JSJ (S3)<:s3_partial:1178574255500308552>☀️","brasingle_randomday":"BrA (S3)<:s3_partial:1178574255500308552>☀️",
-"sggolden_randomday":"SG (S3)<:s3_gold:1330226165679390792>☀️","mbgolden_randomday":"MB (S3)<:s3_gold:1330226165679390792>☀️","ssygolden_randomday":"SSy (S3)<:s3_gold:1330226165679390792>☀️","sstgolden_randomday":"SSt (S3)<:s3_gold:1330226165679390792>☀️","gfhgolden_randomday":"GFH (S3)<:s3_gold:1330226165679390792>☀️","jsjgolden_randomday":"JSJ (S3)<:s3_gold:1330226165679390792>☀️","bragolden_randomday":"BrA (S3)<:s3_gold:1330226165679390792>☀️",
-"sgprincess":"SG (S3)👑","mbprincess":"MB (S3)👑","ssyprincess":"SSy (S3)👑","sstprincess":"SSt (S3)👑","gfhprincess":"GFH (S3)👑","jsjprincess":"JSJ (S3)👑","braprincess":"BrA (S3)👑",
-"s2sg":"SG (S2)📥","s2mb":"MB (S2)📥","s2lo":"LO (S2)📥","s2ss":"SS (S2)📥","s2ap":"AP (S2)📥",
-"s2sgday":"SG (S2)☀️📥","s2mbday":"MB (S2)☀️📥","s2loday":"LO (S2)☀️📥","s2ssday":"SS (S2)☀️📥","s2apday":"AP (S2)☀️📥",
-"s2sgnormal":"SG (S2)","s2mbnormal":"MB (S2)","s2lonormal":"LO (S2)","s2ssnormal":"SS (S2)","s2apnormal":"AP (S2)",
-"s2sggreen_random":"SG (S2)<:s2_green:1178572883220516894>","s2mbgreen_random":"MB (S2)<:s2_green:1178572883220516894>","s2logreen_random":"LO (S2)<:s2_green:1178572883220516894>","s2ssgreen_random":"SS (S2)<:s2_green:1178572883220516894>","s2apgreen_random":"AP (S2)<:s2_green:1178572883220516894>",
-"s2sgsingle_random":"SG (S2)<:s2_partial:1178572917248901220>","s2mbsingle_random":"MB (S2)<:s2_partial:1178572917248901220>","s2losingle_random":"LO (S2)<:s2_partial:1178572917248901220>","s2sssingle_random":"SS (S2)<:s2_partial:1178572917248901220>","s2apsingle_random":"AP (S2)<:s2_partial:1178572917248901220>",
-"s2sggolden_random":"SG (S2) <:s2_gold:1330226090391769250>","s2mbgolden_random":"MB (S2)<:s2_gold:1330226090391769250>","s2logolden_random":"LO (S2)<:s2_gold:1330226090391769250>","s2ssgolden_random":"SS (S2)<:s2_gold:1330226090391769250>","s2apgolden_random":"AP (S2)<:s2_gold:1330226090391769250>",
-"s2sgnormalday":"SG (S2)☀️","s2mbnormalday":"MB (S2)☀️","s2lonormalday":"LO (S2)☀️","s2ssnormalday":"SS (S2)☀️","s2apnormalday":"AP (S2)☀️",
-"s2sggreen_randomday":"SG (S2) <:s2_green:1178572883220516894>☀️","s2mbgreen_randomday":"MB (S2)<:s2_green:1178572883220516894>☀️","s2logreen_randomday":"LO (S2)<:s2_green:1178572883220516894>☀️","s2ssgreen_randomday":"SS (S2)<:s2_green:1178572883220516894>☀️","s2apgreen_randomday":"AP (S2)<:s2_green:1178572883220516894>☀️",
-"s2sgsingle_randomday":"SG (S2)☀️","s2mbsingle_randomday":"MB (S2)<:s2_partial:1178572917248901220>☀️","s2losingle_randomday":"LO (S2)<:s2_partial:1178572917248901220>☀️","s2sssingle_randomday":"SS (S2)<:s2_partial:1178572917248901220>☀️","s2apsingle_randomday":"AP (S2)<:s2_partial:1178572917248901220>☀️",
-"s2sggolden_randomday":"SG (S2)<:s2_gold:1330226090391769250>☀️","s2mbgolden_randomday":"MB (S2)<:s2_gold:1330226090391769250>☀️","s2logolden_randomday":"LO (S2)<:s2_gold:1330226090391769250>☀️","s2ssgolden_randomday":"SS (S2)<:s2_gold:1330226090391769250>☀️","s2apgolden_randomday":"AP (S2)<:s2_gold:1330226090391769250>☀️",
-"s2sgprincess":"SG (S2)👑","s2mbprincess":"MB (S2)👑","s2loprincess":"LO (S2)👑","s2ssprincess":"SS (S2)👑","s2apprincess":"AP (S2)👑",
-"br1":"Wahoo World","br2":"Inkblot Art Academy","br3":"Undertow Spillway","br4":"Umam'i Ruins","br5":"Barnacle & Dime", "br6":"Eeltail Alley","br7": "Grand Splatlands Bowl",
-"ew1":"Eggstra Work 1","ew2":"Eggstra Work 2","ew3":"Eggstra Work 3","ew4":"Eggstra Work 4","ew5":"Eggstra Work 5","ew6":"Eggstra Work 6","ew7":"Eggstra Work 7",
-"princess":"S3 👑📥","s2princess":"S2 👑📥",
-"princessc":"S3 👑","s2princessc":"S2 👑","sgc":"SG (S3)",
-"mbc":"MB (S3)",
-"ssyc":"SSy (S3)","sstc":"SSt (S3)","gfhc":"GFH (S3)","jsjc":"JSJ (S3)","brac":"BrA (S3)",
-"sgdayc":"SG (S3)☀️",
-"mbdayc":"MB (S3)☀️",
-"ssydayc":"SSy (S3)☀️","sstdayc":"SSt (S3)☀️","gfhdayc":"GFH (S3)☀️","jsjdayc":"JSJ (S3)☀️","bradayc":"BrA (S3)☀️",
-"s2sgc":"SG (S2)","s2mbc":"MB (S2)","s2loc":"LO (S2)","s2ssc":"SS (S2)","s2apc":"AP (S2)",
-"s2sgdayc":"SG (S2)☀️","s2mbdayc":"MB (S2)☀️","s2lodayc":"LO (S2)☀️","s2ssdayc":"SS (S2)☀️","s2apdayc":"AP (S2)☀️",
-"oss_1st":"1st Place OSS Finishes","oss_2nd":"2nd Place OSS Finishes","oss_3rd":"3rd Place OSS Finishes"
+        "sg": "SG (S3)📥",
+        "mb": "MB (S3)📥",
+        "ssy": "SSy (S3)📥",
+        "sst": "SSt (S3)📥",
+        "gfh": "GFH (S3)📥",
+        "jsj": "JSJ (S3)📥",
+        "bra": "BrA (S3)📥",
+        "sgday": "SG (S3)☀️📥",
+        "mbday": "MB (S3)☀️📥",
+        "ssyday": "SSy (S3)☀️📥",
+        "sstday": "SSt (S3)☀️📥",
+        "gfhday": "GFH (S3)☀️📥",
+        "jsjday": "JSJ (S3)☀️📥",
+        "braday": "BrA (S3)☀️📥",
+        "sgnormal": "SG (S3)",
+        "mbnormal": "MB (S3)",
+        "ssynormal": "SSy (S3)",
+        "sstnormal": "SSt (S3)",
+        "gfhnormal": "GFH (S3)",
+        "jsjnormal": "JSJ (S3)",
+        "branormal": "BrA (S3)",
+        "sggreen_random": "SG (S3)<:s3_green:1178574271996510249>",
+        "mbgreen_random": "MB (S3)<:s3_green:1178574271996510249>",
+        "ssygreen_random": "SSy (S3)<:s3_green:1178574271996510249>",
+        "sstgreen_random": "SSt (S3)<:s3_green:1178574271996510249>",
+        "gfhgreen_random": "GFH (S3)<:s3_green:1178574271996510249>",
+        "jsjgreen_random": "JSJ (S3)<:s3_green:1178574271996510249>",
+        "bragreen_random": "BrA (S3)<:s3_green:1178574271996510249>",
+        "sgsingle_random": "SG (S3)<:s3_partial:1178574255500308552>",
+        "mbsingle_random": "MB (S3)<:s3_partial:1178574255500308552>",
+        "ssysingle_random": "SSy (S3)<:s3_partial:1178574255500308552>",
+        "sstsingle_random": "SSt (S3)<:s3_partial:1178574255500308552>",
+        "gfhsingle_random": "GFH (S3)<:s3_partial:1178574255500308552>",
+        "jsjsingle_random": "JSJ (S3)<:s3_partial:1178574255500308552>",
+        "brasingle_random": "BrA (S3)<:s3_partial:1178574255500308552>",
+        "sggolden_random": "SG (S3)<:s3_gold:1330226165679390792>",
+        "mbgolden_random": "MB (S3)<:s3_gold:1330226165679390792>",
+        "ssygolden_random": "SSy (S3)<:s3_gold:1330226165679390792>",
+        "sstgolden_random": "SSt (S3)<:s3_gold:1330226165679390792>",
+        "gfhgolden_random": "GFH (S3)<:s3_gold:1330226165679390792>",
+        "jsjgolden_random": "JSJ (S3)<:s3_gold:1330226165679390792>",
+        "bragolden_random": "BrA (S3)<:s3_gold:1330226165679390792>",
+        "sgnormalday": "SG (S3)☀️",
+        "mbnormalday": "MB (S3)☀️",
+        "ssynormalday": "SSy (S3)☀️",
+        "sstnormalday": "SSt (S3)☀️",
+        "gfhnormalday": "GFH (S3)☀️",
+        "jsjnormalday": "JSJ (S3)☀️",
+        "branormalday": "BrA (S3)☀️",
+        "sggreen_randomday": "SG (S3)<:s3_green:1178574271996510249>☀️",
+        "mbgreen_randomday": "MB (S3)<:s3_green:1178574271996510249>☀️",
+        "ssygreen_randomday": "SSy (S3)<:s3_green:1178574271996510249>☀️",
+        "sstgreen_randomday": "SSt (S3)<:s3_green:1178574271996510249>☀️",
+        "gfhgreen_randomday": "GFH (S3)<:s3_green:1178574271996510249>☀️",
+        "jsjgreen_randomday": "JSJ (S3)<:s3_green:1178574271996510249>☀️",
+        "bragreen_randomday": "BrA (S3)<:s3_green:1178574271996510249>☀️",
+        "sgsingle_randomday": "SG (S3)<:s3_partial:1178574255500308552>☀️",
+        "mbsingle_randomday": "MB (S3)<:s3_partial:1178574255500308552>☀️",
+        "ssysingle_randomday": "SSy (S3)<:s3_partial:1178574255500308552>☀️",
+        "sstsingle_randomday": "SSt (S3)<:s3_partial:1178574255500308552>☀️",
+        "gfhsingle_randomday": "GFH (S3)<:s3_partial:1178574255500308552>☀️",
+        "jsjsingle_randomday": "JSJ (S3)<:s3_partial:1178574255500308552>☀️",
+        "brasingle_randomday": "BrA (S3)<:s3_partial:1178574255500308552>☀️",
+        "sggolden_randomday": "SG (S3)<:s3_gold:1330226165679390792>☀️",
+        "mbgolden_randomday": "MB (S3)<:s3_gold:1330226165679390792>☀️",
+        "ssygolden_randomday": "SSy (S3)<:s3_gold:1330226165679390792>☀️",
+        "sstgolden_randomday": "SSt (S3)<:s3_gold:1330226165679390792>☀️",
+        "gfhgolden_randomday": "GFH (S3)<:s3_gold:1330226165679390792>☀️",
+        "jsjgolden_randomday": "JSJ (S3)<:s3_gold:1330226165679390792>☀️",
+        "bragolden_randomday": "BrA (S3)<:s3_gold:1330226165679390792>☀️",
+        "sgprincess": "SG (S3)👑",
+        "mbprincess": "MB (S3)👑",
+        "ssyprincess": "SSy (S3)👑",
+        "sstprincess": "SSt (S3)👑",
+        "gfhprincess": "GFH (S3)👑",
+        "jsjprincess": "JSJ (S3)👑",
+        "braprincess": "BrA (S3)👑",
+        "s2sg": "SG (S2)📥",
+        "s2mb": "MB (S2)📥",
+        "s2lo": "LO (S2)📥",
+        "s2ss": "SS (S2)📥",
+        "s2ap": "AP (S2)📥",
+        "s2sgday": "SG (S2)☀️📥",
+        "s2mbday": "MB (S2)☀️📥",
+        "s2loday": "LO (S2)☀️📥",
+        "s2ssday": "SS (S2)☀️📥",
+        "s2apday": "AP (S2)☀️📥",
+        "s2sgnormal": "SG (S2)",
+        "s2mbnormal": "MB (S2)",
+        "s2lonormal": "LO (S2)",
+        "s2ssnormal": "SS (S2)",
+        "s2apnormal": "AP (S2)",
+        "s2sggreen_random": "SG (S2)<:s2_green:1178572883220516894>",
+        "s2mbgreen_random": "MB (S2)<:s2_green:1178572883220516894>",
+        "s2logreen_random": "LO (S2)<:s2_green:1178572883220516894>",
+        "s2ssgreen_random": "SS (S2)<:s2_green:1178572883220516894>",
+        "s2apgreen_random": "AP (S2)<:s2_green:1178572883220516894>",
+        "s2sgsingle_random": "SG (S2)<:s2_partial:1178572917248901220>",
+        "s2mbsingle_random": "MB (S2)<:s2_partial:1178572917248901220>",
+        "s2losingle_random": "LO (S2)<:s2_partial:1178572917248901220>",
+        "s2sssingle_random": "SS (S2)<:s2_partial:1178572917248901220>",
+        "s2apsingle_random": "AP (S2)<:s2_partial:1178572917248901220>",
+        "s2sggolden_random": "SG (S2) <:s2_gold:1330226090391769250>",
+        "s2mbgolden_random": "MB (S2)<:s2_gold:1330226090391769250>",
+        "s2logolden_random": "LO (S2)<:s2_gold:1330226090391769250>",
+        "s2ssgolden_random": "SS (S2)<:s2_gold:1330226090391769250>",
+        "s2apgolden_random": "AP (S2)<:s2_gold:1330226090391769250>",
+        "s2sgnormalday": "SG (S2)☀️",
+        "s2mbnormalday": "MB (S2)☀️",
+        "s2lonormalday": "LO (S2)☀️",
+        "s2ssnormalday": "SS (S2)☀️",
+        "s2apnormalday": "AP (S2)☀️",
+        "s2sggreen_randomday": "SG (S2) <:s2_green:1178572883220516894>☀️",
+        "s2mbgreen_randomday": "MB (S2)<:s2_green:1178572883220516894>☀️",
+        "s2logreen_randomday": "LO (S2)<:s2_green:1178572883220516894>☀️",
+        "s2ssgreen_randomday": "SS (S2)<:s2_green:1178572883220516894>☀️",
+        "s2apgreen_randomday": "AP (S2)<:s2_green:1178572883220516894>☀️",
+        "s2sgsingle_randomday": "SG (S2)☀️",
+        "s2mbsingle_randomday": "MB (S2)<:s2_partial:1178572917248901220>☀️",
+        "s2losingle_randomday": "LO (S2)<:s2_partial:1178572917248901220>☀️",
+        "s2sssingle_randomday": "SS (S2)<:s2_partial:1178572917248901220>☀️",
+        "s2apsingle_randomday": "AP (S2)<:s2_partial:1178572917248901220>☀️",
+        "s2sggolden_randomday": "SG (S2)<:s2_gold:1330226090391769250>☀️",
+        "s2mbgolden_randomday": "MB (S2)<:s2_gold:1330226090391769250>☀️",
+        "s2logolden_randomday": "LO (S2)<:s2_gold:1330226090391769250>☀️",
+        "s2ssgolden_randomday": "SS (S2)<:s2_gold:1330226090391769250>☀️",
+        "s2apgolden_randomday": "AP (S2)<:s2_gold:1330226090391769250>☀️",
+        "s2sgprincess": "SG (S2)👑",
+        "s2mbprincess": "MB (S2)👑",
+        "s2loprincess": "LO (S2)👑",
+        "s2ssprincess": "SS (S2)👑",
+        "s2apprincess": "AP (S2)👑",
+        "br1": "Wahoo World",
+        "br2": "Inkblot Art Academy",
+        "br3": "Undertow Spillway",
+        "br4": "Umam'i Ruins",
+        "br5": "Barnacle & Dime",
+        "br6": "Eeltail Alley",
+        "br7": "Grand Splatlands Bowl",
+        "ew1": "Eggstra Work 1",
+        "ew2": "Eggstra Work 2",
+        "ew3": "Eggstra Work 3",
+        "ew4": "Eggstra Work 4",
+        "ew5": "Eggstra Work 5",
+        "ew6": "Eggstra Work 6",
+        "ew7": "Eggstra Work 7",
+        "princess": "S3 👑📥",
+        "s2princess": "S2 👑📥",
+        "princessc": "S3 👑",
+        "s2princessc": "S2 👑",
+        "sgc": "SG (S3)",
+        "mbc": "MB (S3)",
+        "ssyc": "SSy (S3)",
+        "sstc": "SSt (S3)",
+        "gfhc": "GFH (S3)",
+        "jsjc": "JSJ (S3)",
+        "brac": "BrA (S3)",
+        "sgdayc": "SG (S3)☀️",
+        "mbdayc": "MB (S3)☀️",
+        "ssydayc": "SSy (S3)☀️",
+        "sstdayc": "SSt (S3)☀️",
+        "gfhdayc": "GFH (S3)☀️",
+        "jsjdayc": "JSJ (S3)☀️",
+        "bradayc": "BrA (S3)☀️",
+        "s2sgc": "SG (S2)",
+        "s2mbc": "MB (S2)",
+        "s2loc": "LO (S2)",
+        "s2ssc": "SS (S2)",
+        "s2apc": "AP (S2)",
+        "s2sgdayc": "SG (S2)☀️",
+        "s2mbdayc": "MB (S2)☀️",
+        "s2lodayc": "LO (S2)☀️",
+        "s2ssdayc": "SS (S2)☀️",
+        "s2apdayc": "AP (S2)☀️",
+        "oss_1st": "1st Place OSS Finishes",
+        "oss_2nd": "2nd Place OSS Finishes",
+        "oss_3rd": "3rd Place OSS Finishes"
     },
-    "map_roleids":{
-        "ssy":[
-            1146545899066110052,1146545726176886864,1146545288383844352,1146544979095846912,1146544587645648936,1146543468416618517,1146543120452956190,1146542705778884628
+    "map_roleids": {
+        "ssy": [
+            1146545899066110052,
+            1146545726176886864,
+            1146545288383844352,
+            1146544979095846912,
+            1146544587645648936,
+            1146543468416618517,
+            1146543120452956190,
+            1146542705778884628
         ],
-        "jsj":[
-            1113959240390942751,1113958909254832168,1113958059191046236,1113957118475780126,1113955719893491876,1113955250454397049,1113954371290546257,1113953070599114862
+        "jsj": [
+            1113959240390942751,
+            1113958909254832168,
+            1113958059191046236,
+            1113957118475780126,
+            1113955719893491876,
+            1113955250454397049,
+            1113954371290546257,
+            1113953070599114862
         ],
-        "mb":[
-            1048732864381993071,1048732597049622528,1048732610114879568,1048732365586964521,1048732332779126785,1048731818158989325,1048521279432572998,1048731517406429305
+        "mb": [
+            1048732864381993071,
+            1048732597049622528,
+            1048732610114879568,
+            1048732365586964521,
+            1048732332779126785,
+            1048731818158989325,
+            1048521279432572998,
+            1048731517406429305
         ],
-        "sg":[
-            1032010779764994099,1032010962959614033,1032011016831254629,1032011027249901638,1032011077606719628,1032011107256250429,1032011136830287933,1032011170464415885
+        "sg": [
+            1032010779764994099,
+            1032010962959614033,
+            1032011016831254629,
+            1032011027249901638,
+            1032011077606719628,
+            1032011107256250429,
+            1032011136830287933,
+            1032011170464415885
         ],
-        "gfh":[
-            1032009454520127498,1032009822331215953,1032009907228131338,1032009935464173679,1032010250515120159,1032010285776633937,1032010322963333250,1032010449409028126
+        "gfh": [
+            1032009454520127498,
+            1032009822331215953,
+            1032009907228131338,
+            1032009935464173679,
+            1032010250515120159,
+            1032010285776633937,
+            1032010322963333250,
+            1032010449409028126
         ],
-        "sst":[
-            1032009289017077801,1032008939853852675,1032008874246553631,1032008609430786108,1032008663872835584,1032007869589114890,1032008125655560292,1031743433984987247
+        "sst": [
+            1032009289017077801,
+            1032008939853852675,
+            1032008874246553631,
+            1032008609430786108,
+            1032008663872835584,
+            1032007869589114890,
+            1032008125655560292,
+            1031743433984987247
         ],
-        "ssyday":[
-            1146545455719796897,1146545124084564001,1146544834182648029,1146544401150119937,1146543245434826833,1146542918107152536
+        "ssyday": [
+            1146545455719796897,
+            1146545124084564001,
+            1146544834182648029,
+            1146544401150119937,
+            1146543245434826833,
+            1146542918107152536
         ],
-        "jsjday":[
-            1113958510003240970,1113957592344035338,1113956636093054996,1114023179363565588,1113954822824136835,1113953686700425296
+        "jsjday": [
+            1113958510003240970,
+            1113957592344035338,
+            1113956636093054996,
+            1114023179363565588,
+            1113954822824136835,
+            1113953686700425296
         ],
-        "mbday":[
-            1048733385008361492,1049123717638266911,1049123794201100319,1049123813595553842,1049123816955203604,1049123821002703010
+        "mbday": [
+            1048733385008361492,
+            1049123717638266911,
+            1049123794201100319,
+            1049123813595553842,
+            1049123816955203604,
+            1049123821002703010
         ],
-        "sgday":[
-            1032016813271306283,1032016795395174482,1032016216908365924,1032016124063256596,1032015796991426670,1032015815681249300
+        "sgday": [
+            1032016813271306283,
+            1032016795395174482,
+            1032016216908365924,
+            1032016124063256596,
+            1032015796991426670,
+            1032015815681249300
         ],
-        "gfhday":[
-            1032017239840403496,1032017553775669318,1032017645492523028,1032017695220183080,1032017708973301832,1032017774890995753
+        "gfhday": [
+            1032017239840403496,
+            1032017553775669318,
+            1032017645492523028,
+            1032017695220183080,
+            1032017708973301832,
+            1032017774890995753
         ],
-        "sstday":[
-            1032017959142576150,1032017981686947890,1032018139271155794,1032018174591373444,1032018205897670738,1032018234653810771
+        "sstday": [
+            1032017959142576150,
+            1032017981686947890,
+            1032018139271155794,
+            1032018174591373444,
+            1032018205897670738,
+            1032018234653810771
         ],
-        "br1":1051378984006451243,
-        "br2":1081351957945532438,
-        "br3":1117607486892015707,
-        "br4":1146542041552130088,
-        "ew1":1093689259963199559,
-        "ew2":1093689436367237130,
-        "ew3":1093689727305134101,
-        "ew4":1093689918548611163,
-        "s2sg":[
-            745392275097518150,745392251601027122,745392223042142332,745392206776500395,745392188791193661,745392165714395187,863699069389373440,863699017912156220,863698802581700618
+        "br1": 1051378984006451243,
+        "br2": 1081351957945532438,
+        "br3": 1117607486892015707,
+        "br4": 1146542041552130088,
+        "ew1": 1093689259963199559,
+        "ew2": 1093689436367237130,
+        "ew3": 1093689727305134101,
+        "ew4": 1093689918548611163,
+        "s2sg": [
+            745392275097518150,
+            745392251601027122,
+            745392223042142332,
+            745392206776500395,
+            745392188791193661,
+            745392165714395187,
+            863699069389373440,
+            863699017912156220,
+            863698802581700618
         ],
-        "s2mb":[
-            745392491477467287,745392468845133935,745392450620883074,745392433235230942,745392413194846208,745392351244976149,863699259671969822,863699236633313290,863699210733355009
+        "s2mb": [
+            745392491477467287,
+            745392468845133935,
+            745392450620883074,
+            745392433235230942,
+            745392413194846208,
+            745392351244976149,
+            863699259671969822,
+            863699236633313290,
+            863699210733355009
         ],
-        "s2lo":[
-            745392670079189072,745392653503430696,745392636260646953,745392618199973949,745392597656141865,745392552529625198,863699352530190337,863699328819789834,863699306857758720
+        "s2lo": [
+            745392670079189072,
+            745392653503430696,
+            745392636260646953,
+            745392618199973949,
+            745392597656141865,
+            745392552529625198,
+            863699352530190337,
+            863699328819789834,
+            863699306857758720
         ],
-        "s2ss":[
-            745392858441449562,745392837788434563,745392806541131886,745393090277408818,745392789415788714,745392771602448465,863699516242001940,863699472767778817,863699431404470303
+        "s2ss": [
+            745392858441449562,
+            745392837788434563,
+            745392806541131886,
+            745393090277408818,
+            745392789415788714,
+            745392771602448465,
+            863699516242001940,
+            863699472767778817,
+            863699431404470303
         ],
-        "s2ap":[
-            745393032425242755,745393013236170863,745392995469361342,745392978075451452,745392958928453702,745392940775637113,863699622941294612,863699597779140650,863699575653924864
+        "s2ap": [
+            745393032425242755,
+            745393013236170863,
+            745392995469361342,
+            745392978075451452,
+            745392958928453702,
+            745392940775637113,
+            863699622941294612,
+            863699597779140650,
+            863699575653924864
         ],
-        "princess":[
-            1047647515912183858,1047648003302887424,1047648308732100608,1047648319419191316,1047648337895108729,1047648606330560582,1047648590421557358
+        "princess": [
+            1047647515912183858,
+            1047648003302887424,
+            1047648308732100608,
+            1047648319419191316,
+            1047648337895108729,
+            1047648606330560582,
+            1047648590421557358
         ],
-        "s2princess":[
-            750373234561515542,750373202609438740,750373121067843685,750373087630983179,750373053879550072,750372931682435174
+        "s2princess": [
+            750373234561515542,
+            750373202609438740,
+            750373121067843685,
+            750373087630983179,
+            750373053879550072,
+            750372931682435174
         ]
     },
-    "roleid_mapscores":{
-        "1146545899066110052":["ssy",220],"1146545726176886864":["ssy",210],"1146545288383844352":["ssy",200],"1146544979095846912":["ssy",190],
-        "1146544587645648936":["ssy",180],"1146543468416618517":["ssy",170],"1146543120452956190":["ssy",160],"1146542705778884628":["ssy",150],
-        "1113959240390942751":["jsj",220],"1113958909254832168":["jsj",210],"1113958059191046236":["jsj",200],"1113957118475780126":["jsj",190],
-        "1113955719893491876":["jsj",180],"1113955250454397049":["jsj",170],"1113954371290546257":["jsj",160],"1113953070599114862":["jsj",150],
-        "1048732864381993071":["mb",220],"1048732597049622528":["mb",210],"1048732610114879568":["mb",200],"1048732365586964521":["mb",190],
-        "1048732332779126785":["mb",180],"1048731818158989325":["mb",170],"1048521279432572998":["mb",160],"1048731517406429305":["mb",150],
-        "1032010779764994099":["sg",220],"1032010962959614033":["sg",210],"1032011016831254629":["sg",200],"1032011027249901638":["sg",190],
-        "1032011077606719628":["sg",180],"1032011107256250429":["sg",170],"1032011136830287933":["sg",160],"1032011170464415885":["sg",150],
-        "1032009454520127498":["gfh",220],"1032009822331215953":["gfh",210],"1032009907228131338":["gfh",200],"1032009935464173679":["gfh",190],
-        "1032010250515120159":["gfh",180],"1032010285776633937":["gfh",170],"1032010322963333250":["gfh",160],"1032010449409028126":["gfh",150],
-        "1032009289017077801":["sst",220],"1032008939853852675":["sst",210],"1032008874246553631":["sst",200],"1032008609430786108":["sst",190],
-        "1032008663872835584":["sst",180],"1032007869589114890":["sst",170],"1032008125655560292":["sst",160],"1031743433984987247":["sst",150],
-        "1212566381787086900":["bra",220],"1212566322752389190":["bra",210],"1212566254490222633":["bra",200],"1212566186353500171":["bra",190],
-        "1212566109891465286":["bra",180],"1212566033232171028":["bra",170],"1212556171656036403":["bra",160],"1212565861366370344":["bra",150],
-        "1146545455719796897":["ssyday",200],"1146545124084564001":["ssyday",190],"1146544834182648029":["ssyday",180],
-        "1146544401150119937":["ssyday",170],"1146543245434826833":["ssyday",160],"1146542918107152536":["ssyday",150],
-        "1113958510003240970":["jsjday",200],"1113957592344035338":["jsjday",190],"1113956636093054996":["jsjday",180],
-        "1114023179363565588":["jsjday",170],"1113954822824136835":["jsjday",160],"1113953686700425296":["jsjday",150],
-        "1048733385008361492":["mbday",200],"1049123717638266911":["mbday",190],"1049123794201100319":["mbday",180],
-        "1049123813595553842":["mbday",170],"1049123816955203604":["mbday",160],"1049123821002703010":["mbday",150],
-        "1032016813271306283":["sgday",200],"1032016795395174482":["sgday",190],"1032016216908365924":["sgday",180],
-        "1032016124063256596":["sgday",170],"1032015796991426670":["sgday",160],"1032015815681249300":["sgday",150],
-        "1032017239840403496":["gfhday",200],"1032017553775669318":["gfhday",190],"1032017645492523028":["gfhday",180],
-        "1032017695220183080":["gfhday",170],"1032017708973301832":["gfhday",160],"1032017774890995753":["gfhday",150],
-        "1032017959142576150":["sstday",200],"1032017981686947890":["sstday",190],"1032018139271155794":["sstday",180],
-        "1032018174591373444":["sstday",170],"1032018205897670738":["sstday",160],"1032018234653810771":["sstday",150],
-        "1212566535634292886":["braday",200],"1212566621475045417":["braday",190],"1212566702882291772":["braday",180],
-        "1212566769580113982":["bra",170],"1212566839369146410":["bra",160],"1212566903248396308":["bra",150],
-        "1051378984006451243":["br1",137],
-        "1081351957945532438":["br2",141],
-        "1117607486892015707":["br3",150],
-        "1146542041552130088":["br4",156],
-        "1181031697895145574":["br5",165],
-        "1215777380501553182":["br6",156],
-        "1093689259963199559":["ew1",203],
-        "1093689436367237130":["ew2",217],
-        "1093689727305134101":["ew3",205],
-        "1093689918548611163":["ew4",218],
-        "1239118127577698315":["ew5",236],
-        "750372931682435174":["ew6",227],
-        "745392275097518150":["s2sg",200],"745392251601027122":["s2sg",190],"745392223042142332":["s2sg",180],
-        "745392206776500395":["s2sg",170],"745392188791193661":["s2sg",160],"745392165714395187":["s2sg",150],
-        "863699069389373440":["s2sg",140],"863699017912156220":["s2sg",130],"863698802581700618":["s2sg",120],
-        "745392491477467287":["s2mb",200],"745392468845133935":["s2mb",190],"745392450620883074":["s2mb",180],
-        "745392433235230942":["s2mb",170],"745392413194846208":["s2mb",160],"745392351244976149":["s2mb",150],
-        "863699259671969822":["s2mb",140],"863699236633313290":["s2mb",130],"863699210733355009":["s2mb",120],
-        "745392670079189072":["s2lo",200],"745392653503430696":["s2lo",190],"745392636260646953":["s2lo",180],
-        "745392618199973949":["s2lo",170],"745392597656141865":["s2lo",160],"745392552529625198":["s2lo",150],
-        "863699352530190337":["s2lo",140],"863699328819789834":["s2lo",130],"863699306857758720":["s2lo",120],
-        "745392858441449562":["s2ss",200],"745392837788434563":["s2ss",190],"745392806541131886":["s2ss",180],
-        "745393090277408818":["s2ss",170],"745392789415788714":["s2ss",160],"745392771602448465":["s2ss",150],
-        "863699516242001940":["s2ss",140],"863699472767778817":["s2ss",130],"863699431404470303":["s2ss",120],
-        "745393032425242755":["s2ap",200],"745393013236170863":["s2ap",190],"745392995469361342":["s2ap",180],
-        "745392978075451452":["s2ap",170],"745392958928453702":["s2ap",160],"745392940775637113":["s2ap",150],
-        "863699622941294612":["s2ap",140],"863699597779140650":["s2ap",130],"863699575653924864":["s2ap",120],
-        "1047647515912183858":["princess",180],"1047648003302887424":["princess",170],"1047648308732100608":["princess",160],
-        "1047648319419191316":["princess",150],"1047648337895108729":["princess",140],"1047648606330560582":["princess",130],"1047648590421557358":["princess",120],
-        "750373234561515542":["s2princess",150],"750373202609438740":["s2princess",140],"750373121067843685":["s2princess",130],
-        "750373087630983179":["s2princess",120],"750373053879550072":["s2princess",110]
+    "roleid_mapscores": {
+        "1146545899066110052": [
+            "ssy",
+            220
+        ],
+        "1146545726176886864": [
+            "ssy",
+            210
+        ],
+        "1146545288383844352": [
+            "ssy",
+            200
+        ],
+        "1146544979095846912": [
+            "ssy",
+            190
+        ],
+        "1146544587645648936": [
+            "ssy",
+            180
+        ],
+        "1146543468416618517": [
+            "ssy",
+            170
+        ],
+        "1146543120452956190": [
+            "ssy",
+            160
+        ],
+        "1146542705778884628": [
+            "ssy",
+            150
+        ],
+        "1113959240390942751": [
+            "jsj",
+            220
+        ],
+        "1113958909254832168": [
+            "jsj",
+            210
+        ],
+        "1113958059191046236": [
+            "jsj",
+            200
+        ],
+        "1113957118475780126": [
+            "jsj",
+            190
+        ],
+        "1113955719893491876": [
+            "jsj",
+            180
+        ],
+        "1113955250454397049": [
+            "jsj",
+            170
+        ],
+        "1113954371290546257": [
+            "jsj",
+            160
+        ],
+        "1113953070599114862": [
+            "jsj",
+            150
+        ],
+        "1048732864381993071": [
+            "mb",
+            220
+        ],
+        "1048732597049622528": [
+            "mb",
+            210
+        ],
+        "1048732610114879568": [
+            "mb",
+            200
+        ],
+        "1048732365586964521": [
+            "mb",
+            190
+        ],
+        "1048732332779126785": [
+            "mb",
+            180
+        ],
+        "1048731818158989325": [
+            "mb",
+            170
+        ],
+        "1048521279432572998": [
+            "mb",
+            160
+        ],
+        "1048731517406429305": [
+            "mb",
+            150
+        ],
+        "1032010779764994099": [
+            "sg",
+            220
+        ],
+        "1032010962959614033": [
+            "sg",
+            210
+        ],
+        "1032011016831254629": [
+            "sg",
+            200
+        ],
+        "1032011027249901638": [
+            "sg",
+            190
+        ],
+        "1032011077606719628": [
+            "sg",
+            180
+        ],
+        "1032011107256250429": [
+            "sg",
+            170
+        ],
+        "1032011136830287933": [
+            "sg",
+            160
+        ],
+        "1032011170464415885": [
+            "sg",
+            150
+        ],
+        "1032009454520127498": [
+            "gfh",
+            220
+        ],
+        "1032009822331215953": [
+            "gfh",
+            210
+        ],
+        "1032009907228131338": [
+            "gfh",
+            200
+        ],
+        "1032009935464173679": [
+            "gfh",
+            190
+        ],
+        "1032010250515120159": [
+            "gfh",
+            180
+        ],
+        "1032010285776633937": [
+            "gfh",
+            170
+        ],
+        "1032010322963333250": [
+            "gfh",
+            160
+        ],
+        "1032010449409028126": [
+            "gfh",
+            150
+        ],
+        "1032009289017077801": [
+            "sst",
+            220
+        ],
+        "1032008939853852675": [
+            "sst",
+            210
+        ],
+        "1032008874246553631": [
+            "sst",
+            200
+        ],
+        "1032008609430786108": [
+            "sst",
+            190
+        ],
+        "1032008663872835584": [
+            "sst",
+            180
+        ],
+        "1032007869589114890": [
+            "sst",
+            170
+        ],
+        "1032008125655560292": [
+            "sst",
+            160
+        ],
+        "1031743433984987247": [
+            "sst",
+            150
+        ],
+        "1212566381787086900": [
+            "bra",
+            220
+        ],
+        "1212566322752389190": [
+            "bra",
+            210
+        ],
+        "1212566254490222633": [
+            "bra",
+            200
+        ],
+        "1212566186353500171": [
+            "bra",
+            190
+        ],
+        "1212566109891465286": [
+            "bra",
+            180
+        ],
+        "1212566033232171028": [
+            "bra",
+            170
+        ],
+        "1212556171656036403": [
+            "bra",
+            160
+        ],
+        "1212565861366370344": [
+            "bra",
+            150
+        ],
+        "1146545455719796897": [
+            "ssyday",
+            200
+        ],
+        "1146545124084564001": [
+            "ssyday",
+            190
+        ],
+        "1146544834182648029": [
+            "ssyday",
+            180
+        ],
+        "1146544401150119937": [
+            "ssyday",
+            170
+        ],
+        "1146543245434826833": [
+            "ssyday",
+            160
+        ],
+        "1146542918107152536": [
+            "ssyday",
+            150
+        ],
+        "1113958510003240970": [
+            "jsjday",
+            200
+        ],
+        "1113957592344035338": [
+            "jsjday",
+            190
+        ],
+        "1113956636093054996": [
+            "jsjday",
+            180
+        ],
+        "1114023179363565588": [
+            "jsjday",
+            170
+        ],
+        "1113954822824136835": [
+            "jsjday",
+            160
+        ],
+        "1113953686700425296": [
+            "jsjday",
+            150
+        ],
+        "1048733385008361492": [
+            "mbday",
+            200
+        ],
+        "1049123717638266911": [
+            "mbday",
+            190
+        ],
+        "1049123794201100319": [
+            "mbday",
+            180
+        ],
+        "1049123813595553842": [
+            "mbday",
+            170
+        ],
+        "1049123816955203604": [
+            "mbday",
+            160
+        ],
+        "1049123821002703010": [
+            "mbday",
+            150
+        ],
+        "1032016813271306283": [
+            "sgday",
+            200
+        ],
+        "1032016795395174482": [
+            "sgday",
+            190
+        ],
+        "1032016216908365924": [
+            "sgday",
+            180
+        ],
+        "1032016124063256596": [
+            "sgday",
+            170
+        ],
+        "1032015796991426670": [
+            "sgday",
+            160
+        ],
+        "1032015815681249300": [
+            "sgday",
+            150
+        ],
+        "1032017239840403496": [
+            "gfhday",
+            200
+        ],
+        "1032017553775669318": [
+            "gfhday",
+            190
+        ],
+        "1032017645492523028": [
+            "gfhday",
+            180
+        ],
+        "1032017695220183080": [
+            "gfhday",
+            170
+        ],
+        "1032017708973301832": [
+            "gfhday",
+            160
+        ],
+        "1032017774890995753": [
+            "gfhday",
+            150
+        ],
+        "1032017959142576150": [
+            "sstday",
+            200
+        ],
+        "1032017981686947890": [
+            "sstday",
+            190
+        ],
+        "1032018139271155794": [
+            "sstday",
+            180
+        ],
+        "1032018174591373444": [
+            "sstday",
+            170
+        ],
+        "1032018205897670738": [
+            "sstday",
+            160
+        ],
+        "1032018234653810771": [
+            "sstday",
+            150
+        ],
+        "1212566535634292886": [
+            "braday",
+            200
+        ],
+        "1212566621475045417": [
+            "braday",
+            190
+        ],
+        "1212566702882291772": [
+            "braday",
+            180
+        ],
+        "1212566769580113982": [
+            "bra",
+            170
+        ],
+        "1212566839369146410": [
+            "bra",
+            160
+        ],
+        "1212566903248396308": [
+            "bra",
+            150
+        ],
+        "1051378984006451243": [
+            "br1",
+            137
+        ],
+        "1081351957945532438": [
+            "br2",
+            141
+        ],
+        "1117607486892015707": [
+            "br3",
+            150
+        ],
+        "1146542041552130088": [
+            "br4",
+            156
+        ],
+        "1181031697895145574": [
+            "br5",
+            165
+        ],
+        "1215777380501553182": [
+            "br6",
+            156
+        ],
+        "1093689259963199559": [
+            "ew1",
+            203
+        ],
+        "1093689436367237130": [
+            "ew2",
+            217
+        ],
+        "1093689727305134101": [
+            "ew3",
+            205
+        ],
+        "1093689918548611163": [
+            "ew4",
+            218
+        ],
+        "1239118127577698315": [
+            "ew5",
+            236
+        ],
+        "750372931682435174": [
+            "ew6",
+            227
+        ],
+        "745392275097518150": [
+            "s2sg",
+            200
+        ],
+        "745392251601027122": [
+            "s2sg",
+            190
+        ],
+        "745392223042142332": [
+            "s2sg",
+            180
+        ],
+        "745392206776500395": [
+            "s2sg",
+            170
+        ],
+        "745392188791193661": [
+            "s2sg",
+            160
+        ],
+        "745392165714395187": [
+            "s2sg",
+            150
+        ],
+        "863699069389373440": [
+            "s2sg",
+            140
+        ],
+        "863699017912156220": [
+            "s2sg",
+            130
+        ],
+        "863698802581700618": [
+            "s2sg",
+            120
+        ],
+        "745392491477467287": [
+            "s2mb",
+            200
+        ],
+        "745392468845133935": [
+            "s2mb",
+            190
+        ],
+        "745392450620883074": [
+            "s2mb",
+            180
+        ],
+        "745392433235230942": [
+            "s2mb",
+            170
+        ],
+        "745392413194846208": [
+            "s2mb",
+            160
+        ],
+        "745392351244976149": [
+            "s2mb",
+            150
+        ],
+        "863699259671969822": [
+            "s2mb",
+            140
+        ],
+        "863699236633313290": [
+            "s2mb",
+            130
+        ],
+        "863699210733355009": [
+            "s2mb",
+            120
+        ],
+        "745392670079189072": [
+            "s2lo",
+            200
+        ],
+        "745392653503430696": [
+            "s2lo",
+            190
+        ],
+        "745392636260646953": [
+            "s2lo",
+            180
+        ],
+        "745392618199973949": [
+            "s2lo",
+            170
+        ],
+        "745392597656141865": [
+            "s2lo",
+            160
+        ],
+        "745392552529625198": [
+            "s2lo",
+            150
+        ],
+        "863699352530190337": [
+            "s2lo",
+            140
+        ],
+        "863699328819789834": [
+            "s2lo",
+            130
+        ],
+        "863699306857758720": [
+            "s2lo",
+            120
+        ],
+        "745392858441449562": [
+            "s2ss",
+            200
+        ],
+        "745392837788434563": [
+            "s2ss",
+            190
+        ],
+        "745392806541131886": [
+            "s2ss",
+            180
+        ],
+        "745393090277408818": [
+            "s2ss",
+            170
+        ],
+        "745392789415788714": [
+            "s2ss",
+            160
+        ],
+        "745392771602448465": [
+            "s2ss",
+            150
+        ],
+        "863699516242001940": [
+            "s2ss",
+            140
+        ],
+        "863699472767778817": [
+            "s2ss",
+            130
+        ],
+        "863699431404470303": [
+            "s2ss",
+            120
+        ],
+        "745393032425242755": [
+            "s2ap",
+            200
+        ],
+        "745393013236170863": [
+            "s2ap",
+            190
+        ],
+        "745392995469361342": [
+            "s2ap",
+            180
+        ],
+        "745392978075451452": [
+            "s2ap",
+            170
+        ],
+        "745392958928453702": [
+            "s2ap",
+            160
+        ],
+        "745392940775637113": [
+            "s2ap",
+            150
+        ],
+        "863699622941294612": [
+            "s2ap",
+            140
+        ],
+        "863699597779140650": [
+            "s2ap",
+            130
+        ],
+        "863699575653924864": [
+            "s2ap",
+            120
+        ],
+        "1047647515912183858": [
+            "princess",
+            180
+        ],
+        "1047648003302887424": [
+            "princess",
+            170
+        ],
+        "1047648308732100608": [
+            "princess",
+            160
+        ],
+        "1047648319419191316": [
+            "princess",
+            150
+        ],
+        "1047648337895108729": [
+            "princess",
+            140
+        ],
+        "1047648606330560582": [
+            "princess",
+            130
+        ],
+        "1047648590421557358": [
+            "princess",
+            120
+        ],
+        "750373234561515542": [
+            "s2princess",
+            150
+        ],
+        "750373202609438740": [
+            "s2princess",
+            140
+        ],
+        "750373121067843685": [
+            "s2princess",
+            130
+        ],
+        "750373087630983179": [
+            "s2princess",
+            120
+        ],
+        "750373053879550072": [
+            "s2princess",
+            110
+        ]
     },
-    "event_thresholds":{
+    "event_thresholds": {
         "br1": 137,
         "br2": 141,
         "br3": 150,
         "br4": 156,
         "br5": 165,
-        "br6":156,
-        "br7":221,
+        "br6": 156,
+        "br7": 221,
         "ew1": 203,
         "ew2": 217,
         "ew3": 205,
@@ -234,502 +1103,973 @@
         "ew6": 227,
         "ew7": 99999
     },
-    "col_groups":{
-        "sstc":["sstnormal",
+    "col_groups": {
+        "sstc": [
+            "sstnormal",
             "sstgreen_random",
             "sstsingle_random",
             "sstgolden_random",
-            "sst"],
-        "sstdayc":["sstnormalday",
+            "sst"
+        ],
+        "sstdayc": [
+            "sstnormalday",
             "sstgreen_randomday",
             "sstsingle_randomday",
             "sstgolden_randomday",
-            "sstday"],
-        "gfhc":["gfhnormal",
+            "sstday"
+        ],
+        "gfhc": [
+            "gfhnormal",
             "gfhgreen_random",
             "gfhsingle_random",
             "gfhgolden_random",
-            "gfh"],
-        "gfhdayc":["gfhnormalday",
+            "gfh"
+        ],
+        "gfhdayc": [
+            "gfhnormalday",
             "gfhgreen_randomday",
             "gfhsingle_randomday",
             "gfhgolden_randomday",
-            "gfhday"],
-        "sgc":["sgnormal",
+            "gfhday"
+        ],
+        "sgc": [
+            "sgnormal",
             "sggreen_random",
             "sgsingle_random",
             "sggolden_random",
-            "sg"],
-        "sgdayc":["sgnormalday",
+            "sg"
+        ],
+        "sgdayc": [
+            "sgnormalday",
             "sggreen_randomday",
             "sgsingle_randomday",
             "sggolden_randomday",
-            "sgday"],
-        "mbc":["mbnormal",
+            "sgday"
+        ],
+        "mbc": [
+            "mbnormal",
             "mbgreen_random",
             "mbsingle_random",
             "mbgolden_random",
-            "mb"],
-        "mbdayc":["mbnormalday",
+            "mb"
+        ],
+        "mbdayc": [
+            "mbnormalday",
             "mbgreen_randomday",
             "mbsingle_randomday",
             "mbgolden_randomday",
-            "mbday"],
-        "jsjc":["jsjnormal",
+            "mbday"
+        ],
+        "jsjc": [
+            "jsjnormal",
             "jsjgreen_random",
             "jsjsingle_random",
             "jsjgolden_random",
-            "jsj"],
-        "jsjdayc":["jsjnormalday",
+            "jsj"
+        ],
+        "jsjdayc": [
+            "jsjnormalday",
             "jsjgreen_randomday",
             "jsjsingle_randomday",
             "jsjgolden_randomday",
-            "jsjday"],
-        "ssyc":["ssynormal",
+            "jsjday"
+        ],
+        "ssyc": [
+            "ssynormal",
             "ssygreen_random",
             "ssysingle_random",
             "ssygolden_random",
-            "ssy"],
-        "ssydayc":["ssynormalday",
+            "ssy"
+        ],
+        "ssydayc": [
+            "ssynormalday",
             "ssygreen_randomday",
             "ssysingle_randomday",
             "ssygolden_randomday",
-            "ssyday"],
-        "brac":["branormal",
-        "bragreen_random",
-        "brasingle_random",
-        "bragolden_random"],
-        "bradayc":["branormalday",
-        "bragreen_randomday",
-        "brasingle_randomday",
-        "bragolden_randomday"],
-        "normal":["sgnormal","mbnormal","ssynormal","sstnormal","gfhnormal","jsjnormal","branormal"],
-        "green_random":["sggreen_random","mbgreen_random","ssygreen_random","sstgreen_random","gfhgreen_random","jsjgreen_random","bragreen_random"],
-        "single_random":["sgsingle_random","mbsingle_random","ssysingle_random","sstsingle_random","gfhsingle_random","jsjsingle_random","brasingle_random"],
-        "golden_random":["sggolden_random","mbgolden_random","ssygolden_random","sstgolden_random","gfhgolden_random","jsjgolden_random","bragolden_random"],
-        "normalday":["sgnormalday","mbnormalday","ssynormalday","sstnormalday","gfhnormalday","jsjnormalday","branormalday"],
-        "single_randomday":["sgsingle_randomday","mbsingle_randomday","ssysingle_randomday","sstsingle_randomday","gfhsingle_randomday","jsjsingle_randomday","brasingle_randomday"],
-        "green_randomday":["sggreen_randomday","mbgreen_randomday","ssygreen_randomday","sstgreen_randomday","gfhgreen_randomday","jsjgreen_randomday","bragreen_randomday"],
-        "golden_randomday":["sggolden_randomday","mbgolden_randomday","ssygolden_randomday","sstgolden_randomday","gfhgolden_randomday","jsjgolden_randomday","bragolden_randomday"],
-        "princessc":["sgprincess","mbprincess","ssyprincess","sstprincess","gfhprincess","jsjprincess","braprincess","princess"],
-        "s2sgc":["s2sgnormal",
+            "ssyday"
+        ],
+        "brac": [
+            "branormal",
+            "bragreen_random",
+            "brasingle_random",
+            "bragolden_random"
+        ],
+        "bradayc": [
+            "branormalday",
+            "bragreen_randomday",
+            "brasingle_randomday",
+            "bragolden_randomday"
+        ],
+        "normal": [
+            "sgnormal",
+            "mbnormal",
+            "ssynormal",
+            "sstnormal",
+            "gfhnormal",
+            "jsjnormal",
+            "branormal"
+        ],
+        "green_random": [
+            "sggreen_random",
+            "mbgreen_random",
+            "ssygreen_random",
+            "sstgreen_random",
+            "gfhgreen_random",
+            "jsjgreen_random",
+            "bragreen_random"
+        ],
+        "single_random": [
+            "sgsingle_random",
+            "mbsingle_random",
+            "ssysingle_random",
+            "sstsingle_random",
+            "gfhsingle_random",
+            "jsjsingle_random",
+            "brasingle_random"
+        ],
+        "golden_random": [
+            "sggolden_random",
+            "mbgolden_random",
+            "ssygolden_random",
+            "sstgolden_random",
+            "gfhgolden_random",
+            "jsjgolden_random",
+            "bragolden_random"
+        ],
+        "normalday": [
+            "sgnormalday",
+            "mbnormalday",
+            "ssynormalday",
+            "sstnormalday",
+            "gfhnormalday",
+            "jsjnormalday",
+            "branormalday"
+        ],
+        "single_randomday": [
+            "sgsingle_randomday",
+            "mbsingle_randomday",
+            "ssysingle_randomday",
+            "sstsingle_randomday",
+            "gfhsingle_randomday",
+            "jsjsingle_randomday",
+            "brasingle_randomday"
+        ],
+        "green_randomday": [
+            "sggreen_randomday",
+            "mbgreen_randomday",
+            "ssygreen_randomday",
+            "sstgreen_randomday",
+            "gfhgreen_randomday",
+            "jsjgreen_randomday",
+            "bragreen_randomday"
+        ],
+        "golden_randomday": [
+            "sggolden_randomday",
+            "mbgolden_randomday",
+            "ssygolden_randomday",
+            "sstgolden_randomday",
+            "gfhgolden_randomday",
+            "jsjgolden_randomday",
+            "bragolden_randomday"
+        ],
+        "princessc": [
+            "sgprincess",
+            "mbprincess",
+            "ssyprincess",
+            "sstprincess",
+            "gfhprincess",
+            "jsjprincess",
+            "braprincess",
+            "princess"
+        ],
+        "s2sgc": [
+            "s2sgnormal",
             "s2sggreen_random",
             "s2sgsingle_random",
             "s2sggolden_random",
-            "s2sg"],
-        "s2sgdayc":["s2sgnormalday",
+            "s2sg"
+        ],
+        "s2sgdayc": [
+            "s2sgnormalday",
             "s2sggreen_randomday",
             "s2sgsingle_randomday",
             "s2sggolden_randomday",
-            "s2sgday"],
-        "s2mbc":["s2mbnormal",
+            "s2sgday"
+        ],
+        "s2mbc": [
+            "s2mbnormal",
             "s2mbgreen_random",
             "s2mbsingle_random",
             "s2mbgolden_random",
-            "s2mb"],
-        "s2mbdayc":["s2mbnormalday",
+            "s2mb"
+        ],
+        "s2mbdayc": [
+            "s2mbnormalday",
             "s2mbgreen_randomday",
             "s2mbsingle_randomday",
             "s2mbgolden_randomday",
-            "s2mbday"],
-        "s2loc":["s2lonormal",
+            "s2mbday"
+        ],
+        "s2loc": [
+            "s2lonormal",
             "s2logreen_random",
             "s2losingle_random",
             "s2logolden_random",
-            "s2lo"],
-        "s2lodayc":["s2lonormalday",
+            "s2lo"
+        ],
+        "s2lodayc": [
+            "s2lonormalday",
             "s2logreen_randomday",
             "s2losingle_randomday",
             "s2logolden_randomday",
-            "s2loday"],
-        "s2ssc":["s2ssnormal",
+            "s2loday"
+        ],
+        "s2ssc": [
+            "s2ssnormal",
             "s2ssgreen_random",
             "s2sssingle_random",
             "s2ssgolden_random",
-            "s2ss"],
-        "s2ssdayc":["s2ssnormalday",
+            "s2ss"
+        ],
+        "s2ssdayc": [
+            "s2ssnormalday",
             "s2ssgreen_randomday",
             "s2sssingle_randomday",
             "s2ssgolden_randomday",
-            "s2ssday"],
-        "s2apc":["s2apnormal",
+            "s2ssday"
+        ],
+        "s2apc": [
+            "s2apnormal",
             "s2apgreen_random",
             "s2apsingle_random",
             "s2apgolden_random",
-            "s2ap"],
-        "s2apdayc":["s2apnormalday",
+            "s2ap"
+        ],
+        "s2apdayc": [
+            "s2apnormalday",
             "s2apgreen_randomday",
             "s2apsingle_randomday",
             "s2apgolden_randomday",
-            "s2apday"],
-        "s2princessc":["s2sgprincess","s2mbprincess","s2loprincess","s2ssprincess","s2apprincess","s2princess"],
-        "s2normal":["s2sgnormal","s2mbnormal","s2lonormal","s2ssnormal","s2apnormal"],
-        "s2green_random":["s2sggreen_random","s2mbgreen_random","s2logreen_random","s2ssgreen_random","s2apgreen_random"],
-        "s2single_random":["s2sgsingle_random","s2mbsingle_random","s2losingle_random","s2sssingle_random","s2apsingle_random"],
-        "s2golden_random":["s2sggolden_random","s2mbgolden_random","s2logolden_random","s2ssgolden_random","s2apgolden_random"],
-        "s2normalday":["s2sgnormalday","s2mbnormalday","s2lonormalday","s2ssnormalday","s2apnormalday"],
-        "s2green_randomday":["s2sggreen_randomday","s2mbgreen_randomday","s2logreen_randomday","s2ssgreen_randomday","s2apgreen_randomday"],
-        "s2single_randomday":["s2sgsingle_randomday","s2mbsingle_randomday","s2losingle_randomday","s2sssingle_randomday","s2apsingle_randomday"],
-        "s2golden_randomday":["s2sggolden_randomday","s2mbgolden_randomday","s2logolden_randomday","s2ssgolden_randomday","s2apgolden_randomday"],
-        "br":["br1","br2","br3","br4","br5","br6","br7"],
-        "ew":["ew1","ew2","ew3","ew4","ew5","ew6","ew7"],
-        "oss":["oss_1st","oss_2nd","oss_3rd"]
-
+            "s2apday"
+        ],
+        "s2princessc": [
+            "s2sgprincess",
+            "s2mbprincess",
+            "s2loprincess",
+            "s2ssprincess",
+            "s2apprincess",
+            "s2princess"
+        ],
+        "s2normal": [
+            "s2sgnormal",
+            "s2mbnormal",
+            "s2lonormal",
+            "s2ssnormal",
+            "s2apnormal"
+        ],
+        "s2green_random": [
+            "s2sggreen_random",
+            "s2mbgreen_random",
+            "s2logreen_random",
+            "s2ssgreen_random",
+            "s2apgreen_random"
+        ],
+        "s2single_random": [
+            "s2sgsingle_random",
+            "s2mbsingle_random",
+            "s2losingle_random",
+            "s2sssingle_random",
+            "s2apsingle_random"
+        ],
+        "s2golden_random": [
+            "s2sggolden_random",
+            "s2mbgolden_random",
+            "s2logolden_random",
+            "s2ssgolden_random",
+            "s2apgolden_random"
+        ],
+        "s2normalday": [
+            "s2sgnormalday",
+            "s2mbnormalday",
+            "s2lonormalday",
+            "s2ssnormalday",
+            "s2apnormalday"
+        ],
+        "s2green_randomday": [
+            "s2sggreen_randomday",
+            "s2mbgreen_randomday",
+            "s2logreen_randomday",
+            "s2ssgreen_randomday",
+            "s2apgreen_randomday"
+        ],
+        "s2single_randomday": [
+            "s2sgsingle_randomday",
+            "s2mbsingle_randomday",
+            "s2losingle_randomday",
+            "s2sssingle_randomday",
+            "s2apsingle_randomday"
+        ],
+        "s2golden_randomday": [
+            "s2sggolden_randomday",
+            "s2mbgolden_randomday",
+            "s2logolden_randomday",
+            "s2ssgolden_randomday",
+            "s2apgolden_randomday"
+        ],
+        "br": [
+            "br1",
+            "br2",
+            "br3",
+            "br4",
+            "br5",
+            "br6",
+            "br7"
+        ],
+        "ew": [
+            "ew1",
+            "ew2",
+            "ew3",
+            "ew4",
+            "ew5",
+            "ew6",
+            "ew7"
+        ],
+        "oss": [
+            "oss_1st",
+            "oss_2nd",
+            "oss_3rd"
+        ]
     },
-    "emoji":{
-        "sun":"☀",
-        "question_mark":{
-            "s2":["<:s2_gold:1330226090391769250>",
-            "<:s2_green:1178572883220516894>",
-            "<:s2_partial:1178572917248901220>"],
-            "s3":["<:s3_gold:1330226165679390792>",
-            "<:s3_green:1178574271996510249>",
-            "<:s3_partial:1178574255500308552>"]
-        },
-        "sg":["<:OFS3a_spawning_grounds:1062266855928107018>","<:OFS3b_spawning_grounds:1063591093947605052>",
-        "<:OFS3c_spawning_grounds:1063598851455471646>","<:OFS3d_spawning_grounds:1063598874654146670>"],
-        "mb":["<:OFS3a_marooners_bay:1062266973943238716>","<:OFS3b_marooners_bay:1063598944430592020>",
-        "<:OFS3c_marooners_bay:1063598959056146442>","<:OFS3d_marooners_bay:1063598974352752690>"],
-        "ssy":["<:OFS3a_salmonid_smokeyard:1147432387530194944>","<:OFS3b_salmonid_smokeyard:1147432422825271366>",
-        "<:OFS3c_salmonid_smokeyard:1147432477263142962>","<:OFS3d_salmonid_smokeyard:1147432512927314030>"],
-        "sst":["<:OFS3a_sockeye_station:1062266818682703903>","<:OFS3b_sockeye_station:1063598891708203120>",
-        "<:OFS3c_sockeye_station:1063598906782535711>","<:OFS3d_sockeye_station:1063598921894604890>"],
-        "gfh":["<:OFS3a_gone_fission_hydroplant:1062266837880029244>","<:OFS3b_gone_fission_hydroplant:1063598988756000888>",
-        "<:OFS3c_gone_fission_hydroplant:1063599001678655600>","<:OFS3d_gone_fission_hydroplant:1063599017705087056>"],
-        "jsj":["<:OFS3a_jammin_salmon_junction:1114021296846675998>","<:OFS3b_jammin_salmon_junction:1114021353989873809>",
-        "<:OFS3c_jammin_salmon_junction:1114021356359667722>","<:OFS3d_jammin_salmon_junction:1114021357399855116>"],
-        "ap":"<:OFS3a_Ark_Polaris:1092140241642606602>",
-        "br":["<:OFS4c1_big_run:1062268646442930206>","<:OFS4c2_big_run_top20percent:1083872477479968909>","<:OFS4c3_big_run_top5percent:1063611081668427826>"],
-        "ew":["<:OFS4d2_eggstra_work_top50percent:1093691117226184795>","<:OFS4d3_eggstra_work_top20percent:1093691132896100474>","<:OFS4d4_eggstra_work_top5percent:1093691149434236979>","<:OFS4d1_eggstra_work:1093692440067711057>"]
-    },
-    "layouts":{
-        "0":[true,"S3",[["sgc","sgdayc"],["mbc","mbdayc"],["ssyc","ssydayc"],["sstc","sstdayc"],["gfhc","gfhdayc"],["jsjc","jsjdayc"],["brac","bradayc"]]],
-        "1":[false,"S3 Spawning Grounds",["sgc","sgdayc"]],
-        "2":[false,"S3 Marooner's Bay",["mbc","mbdayc"]],
-        "3":[false,""],
-        "4":[false,"S3 Salmonid Smokeyard",["ssyc","ssydayc"]],
-        "5":[false,""],
-        "6":[false,"S3 Sockeye Station",["sstc","sstdayc"]],
-        "7":[false,"S3 Gone Fission Hydroplant",["gfhc","gfhdayc"]],
-        "8":[false,"S3 Jammin' Salmon Junction",["jsjc","jsjdayc"]],
-        "9":[false,"S3 Bonerattle Arena",["brac","bradayc"]],
-        "10":[false,"One Shot Showdown",["oss"]],
-        "14":[false,"S3 Normal",["normal","normalday"]],
-        "15":[false,"S3 Green Random",["green_random","green_randomday"]],
-        "16":[false,"S3 One Green Random",["single_random","single_randomday"]],
-        "17":[false,"S3 Gold Random",["golden_random","golden_randomday"]],
-        "18":[false,"S3 princess",["princessc"]],
-        "19":[false,"S3 Events",["br","ew"]],
-        "20":[true,"S2",[["s2sgc","s2sgdayc"],["s2mbc","s2mbdayc"],["s2loc","s2lodayc"],["s2ssc","s2ssdayc"],["s2apc","s2apdayc"],""]],
-        "21":[false,"S2 Spawning Grounds",["s2sgc","s2sgdayc"]],
-        "22":[false,"S2 Marooner's Bay",["s2mbc","s2mbdayc"]],
-        "23":[false,"S2 Lost Outpost",["s2loc","s2lodayc"]],
-        "24":[false,"S2 Salmonid Smokeyard",["s2ssc","s2ssdayc"]],
-        "25":[false,"S2 Ruins of Ark Polaris",["s2apc","s2apdayc"]],
-        "26":[false,"S2 Princess",["s2princessc"]],
-        "27":[false,"S2 Normal",["s2normal","s2normalday"]],
-        "28":[false,"S2 Green Random",["s2green_random","s2green_randomday"]],
-        "29":[false,"S2 One Green Random",["s2single_random","s2single_randomday"]],
-        "30":[false,"S2 Gold Random",["s2golden_random","s2golden_randomday"]]
-    },
-    "mapfields":{
-        "s3":
-        {
-          "type":1,
-          "components":[{
-            "type":3,
-            "custom_id":"change map",
-            "placeholder":"change map/event",
-            "options":[
-              {
-                "label": "Spawning Grounds",
-                "value": "sg"
-              },
-              {
-                "label": "Marooner's Bay",
-                "value": "mb"
-              },
-              {
-                "label": "Salmonid Smokeyard",
-                "value": "ssy"
-              },
-              {
-                "label": "Gone Fission Hydroplant",
-                "value": "gfh"
-              },
-              {
-                "label": "Sockeye Station",
-                "value": "sst"
-              },
-              {
-                "label": "Jammin' Salmon Junction",
-                "value": "jsj"
-              },
-              {
-                "label": "Bonerattle Arena",
-                "value": "bra"
-              }
+    "emoji": {
+        "sun": "☀",
+        "question_mark": {
+            "s2": [
+                "<:s2_gold:1330226090391769250>",
+                "<:s2_green:1178572883220516894>",
+                "<:s2_partial:1178572917248901220>"
+            ],
+            "s3": [
+                "<:s3_gold:1330226165679390792>",
+                "<:s3_green:1178574271996510249>",
+                "<:s3_partial:1178574255500308552>"
             ]
-          }]
         },
-        "s2":
-        {
-          "type":1,
-          "components":[{
-            "type":3,
-            "custom_id":"change map",
-            "placeholder":"change map/event",
-            "options":[
-              {
-                "label": "Spawning Grounds",
-                "value": "s2sg"
-              },
-              {
-                "label": "Marooner's Bay",
-                "value": "s2mb"
-              },
-              {
-                "label": "Lost Outpost",
-                "value": "s2lo"
-              },
-              {
-                "label": "Salmond Smokeyard",
-                "value": "s2ss"
-              },
-              {
-                "label": "Ruins of Ark Polaris",
-                "value": "s2ap"
-              }
-            ]
-          }]
-        },
-        "bigrun":{
-            "type":1,
-            "components":[{
-              "type":3,
-              "custom_id":"change map",
-              "placeholder":"change map/event",
-              "options":[
-                {
-                  "label": "Big Run #1 - Wahoo World",
-                  "value": "br1"
-                },
-                {
-                  "label": "Big Run #2 - Inkblot Art Academy",
-                  "value": "br2"
-                },
-                {
-                  "label": "Big Run #3 - Undertow Spillway",
-                  "value": "br3"
-                },
-                {
-                  "label": "Big Run #4 - Um'ami Ruins",
-                  "value": "br4"
-                },
-                {
-                  "label": "Big Run #5 - Barnacle & Dime",
-                  "value": "br5"
-                },
-                {
-                  "label": "Big Run #6 - Eeltail Alley",
-                  "value": "br6"
-                },
-                {
-                  "label": "Big Run #7 - Grand Splatlands Bowl",
-                  "value": "br7"
-                }
-              ]
-            }]
-          },
-          "eggstra":{
-            "type":1,
-            "components":[{
-              "type":3,
-              "custom_id":"change map",
-              "placeholder":"change map/event",
-              "options":[
-                {
-                  "label": "Eggstra Work #1 - Sockeye Station",
-                  "value": "ew1",
-                  "description": "Splattershot, Blaster, Splat Roller, Splat Charger"
-                },
-                {
-                  "label": "Eggstra Work #2 - Gone Fission Hydroplant",
-                  "value": "ew2",
-                  "description": "Heavy Splatling, Slosher, Splat Dualies, Splat Brella"
-                },
-                {
-                  "label": "Eggstra Work #3 - Spawning Grounds",
-                  "value": "ew3",
-                  "description": "Flingza Roller, Tri-Stringer, Splatana Wiper, .52 Gal"
-                },
-                {
-                  "label": "Eggstra Work #4 - Marooner's Bay",
-                  "value": "ew4",
-                  "description": "Classic Squiffer, Splash-o-matic, S-Blast '92, Dynamo Roller"
-                },
-                {
-                  "label": "Eggstra Work #5 - Jammin' Salmon Junction",
-                  "value": "ew5",
-                  "description": "Splattershot Jr., Sloshing Machine, Rapid Blaster, Hydra Splatling"
-                },
-                {
-                  "label": "Eggstra Work #6 - Salmonid Smokeyard",
-                  "value": "ew6",
-                  "description": "N-ZAP '85, Squeezer, Carbon Roller, Tenta Brella"
-                },
-                {
-                  "label": "Eggstra Work #7 - Bonerattle Arena",
-                  "value": "ew7",
-                  "description": "Splattershot, Octobrush, Nautilus 47, Explosher"
-                }
-              ]
-            }]
-          }
+        "sg": [
+            "<:OFS3a_spawning_grounds:1062266855928107018>",
+            "<:OFS3b_spawning_grounds:1063591093947605052>",
+            "<:OFS3c_spawning_grounds:1063598851455471646>",
+            "<:OFS3d_spawning_grounds:1063598874654146670>"
+        ],
+        "mb": [
+            "<:OFS3a_marooners_bay:1062266973943238716>",
+            "<:OFS3b_marooners_bay:1063598944430592020>",
+            "<:OFS3c_marooners_bay:1063598959056146442>",
+            "<:OFS3d_marooners_bay:1063598974352752690>"
+        ],
+        "ssy": [
+            "<:OFS3a_salmonid_smokeyard:1147432387530194944>",
+            "<:OFS3b_salmonid_smokeyard:1147432422825271366>",
+            "<:OFS3c_salmonid_smokeyard:1147432477263142962>",
+            "<:OFS3d_salmonid_smokeyard:1147432512927314030>"
+        ],
+        "sst": [
+            "<:OFS3a_sockeye_station:1062266818682703903>",
+            "<:OFS3b_sockeye_station:1063598891708203120>",
+            "<:OFS3c_sockeye_station:1063598906782535711>",
+            "<:OFS3d_sockeye_station:1063598921894604890>"
+        ],
+        "gfh": [
+            "<:OFS3a_gone_fission_hydroplant:1062266837880029244>",
+            "<:OFS3b_gone_fission_hydroplant:1063598988756000888>",
+            "<:OFS3c_gone_fission_hydroplant:1063599001678655600>",
+            "<:OFS3d_gone_fission_hydroplant:1063599017705087056>"
+        ],
+        "jsj": [
+            "<:OFS3a_jammin_salmon_junction:1114021296846675998>",
+            "<:OFS3b_jammin_salmon_junction:1114021353989873809>",
+            "<:OFS3c_jammin_salmon_junction:1114021356359667722>",
+            "<:OFS3d_jammin_salmon_junction:1114021357399855116>"
+        ],
+        "ap": "<:OFS3a_Ark_Polaris:1092140241642606602>",
+        "br": [
+            "<:OFS4c1_big_run:1062268646442930206>",
+            "<:OFS4c2_big_run_top20percent:1083872477479968909>",
+            "<:OFS4c3_big_run_top5percent:1063611081668427826>"
+        ],
+        "ew": [
+            "<:OFS4d2_eggstra_work_top50percent:1093691117226184795>",
+            "<:OFS4d3_eggstra_work_top20percent:1093691132896100474>",
+            "<:OFS4d4_eggstra_work_top5percent:1093691149434236979>",
+            "<:OFS4d1_eggstra_work:1093692440067711057>"
+        ]
     },
-    "componentrows":{
-        "rotationrow":{
-            "type":1,
-            "components":[{
-              "type":3,
-              "custom_id":"change rotation type",
-              "placeholder":"change rotation type",
-              "options":[
-                {
-                  "label":"Normal",
-                  "value":"normal"
-                },
-                {
-                  "label":"All Green Random",
-                  "value":"green_random"
-                },
-                {
-                  "label":"One Green Random",
-                  "value":"single_random"
-                },
-                {
-                  "label":"All Gold Random",
-                  "value":"golden_random"
-                },
-                {
-                  "label":"Normal (Day Only)",
-                  "value":"normalday"
-                },
-                {
-                  "label":"All Green Random (Day Only)",
-                  "value":"green_randomday"
-                },
-                {
-                  "label":"One Green Random (Day Only)",
-                  "value":"single_randomday"
-                },
-                {
-                  "label":"All Gold Random (Day Only)",
-                  "value":"golden_randomday"
-                },
-                {
-                  "label":"Princess",
-                  "value":"princess"
-                }
-              ]
-            }]
-          },
-        "subcommandrow":{
-            "type":1,
-            "components":[{
-              "type":3,
-              "custom_id":"change subcommand",
-              "placeholder":"change subcommand",
-              "options":[
-                {
-                  "label": "s3",
-                  "value": "s3"
-                },
-                {
-                  "label": "s2",
-                  "value": "s2"
-                },
-                {
-                  "label": "big run",
-                  "value": "bigrun"
-                },
-                {
-                  "label": "eggstra work",
-                  "value": "eggstra"
-                }
-              ]
-            }]
-        },
-        "scorewrow":{
+    "layouts": {
+        "0": [
+            true,
+            "S3",
+            [
+                [
+                    "sgc",
+                    "sgdayc"
+                ],
+                [
+                    "mbc",
+                    "mbdayc"
+                ],
+                [
+                    "ssyc",
+                    "ssydayc"
+                ],
+                [
+                    "sstc",
+                    "sstdayc"
+                ],
+                [
+                    "gfhc",
+                    "gfhdayc"
+                ],
+                [
+                    "jsjc",
+                    "jsjdayc"
+                ],
+                [
+                    "brac",
+                    "bradayc"
+                ]
+            ]
+        ],
+        "1": [
+            false,
+            "S3 Spawning Grounds",
+            [
+                "sgc",
+                "sgdayc"
+            ]
+        ],
+        "2": [
+            false,
+            "S3 Marooner's Bay",
+            [
+                "mbc",
+                "mbdayc"
+            ]
+        ],
+        "3": [
+            false,
+            ""
+        ],
+        "4": [
+            false,
+            "S3 Salmonid Smokeyard",
+            [
+                "ssyc",
+                "ssydayc"
+            ]
+        ],
+        "5": [
+            false,
+            ""
+        ],
+        "6": [
+            false,
+            "S3 Sockeye Station",
+            [
+                "sstc",
+                "sstdayc"
+            ]
+        ],
+        "7": [
+            false,
+            "S3 Gone Fission Hydroplant",
+            [
+                "gfhc",
+                "gfhdayc"
+            ]
+        ],
+        "8": [
+            false,
+            "S3 Jammin' Salmon Junction",
+            [
+                "jsjc",
+                "jsjdayc"
+            ]
+        ],
+        "9": [
+            false,
+            "S3 Bonerattle Arena",
+            [
+                "brac",
+                "bradayc"
+            ]
+        ],
+        "10": [
+            false,
+            "One Shot Showdown",
+            [
+                "oss"
+            ]
+        ],
+        "14": [
+            false,
+            "S3 Normal",
+            [
+                "normal",
+                "normalday"
+            ]
+        ],
+        "15": [
+            false,
+            "S3 Green Random",
+            [
+                "green_random",
+                "green_randomday"
+            ]
+        ],
+        "16": [
+            false,
+            "S3 One Green Random",
+            [
+                "single_random",
+                "single_randomday"
+            ]
+        ],
+        "17": [
+            false,
+            "S3 Gold Random",
+            [
+                "golden_random",
+                "golden_randomday"
+            ]
+        ],
+        "18": [
+            false,
+            "S3 princess",
+            [
+                "princessc"
+            ]
+        ],
+        "19": [
+            false,
+            "S3 Events",
+            [
+                "br",
+                "ew"
+            ]
+        ],
+        "20": [
+            true,
+            "S2",
+            [
+                [
+                    "s2sgc",
+                    "s2sgdayc"
+                ],
+                [
+                    "s2mbc",
+                    "s2mbdayc"
+                ],
+                [
+                    "s2loc",
+                    "s2lodayc"
+                ],
+                [
+                    "s2ssc",
+                    "s2ssdayc"
+                ],
+                [
+                    "s2apc",
+                    "s2apdayc"
+                ],
+                ""
+            ]
+        ],
+        "21": [
+            false,
+            "S2 Spawning Grounds",
+            [
+                "s2sgc",
+                "s2sgdayc"
+            ]
+        ],
+        "22": [
+            false,
+            "S2 Marooner's Bay",
+            [
+                "s2mbc",
+                "s2mbdayc"
+            ]
+        ],
+        "23": [
+            false,
+            "S2 Lost Outpost",
+            [
+                "s2loc",
+                "s2lodayc"
+            ]
+        ],
+        "24": [
+            false,
+            "S2 Salmonid Smokeyard",
+            [
+                "s2ssc",
+                "s2ssdayc"
+            ]
+        ],
+        "25": [
+            false,
+            "S2 Ruins of Ark Polaris",
+            [
+                "s2apc",
+                "s2apdayc"
+            ]
+        ],
+        "26": [
+            false,
+            "S2 Princess",
+            [
+                "s2princessc"
+            ]
+        ],
+        "27": [
+            false,
+            "S2 Normal",
+            [
+                "s2normal",
+                "s2normalday"
+            ]
+        ],
+        "28": [
+            false,
+            "S2 Green Random",
+            [
+                "s2green_random",
+                "s2green_randomday"
+            ]
+        ],
+        "29": [
+            false,
+            "S2 One Green Random",
+            [
+                "s2single_random",
+                "s2single_randomday"
+            ]
+        ],
+        "30": [
+            false,
+            "S2 Gold Random",
+            [
+                "s2golden_random",
+                "s2golden_randomday"
+            ]
+        ]
+    },
+    "mapfields": {
+        "s3": {
             "type": 1,
             "components": [
-              {
-                "type": 2,
-                "label": "-1",
-                "style": 2,
-                "custom_id": "sub 1"
-              },
-              {
-                "type": 2,
-                "label": "-2",
-                "style": 2,
-                "custom_id": "sub 2"
-              },
-              {
-                "type": 2,
-                "label": "-5",
-                "style": 2,
-                "custom_id": "sub 5"
-              },
-              {
-                "type": 2,
-                "label": "-10",
-                "style": 2,
-                "custom_id": "sub 10"
-              },
-              {
-                "type": 2,
-                "label": "+10",
-                "style": 2,
-                "custom_id": "add 10"
-              }
+                {
+                    "type": 3,
+                    "custom_id": "change map",
+                    "placeholder": "change map/event",
+                    "options": [
+                        {
+                            "label": "Spawning Grounds",
+                            "value": "sg"
+                        },
+                        {
+                            "label": "Marooner's Bay",
+                            "value": "mb"
+                        },
+                        {
+                            "label": "Salmonid Smokeyard",
+                            "value": "ssy"
+                        },
+                        {
+                            "label": "Gone Fission Hydroplant",
+                            "value": "gfh"
+                        },
+                        {
+                            "label": "Sockeye Station",
+                            "value": "sst"
+                        },
+                        {
+                            "label": "Jammin' Salmon Junction",
+                            "value": "jsj"
+                        },
+                        {
+                            "label": "Bonerattle Arena",
+                            "value": "bra"
+                        }
+                    ]
+                }
             ]
-          },
-        "approverow":{
-            "type":1,
-            "components":[
-              {
-                "type":2,
-                "label":"approve",
-                "style":3,
-                "custom_id":"approve"         
-              },
-              {
-                "type":2,
-                "label":"deny",
-                "style":4,
-                "custom_id":"deny"
-              },
-              {
-                "type":2,
-                "label":"+1",
-                "style":2,
-                "custom_id":"add 1"
-              },
-              {
-                "type":2,
-                "label":"+2",
-                "style":2,
-                "custom_id":"add 2"
-              },
-              {
-                "type":2,
-                "label":"+5",
-                "style":2,
-                "custom_id":"add 5"
-              }
+        },
+        "s2": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 3,
+                    "custom_id": "change map",
+                    "placeholder": "change map/event",
+                    "options": [
+                        {
+                            "label": "Spawning Grounds",
+                            "value": "s2sg"
+                        },
+                        {
+                            "label": "Marooner's Bay",
+                            "value": "s2mb"
+                        },
+                        {
+                            "label": "Lost Outpost",
+                            "value": "s2lo"
+                        },
+                        {
+                            "label": "Salmond Smokeyard",
+                            "value": "s2ss"
+                        },
+                        {
+                            "label": "Ruins of Ark Polaris",
+                            "value": "s2ap"
+                        }
+                    ]
+                }
             ]
-          }
+        },
+        "bigrun": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 3,
+                    "custom_id": "change map",
+                    "placeholder": "change map/event",
+                    "options": [
+                        {
+                            "label": "Big Run #1 - Wahoo World",
+                            "value": "br1"
+                        },
+                        {
+                            "label": "Big Run #2 - Inkblot Art Academy",
+                            "value": "br2"
+                        },
+                        {
+                            "label": "Big Run #3 - Undertow Spillway",
+                            "value": "br3"
+                        },
+                        {
+                            "label": "Big Run #4 - Um'ami Ruins",
+                            "value": "br4"
+                        },
+                        {
+                            "label": "Big Run #5 - Barnacle & Dime",
+                            "value": "br5"
+                        },
+                        {
+                            "label": "Big Run #6 - Eeltail Alley",
+                            "value": "br6"
+                        },
+                        {
+                            "label": "Big Run #7 - Grand Splatlands Bowl",
+                            "value": "br7"
+                        }
+                    ]
+                }
+            ]
+        },
+        "eggstra": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 3,
+                    "custom_id": "change map",
+                    "placeholder": "change map/event",
+                    "options": [
+                        {
+                            "label": "Eggstra Work #1 - Sockeye Station",
+                            "value": "ew1",
+                            "description": "Splattershot, Blaster, Splat Roller, Splat Charger"
+                        },
+                        {
+                            "label": "Eggstra Work #2 - Gone Fission Hydroplant",
+                            "value": "ew2",
+                            "description": "Heavy Splatling, Slosher, Splat Dualies, Splat Brella"
+                        },
+                        {
+                            "label": "Eggstra Work #3 - Spawning Grounds",
+                            "value": "ew3",
+                            "description": "Flingza Roller, Tri-Stringer, Splatana Wiper, .52 Gal"
+                        },
+                        {
+                            "label": "Eggstra Work #4 - Marooner's Bay",
+                            "value": "ew4",
+                            "description": "Classic Squiffer, Splash-o-matic, S-Blast '92, Dynamo Roller"
+                        },
+                        {
+                            "label": "Eggstra Work #5 - Jammin' Salmon Junction",
+                            "value": "ew5",
+                            "description": "Splattershot Jr., Sloshing Machine, Rapid Blaster, Hydra Splatling"
+                        },
+                        {
+                            "label": "Eggstra Work #6 - Salmonid Smokeyard",
+                            "value": "ew6",
+                            "description": "N-ZAP '85, Squeezer, Carbon Roller, Tenta Brella"
+                        },
+                        {
+                            "label": "Eggstra Work #7 - Bonerattle Arena",
+                            "value": "ew7",
+                            "description": "Splattershot, Octobrush, Nautilus 47, Explosher"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "componentrows": {
+        "rotationrow": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 3,
+                    "custom_id": "change rotation type",
+                    "placeholder": "change rotation type",
+                    "options": [
+                        {
+                            "label": "Normal",
+                            "value": "normal"
+                        },
+                        {
+                            "label": "All Green Random",
+                            "value": "green_random"
+                        },
+                        {
+                            "label": "One Green Random",
+                            "value": "single_random"
+                        },
+                        {
+                            "label": "All Gold Random",
+                            "value": "golden_random"
+                        },
+                        {
+                            "label": "Normal (Day Only)",
+                            "value": "normalday"
+                        },
+                        {
+                            "label": "All Green Random (Day Only)",
+                            "value": "green_randomday"
+                        },
+                        {
+                            "label": "One Green Random (Day Only)",
+                            "value": "single_randomday"
+                        },
+                        {
+                            "label": "All Gold Random (Day Only)",
+                            "value": "golden_randomday"
+                        },
+                        {
+                            "label": "Princess",
+                            "value": "princess"
+                        }
+                    ]
+                }
+            ]
+        },
+        "subcommandrow": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 3,
+                    "custom_id": "change subcommand",
+                    "placeholder": "change subcommand",
+                    "options": [
+                        {
+                            "label": "s3",
+                            "value": "s3"
+                        },
+                        {
+                            "label": "s2",
+                            "value": "s2"
+                        },
+                        {
+                            "label": "big run",
+                            "value": "bigrun"
+                        },
+                        {
+                            "label": "eggstra work",
+                            "value": "eggstra"
+                        }
+                    ]
+                }
+            ]
+        },
+        "scorewrow": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 2,
+                    "label": "-1",
+                    "style": 2,
+                    "custom_id": "sub 1"
+                },
+                {
+                    "type": 2,
+                    "label": "-2",
+                    "style": 2,
+                    "custom_id": "sub 2"
+                },
+                {
+                    "type": 2,
+                    "label": "-5",
+                    "style": 2,
+                    "custom_id": "sub 5"
+                },
+                {
+                    "type": 2,
+                    "label": "-10",
+                    "style": 2,
+                    "custom_id": "sub 10"
+                },
+                {
+                    "type": 2,
+                    "label": "+10",
+                    "style": 2,
+                    "custom_id": "add 10"
+                }
+            ]
+        },
+        "approverow": {
+            "type": 1,
+            "components": [
+                {
+                    "type": 2,
+                    "label": "approve",
+                    "style": 3,
+                    "custom_id": "approve"
+                },
+                {
+                    "type": 2,
+                    "label": "deny",
+                    "style": 4,
+                    "custom_id": "deny"
+                },
+                {
+                    "type": 2,
+                    "label": "+1",
+                    "style": 2,
+                    "custom_id": "add 1"
+                },
+                {
+                    "type": 2,
+                    "label": "+2",
+                    "style": 2,
+                    "custom_id": "add 2"
+                },
+                {
+                    "type": 2,
+                    "label": "+5",
+                    "style": 2,
+                    "custom_id": "add 5"
+                }
+            ]
+        }
     }
-    
 }

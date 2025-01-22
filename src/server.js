@@ -1221,17 +1221,17 @@ async function stopTourney(interaction, env) {
     });
   }
 
-  // if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
-  //   client.end();
-  //   const mins = tourney_length / 60000;
-  //   return new JsonResponse({
-  //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-  //     data: {
-  //       "content": "One Shot Showdown " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
-  //       "flags": 1000000
-  //     }
-  //   });
-  // }
+  if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
+    client.end();
+    const mins = tourney_length / 60000;
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "One Shot Showdown " + tourney_id + "'s submission deadline has not been reached. Please wait until " + mins + " minutes have passed.",
+        "flags": 1000000
+      }
+    });
+  }
 
   // end the tournament
   let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
@@ -1361,13 +1361,13 @@ async function submitTourney(interaction, env) {
   const image = interaction.data.options[4].value;
   // only image attachment is allowed, so unsure if additional checks are needed like checking undefined
   let link;
-  if (interaction.data.resolved.attachments[image].content_type.substring(0, 5) === "image") {
+  if (interaction.data.resolved.attachments[image].content_type && interaction.data.resolved.attachments[image].content_type.substring(0, 5) === "image") {
       link = interaction.data.resolved.attachments[image].url;
   } else {
       return new JsonResponse({
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
-              "content": "Please only attach images",
+              "content": "Please only attach images.",
               "flags": 1000000
           }
       });
