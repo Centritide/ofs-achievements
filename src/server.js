@@ -589,13 +589,13 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
       prevScore = leaderboard[i].score;
     }
     // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
-    let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
+    let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
     leaderboardstring += `${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
-    for (let j in leaderboard[i].team_members[0].split(" ")) {
+    for (let j in leaderboard[i].team_members) {
       // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
-      let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
+      let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[j]}`);
       // hope this isn't as jank as it feels
-      try{let output4 = await client.query(`INSERT INTO users (id,${oss_cols[i]}) VALUES (${leaderboard[i].team_members[0].split(" ")[j]},1);`)}
+      try{let output4 = await client.query(`INSERT INTO users (id,${oss_cols[i]}) VALUES (${leaderboard[i].team_members[j]},1);`)}
       catch(error){
 
       }
@@ -1068,9 +1068,9 @@ async function startTourney(interaction, env) {
     scenario = scenario.match(/.{4}/g).join("-");
     // console.log(scenario);
   } else if (!validDashedFormat.test(scenario)) {
-    
+
     return new JsonResponse({
-      
+
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
@@ -1251,7 +1251,7 @@ async function stopTourney(interaction, env) {
       body: JSON.stringify({
         "content": `Unfortunately, One Shot Showdown ${tourney_id} did not have any submissions. We'll see you in the next one!`
       })
-    });    
+    });
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1325,7 +1325,7 @@ async function submitTourney(interaction, env) {
       }
     });
   }
-  
+
   const team = [interaction.member.user.id, interaction.data.options[1].value, interaction.data.options[2].value, interaction.data.options[3].value];
   console.log(team.length);
   //check if any teammates are duplicates
@@ -1344,8 +1344,8 @@ async function submitTourney(interaction, env) {
   }
 
   // check if the user or any teammates have already submitted a score
-
-  let output2 = await client.query('SELECT * FROM submissions WHERE tournament_id = $1 AND team_members && $2::TEXT[];', [tourney_id, team]);
+  const team_members = team.join('\', \'') //formatting for sql query
+  let output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} AND team_members && ARRAY['${team_members}'];`);
   if (output2.rows.length > 0) {
     client.end();
     return new JsonResponse({
@@ -1391,7 +1391,7 @@ async function submitTourney(interaction, env) {
 
   // insert the new submission into the database
   // console.log(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, '{${team[0]} ${team[1]} ${team[2]} ${team[3]}}', ${score}, '${link})';`)
-  output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, '{${team[0]} ${team[1]} ${team[2]} ${team[3]}}', ${score}, '${link}');`);
+  output = await client.query(`INSERT INTO submissions (tournament_id, team_members, score, link) VALUES (${tourney_id}, ARRAY['${team_members}'], ${score}, '${link}');`);
   client.end();
 
   return new JsonResponse({
@@ -1416,7 +1416,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `<@${team[0].split(" ")[0]}> submitted ${score} for OSS${tourney_id} with <@${team[0].split(" ")[1]}>,<@${team[0].split(" ")[2]}>,and <@${team[0].split(" ")[3]}>.\n${link}`,
+      "content": `<@${team[0]}> submitted ${score} for OSS${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`,
       "embeds": [
         {
           "author": {
@@ -1432,7 +1432,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
             },
             {
               "name": "user",
-              "value": team[0].split(" ")[0]
+              "value": team[0]
             },
             {
               "name": "score",
@@ -1444,7 +1444,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
             },
             {
               "name": "team",
-              "value": team[0]
+              "value": team
             }
           ]
         }
