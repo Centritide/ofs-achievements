@@ -1132,8 +1132,9 @@ async function startTourney(interaction, env) {
   // if there's no ongoing tournament, start a new one
 
   // insert the new tournament into the database
+  let output2;
   try {
-    let output2 = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
+    output2 = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
   } catch (error) {
     // will error if the scenario has been used before
     console.error(error);
@@ -1159,7 +1160,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `One Shot Showdown ${output.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in <#746130457455886337> with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!\n< @&1330632674477473883>`
+      "content": `One Shot Showdown ${output2.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in <#746130457455886337> with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!\n< @&1330632674477473883>`
     })
   });
   const data = await response.json();
