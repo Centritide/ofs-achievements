@@ -426,7 +426,7 @@ async function tourneyResponse(interaction, env) {
   const score = Number(interaction.message.embeds[0].fields[2].value);
   const tourney_id = interaction.message.embeds[0].fields[3].value;
   const content = interaction.message.content;
-  const tourney_channel = "1330632032014827550"; // oss-announcements
+  const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
   const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
     headers: {
       'Content-Type': 'application/json',
@@ -454,14 +454,16 @@ async function tourneyResponse(interaction, env) {
       const requested = output2.rows.filter((row) => row.submission_status == 'requested');
 
       // if there are no more requested submissions, send leaderboard
-      if (requested.rows.length == 0) {
+      console.log(requested.length);
+      if (requested.length == 0) {
         const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
-        // console.log(leaderboard[0].team_members[0]);
-        await top3_leaderboard(leaderboard, client);
+        console.log(leaderboard);
+        await top3_leaderboard(env, leaderboard, client, tourney_id);
         return new JsonResponse({
           type: InteractionResponseType.UPDATE_MESSAGE,
           data: {
-            content: content + "\nAdded submission for<@" + user + " >. " + " score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
+            content: content + "\nAdded submission for<@" + user + ">. score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
+            components:[]
           }
         })
       }
@@ -485,7 +487,7 @@ async function tourneyResponse(interaction, env) {
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: content + "\nAdded submission for <@" + user + ">. " + " score: " + score,
+          content: content + "\nAdded submission for <@" + user + ">. score: " + score,
           components: []
         }
       });
@@ -537,7 +539,7 @@ async function tourneyResponse(interaction, env) {
       // if there are no more submissions, send leaderboard
       const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
       if (leaderboard.length > 0) {
-        await top3_leaderboard(leaderboard, client);
+        await top3_leaderboard(env, leaderboard, client,tourney_id);
         client.end();
       } else { // the only submissions were denied
         client.end();
@@ -548,7 +550,7 @@ async function tourneyResponse(interaction, env) {
           },
           method: 'POST',
           body: JSON.stringify({
-            "content": `Unfortunately, One Shot Showdown ${output.id} did not have any submissions. We'll see you in the next one!`
+            "content": `Unfortunately, One Shot Showdown ${interaction.message.embeds[0].fields[3].value} did not have any submissions. We'll see you in the next one!`
           })
         });
         // const data = await response.json();
@@ -571,7 +573,7 @@ async function tourneyResponse(interaction, env) {
   }
 }
 // leaderboard helper function
-async function top3_leaderboard(leaderboard, client) {
+async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   let leaderboardstring = "";
   const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
   const oss_cols = ['oss_1st', 'oss_2nd', 'oss_3rd'];
@@ -588,15 +590,20 @@ async function top3_leaderboard(leaderboard, client) {
     }
     // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
     let members = leaderboard[i].team_members[0].split(" ").map((member) => "<@" + member + ">").join(", ");
-    leaderboardstring += `${place[p]}\n:OFS4a_goldenegg: x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+    leaderboardstring += `${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
     for (let j in leaderboard[i].team_members[0].split(" ")) {
       // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
       let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[0].split(" ")[j]}`);
+      // hope this isn't as jank as it feels
+      try{let output4 = await client.query(`INSERT INTO users (id,${oss_cols[i]}) VALUES (${leaderboard[i].team_members[0].split(" ")[j]},1);`)}
+      catch(error){
+
+      }
     }
     i++;
   }
   leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}\n${leaderboardstring}`;
-  const tourney_channel = "1330632032014827550"; // oss-announcements
+  const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
   const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
     headers: {
       'Content-Type': 'application/json',
@@ -1059,13 +1066,13 @@ async function updateScore(user,score,column,env,strict_increase = true){
     return Math.max(old_score,score);
   } else {
     let old_score;
-    const old = await client.query(`SELECT ${column}from ${table} where id = ${user};`);
+    const old = await client.query(`SELECT ${column} from ${table} where id = ${user};`);
     if(old.rows.length <= 0){
       old_score = 0;
       await client.query(`INSERT INTO ${table} (id,${column}) VALUES (${user},${score});`);
     } else {
       try{
-        // console.log(await client.query(`UPDATE ${table} set ${column} = ${score} where id = ${user};`));
+        await client.query(`UPDATE ${table} set ${column} = ${score} where id = ${user};`);
         old_score = old.rows[0][column];
       } catch{
       }
@@ -1098,6 +1105,15 @@ async function updateEvent(interaction,env){
 }
 
 async function update(interaction,env){
+  if (!interaction.member.roles.includes("1164999939730972773") && !interaction.member.roles.includes("737371594686595182")){
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You do not have permissions to use this command.",
+        "flags": 1000000
+      }
+    });
+  }
   const user = interaction.data.options[0].options[0].value;
   const stage = interaction.data.options[0].options[1].value;
   const score = interaction.data.options[0].options[2].value;
@@ -1258,6 +1274,15 @@ async function requestScore(interaction,env){
 
 async function importFromRoles(id,interaction,env){
   const guild = interaction.guild_id;
+  if (interaction.member.user.id!=id && !interaction.member.roles.includes("1164999939730972773") && !interaction.member.roles.includes("737371594686595182")){
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You do not have permissions to use this command.",
+        "flags": 1000000
+      }
+    });
+  }
   const user = await fetch(`https://discord.com/api/v10/guilds/${guild}/members/${id}`,{
     headers: {
       'Content-Type': 'application/json',
@@ -1335,7 +1360,7 @@ async function importFromRoles(id,interaction,env){
 // starts tournament, sends message in tournament channel
 async function startTourney(interaction, env) {
   // check if user has the correct permissions
-  if (!interaction.member.roles.includes("1118691602819452958")) {
+  if (!interaction.member.roles.includes("1330632415181279303")) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1349,9 +1374,13 @@ async function startTourney(interaction, env) {
   const validDashedFormat = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
   const validUndashedFormat = /^[A-Z0-9]{16}$/;
   if (validUndashedFormat.test(scenario)) {
+    // console.log(scenario);
     scenario = scenario.match(/.{4}/g).join("-");
+    // console.log(scenario);
   } else if (!validDashedFormat.test(scenario)) {
+    
     return new JsonResponse({
+      
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
@@ -1369,7 +1398,7 @@ async function startTourney(interaction, env) {
   await client.connect();
   let output;
   // if the option for check is true, only check if the scenario is valid
-  if (interaction.data.options[1].value) {
+  if (interaction.data.options[1] && interaction.data.options[1].value) {
     output = await client.query(`SELECT 1 from tournaments WHERE scenario = $1;`, [scenario]);
     if (output.rows.length > 0) {
       client.end();
@@ -1414,9 +1443,10 @@ async function startTourney(interaction, env) {
 
   // insert the new tournament into the database
   try {
-    output = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
+    let output2 = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
   } catch (error) {
     // will error if the scenario has been used before
+    console.error(error);
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1428,7 +1458,7 @@ async function startTourney(interaction, env) {
   client.end();
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
-  const tour_announcement_channel = "1330632032014827550"; // oss-announcements
+  const tour_announcement_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
 
   // the date tourney_length from now with discord timestamps
   const date_end = "<t:" + Math.floor((date.getTime() + tourney_length) / 1000) + ":R>";
@@ -1439,7 +1469,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `One Shot Showdown ${output.id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in <#746130457455886337> with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!\n<@&1330632674477473883>`
+      "content": `One Shot Showdown ${output.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score in <#746130457455886337> with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. Good luck!\n< @&1330632674477473883>`
     })
   });
   const data = await response.json();
@@ -1457,7 +1487,7 @@ async function startTourney(interaction, env) {
 
 async function stopTourney(interaction, env) {
   // check if user has the correct permissions
-  if (!interaction.member.roles.includes("1118691602819452958")) {
+  if (!interaction.member.roles.includes("1330632415181279303")) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1521,6 +1551,17 @@ async function stopTourney(interaction, env) {
   // console.log(top3.rows.length);
   if (top3.rows.length == 0) {
     client.end();
+    const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
+    const response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        "content": `Unfortunately, One Shot Showdown ${tourney_id} did not have any submissions. We'll see you in the next one!`
+      })
+    });    
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1594,8 +1635,26 @@ async function submitTourney(interaction, env) {
       }
     });
   }
-  // check if the user or any teammates have already submitted a score
+  
   const team = [interaction.member.user.id, interaction.data.options[1].value, interaction.data.options[2].value, interaction.data.options[3].value];
+  console.log(team.length);
+  //check if any teammates are duplicates
+  const teamset = new Set(team);
+  console.log(teamset.size);
+  if(!(teamset.size === team.length)){
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      // need to allow some way to delete wrong submissions in the future
+      data: {
+        "content": "Your team has non-unique members.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  // check if the user or any teammates have already submitted a score
+
   let output2 = await client.query('SELECT * FROM submissions WHERE tournament_id = $1 AND team_members && $2::TEXT[];', [tourney_id, team]);
   if (output2.rows.length > 0) {
     client.end();
@@ -1735,10 +1794,11 @@ async function leaderboard(interaction, env) {
   });
   await client.connect();
   let tourney_id;
+  let output;
   if (Object.hasOwn(interaction.data, "options")) {
     tourney_id = interaction.data.options[0].value;
   } else {
-    let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+    output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
     tourney_id = output.rows[0].id;
   }
   output = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);

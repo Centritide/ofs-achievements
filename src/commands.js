@@ -5,10 +5,10 @@
 
 
 export const UPDATE_EVENT_COMMAND = {
-  name: 'score',
+  name: 'modify_score_debug',
   // id:"1178119204302491779",
   type:1,
-  default_member_permissions:1<<32,
+  // default_member_permissions:1<<32,
   dm_permission:true,
   description: 'update a user\'s event achievement',
   options: [
@@ -497,9 +497,9 @@ export const IMPORT_FROM_ROLES_COMMAND = {
   type:1
 }
 export const IMPORT_USER = {
-  name:"forceimport",
+  name:"import_debug",
   // id:"1178119204302491782",
-  default_member_permissions:1<<32,
+  // default_member_permissions:1<<32,
   description:"import scores from a user's roles",
   dm_permission:"false",
   type:1,
@@ -951,7 +951,7 @@ export const START_TOURNEY_COMMAND = {
         },
         {
           name: "check",
-          description: "check if the scenario is valid",
+          description: "Instead of starting a tournament, check if the scenario is valid",
           type: 5,
           required: false
         }
