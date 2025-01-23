@@ -14,7 +14,7 @@ const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
 const table = "users";
-const tourney_length = 15*60*1000; // 15 minutes
+const tourney_length = BigInt(15*60*1000); // 15 minutes
 class JsonResponse extends Response {
   constructor(body, init) {
     const jsonBody = JSON.stringify(body);
@@ -581,16 +581,17 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   let i = 0;
   let p = 0; // place index
   while (i < leaderboard.length) {
-    if (leaderboard[i].score != prevScore) {
+    let score = Number(leaderboard[i].score);
+    if (score !== prevScore) {
       if (i > 2) {
         break; // 3 scores have already been added
       }
       p = i;
-      prevScore = leaderboard[i].score;
+      prevScore = score;
     }
     // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
     let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
-    leaderboardstring += `${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${leaderboard[i].score}**\nTeam Members: ${members}\n\n`
+    leaderboardstring += `${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${score}**\nTeam Members: ${members}\n\n`
     for (let j in leaderboard[i].team_members) {
       // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
       let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[j]}`);
@@ -1299,7 +1300,6 @@ async function submitTourney(interaction, env) {
     database: env.PG_NAME
   });
   await client.connect();
-  // database has a table called tournaments with columns id, scenario, and start_time.
   let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
   const date = new Date();
   if (output.rows.length <= 0) {
@@ -1313,10 +1313,10 @@ async function submitTourney(interaction, env) {
     });
   }
   // check if the latest tournament has ended, which is tourney_length after the start time
-  const start_time = output.rows[0].start_time;
+  const start_time = BigInt(output.rows[0].start_time);
   const is_active = output.rows[0].is_active;
   const tourney_id = output.rows[0].id;
-  if (!is_active || date.getTime() > start_time + tourney_length) {
+  if (!is_active || BigInt(date.getTime()) > start_time + tourney_length) {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1506,12 +1506,14 @@ async function leaderboard(interaction, env) {
   let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n";
   let p = 1;
   let prev_score = 0;
+
   for (let i = 0; i < output.rows.length; i++) {
-    if (output.rows[i].score != prev_score) {
+    let score = Number(output.rows[i].score);
+    if (score !== prev_score) {
       p = i + 1;
-      prev_score = output.rows[i].score;
+      prev_score = score;
     }
-    content += `${p}. ${output.rows[i].score}\n`;
+    content += `${p}. ${score}\n`;
   }
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
