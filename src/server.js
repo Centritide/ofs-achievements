@@ -594,7 +594,7 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
     leaderboardstring += `${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${score}**\nTeam Members: ${members}\n\n`
     for (let j in leaderboard[i].team_members) {
       // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
-      let output3 = await client.query(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${leaderboard[i].team_members[j]}`);
+      let output3 = await client.query(`UPDATE users SET ${oss_cols[p]} = ${oss_cols[p]} + 1 WHERE id = ${leaderboard[i].team_members[j]}`);
       // hope this isn't as jank as it feels
       try{let output4 = await client.query(`INSERT INTO users (id,${oss_cols[i]}) VALUES (${leaderboard[i].team_members[j]},1);`)}
       catch(error){
@@ -1153,7 +1153,14 @@ async function startTourney(interaction, env) {
   const tour_announcement_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
 
   // the date tourney_length from now with discord timestamps
-  const date_end = "<t:" + Math.floor((date.getTime() + tourney_length) / 1000) + ":R>";
+  // console.log(`tourney_length ${tourney_length}`)
+  // console.log(`date.getTime() ${date.getTime()}`)
+  // console.log(`nya ${BigInt(date.getTime()) + tourney_length}`)
+  // console.log(1000n);
+  // console.log(BigInt(1000))
+  // console.log((BigInt(date.getTime()) + tourney_length) / 1000n)
+  const date_end = "<t:" + (BigInt(date.getTime()) + tourney_length) / BigInt(1000) + ":R>";
+  // console.log(JSON.stringify(output2));
   const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
     headers: {
       'Content-Type': 'application/json',
@@ -1161,7 +1168,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `One Shot Showdown ${output2.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. You can submit in <#746130457455886337>, <#1330801952438878250>, or anywhere you can type as the submission will only be visible to you. Good luck!\n< @&1330632674477473883>`
+      "content": `One Shot Showdown ${output.rows[0].id+1} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. You can submit in <#746130457455886337>, <#1330801952438878250>, or anywhere you can type as the submission will only be visible to you. Good luck!\n< @&1330632674477473883>`
     })
   });
   const data = await response.json();
@@ -1225,7 +1232,7 @@ async function stopTourney(interaction, env) {
 
   if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
     client.end();
-    const mins = tourney_length / 60000;
+    const mins = tourney_length / 60000n;
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1236,7 +1243,6 @@ async function stopTourney(interaction, env) {
   }
 
   // end the tournament
-  let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
 
   // get the top 3 scores
   const top3 = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
@@ -1278,6 +1284,8 @@ async function stopTourney(interaction, env) {
     await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${id};`);
     await handleSubmission(env, id, score, team, tourney_id, link);
   }
+  let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
+
   client.end();
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1406,10 +1414,43 @@ async function submitTourney(interaction, env) {
 
 async function handleSubmission(env, id, score, team, tourney_id, link) {
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
+  // console.log(team);
   const channel_id = env.TOUR_CHANNEL_ID
-
-
+  const content = `<@${team[0]}> submitted ${score} for OSS${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`;
+  const embeds = [
+    {
+      "author": {
+        "name": ""
+      },
+      "image": {
+        "url": link
+      },
+      "fields": [
+        {
+          "name": "id",
+          "value": id
+        },
+        {
+          "name": "user",
+          "value": team[0]
+        },
+        {
+          "name": "score",
+          "value": score
+        },
+        {
+          "name": "tourney id",
+          "value": tourney_id
+        },
+        {
+          "name": "team",
+          "value": `<@${team[0]}>,<@${team[1]}>,<@${team[2]}>,<@${team[3]}>`
+        }
+      ]
+    }
+  ];
   const components = componentMaker("tourney", score, null, null);
+  // console.log("a");
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
     headers: {
       'Content-Type': 'application/json',
@@ -1417,59 +1458,15 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `<@${team[0]}> submitted ${score} for OSS${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`,
-      "embeds": [
-        {
-          "author": {
-            "name": ""
-          },
-          "image": {
-            "url": link
-          },
-          "fields": [
-            {
-              "name": "id",
-              "value": id
-            },
-            {
-              "name": "user",
-              "value": team[0]
-            },
-            {
-              "name": "score",
-              "value": score
-            },
-            {
-              "name": "tourney id",
-              "value": tourney_id
-            },
-            {
-              "name": "team",
-              "value": team
-            }
-          ]
-        }
-      ],
+      "content": content,
+      "embeds": embeds,
       "components": components,
       // "attachments": []
     })
   });
-  // fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`,{
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //     Authorization: `Bot ${env.DISCORD_TOKEN}`,
-  //   },
-  //   method:'POST',
-  //   body: JSON.stringify({
-  //     "content": content,
-  //     "embeds": embeds,
-  //     "components":components,
-  //     "attachments":[]
-  //   })
-  // })
 
   const data = await response.json();
-  // console.log(data);
+  console.log(JSON.stringify(data));
   // console.log(data);
   return data;
 }
