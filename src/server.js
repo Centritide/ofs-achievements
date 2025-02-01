@@ -1135,7 +1135,7 @@ async function startTourney(interaction, env) {
   // insert the new tournament into the database
   let output2;
   try {
-    output2 = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2);`, [scenario, date.getTime()]);
+    output2 = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2) RETURNING id;`, [scenario, date.getTime()]);
   } catch (error) {
     // will error if the scenario has been used before
     console.error(error);
