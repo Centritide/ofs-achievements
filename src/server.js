@@ -1168,7 +1168,7 @@ async function startTourney(interaction, env) {
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `One Shot Showdown ${output.rows[0].id+1} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. You can submit in <#746130457455886337>, <#1330801952438878250>, or anywhere you can type as the submission will only be visible to you. Good luck!\n<@&1330632674477473883>`
+      "content": `One Shot Showdown ${output2.rows[0].id+1} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. You can submit in <#746130457455886337>, <#1330801952438878250>, or anywhere you can type as the submission will only be visible to you. Good luck!\n<@&1330632674477473883>`
     })
   });
   const data = await response.json();
