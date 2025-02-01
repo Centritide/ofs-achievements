@@ -1272,6 +1272,7 @@ async function stopTourney(interaction, env) {
   if (top3.rows.length > 2) {
     min_score = top3.rows[2].score;
   }
+  let num_sent = 0;
   for (let i = 0; i < top3.rows.length; i++) {
     if (i > 2 && top3.rows[i].score < min_score) {
       break;
@@ -1283,6 +1284,7 @@ async function stopTourney(interaction, env) {
     // console.log("a");
     await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${id};`);
     await handleSubmission(env, id, score, team, tourney_id, link);
+    num_sent++;
   }
   let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
 
@@ -1290,7 +1292,7 @@ async function stopTourney(interaction, env) {
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      "content": "Tournament ended. The top " + top3.rows.length + " scores have been sent for approval.",
+      "content": "Tournament ended. The top " + num_sent + " scores have been sent for approval.",
       "flags": 1000000
     }
   });
