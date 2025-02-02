@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND, LEADERBOARD_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND, LEADERBOARD_COMMAND, EXTEND_TOUR_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -91,6 +91,8 @@ router.post('/', async (request, env) => {
         return stopTourney(interaction, env);
       case LEADERBOARD_COMMAND.name.toLowerCase():
         return leaderboard(interaction, env);
+      case EXTEND_TOUR_COMMAND.name.toLowerCase():
+        return extendTour(interaction,env);
       case TEST_COMMAND.name.toLowerCase():
 
         return new JsonResponse({
@@ -618,7 +620,81 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   // const tourney_data = await tourney_response.json();
   // console.log(tourney_data);
 }
-
+async function extendTour(interaction,env){
+  const mins = BigInt(interaction.data.options[0].value);
+  if (!interaction.member.roles.includes("1330632415181279303")) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You do not have permissions to use this command.",
+        "flags": 1000000
+      }
+    });
+  }
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  const tourney_id = output.rows[0].id;
+  const date = BigInt(output.rows[0].start_time);
+  const date_end = `<t:${(date+mins*60000n+tourney_length)/1000n}:R>`
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no ongoing event. Please wait until an event starts before ending it.",
+        "flags": 1000000
+      }
+    });
+  }
+  if (!output.rows[0].is_active) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "One Shot Showdown " + tourney_id + " has already ended.",
+        "flags": 1000000
+      }
+    });
+  }
+  try {
+    const output2 = await client.query(`UPDATE tournaments SET start_time = ${date + mins*60000n} WHERE id = ${tourney_id}`)
+  } catch(e) {
+    client.end();
+    console.error(e);
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Failed to extend tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+  const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": `One Shot Showdown has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}. <@&1330632674477473883>`
+    })
+  });
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": `Successfully extended tournament by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}.`,
+      "flags": 1000000
+    }
+  });
+  
+}
 //formatting for the super secret staff messages
 
 function embedMaker(link,user,subcommand,score,rot_type,stage){

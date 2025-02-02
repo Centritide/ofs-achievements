@@ -982,6 +982,23 @@ export const LEADERBOARD_COMMAND = {
     ]
 }
 
+export const EXTEND_TOUR_COMMAND = {
+  name: "extend",
+  // id: ""
+  description: "extend a tournament by some number of minutes",
+  dm_permission:false,
+  type:1,
+  options: [
+    {
+      name:"minutes",
+      description:"number of minutes to extend by",
+      type:4,
+      required:true
+    }
+  ]
+}
+
+
 // export const PROFILE_TO_ROLES_COMMAND = {
 //   name:"role",
 //   description:"add/remove badge based on profile",
