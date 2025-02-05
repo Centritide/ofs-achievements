@@ -743,7 +743,8 @@ async function deleteSubmission(interaction, env) {
   }
 
   const tourney_id = output.rows[0].id;
-  const output2 = await client.query(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND ${teammate_id} = ANY(team_members) RETURNING *;`);
+  // console.log(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND ${teammate_id.toString()} = ANY(team_members) RETURNING *;`);
+  const output2 = await client.query(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND '${teammate_id.toString()}' = ANY(team_members) RETURNING *;`);
   if (output2.rows.length <= 0) {
     client.end();
     return new JsonResponse({
@@ -774,17 +775,18 @@ async function deleteSubmission(interaction, env) {
     method: 'POST',
     body: JSON.stringify({
       "content": `Your OSS ${tourney_id} submission has been deleted.`,
-      "embeds": interaction.message.embeds,
+      // "embeds": interaction.message.embeds,
     })
   });
   const delete_data = await delete_response.json();
   // console.log(delete_data);
-  const content = interaction.message.content;
+  // const content = interaction.message.content;
   client.end();
+  await handleSubmission(env, submission.team_members[0], submission.score, submission.team_members, tourney_id, submission.link,interaction.member.user.id)
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      "content": content + "\nDeleted submission for <@" + teammate_id + ">." + "Message sent to original submitter <@" + submission.team_members[0] + ">.",
+      "content": "Deleted submission for <@" + teammate_id + ">. Message sent to original submitter <@" + submission.team_members[0] + ">.",
       "flags": 1000000
     }
   });
@@ -1597,11 +1599,39 @@ async function submitTourney(interaction, env) {
   });
 }
 
-async function handleSubmission(env, id, score, team, tourney_id, link) {
+async function handleSubmission(env, id, score, team, tourney_id, link,deleter=false) {
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
   // console.log(team);
   const channel_id = env.TOUR_CHANNEL_ID
   const content = `<@${team[0]}> submitted ${score} for OSS${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`;
+  let fields = [
+    {
+      "name": "id",
+      "value": id
+    },
+    {
+      "name": "submitter",
+      "value": `<@${team[0]}>`
+    },
+    {
+      "name": "score",
+      "value": score
+    },
+    {
+      "name": "tourney id",
+      "value": tourney_id
+    },
+    {
+      "name": "team",
+      "value": `<@${team[0]}>,<@${team[1]}>,<@${team[2]}>,<@${team[3]}>`
+    }
+  ]
+  if(deleter){
+    fields.push({
+      "name":"deleter",
+      "value": `<@${deleter}>`
+    });
+  }
   const embeds = [
     {
       "author": {
@@ -1610,31 +1640,12 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
       "image": {
         "url": link
       },
-      "fields": [
-        {
-          "name": "id",
-          "value": id
-        },
-        {
-          "name": "user",
-          "value": team[0]
-        },
-        {
-          "name": "score",
-          "value": score
-        },
-        {
-          "name": "tourney id",
-          "value": tourney_id
-        },
-        {
-          "name": "team",
-          "value": `<@${team[0]}>,<@${team[1]}>,<@${team[2]}>,<@${team[3]}>`
-        }
-      ]
+      "fields": fields
     }
   ];
-  const components = componentMaker("tourney", score, null, null);
+  // console.log(embeds);
+  
+  const components = deleter?[]:componentMaker("tourney", score, null, null);
   // console.log("a");
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
     headers: {
@@ -1651,7 +1662,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link) {
   });
 
   const data = await response.json();
-  console.log(JSON.stringify(data));
+  // console.log(JSON.stringify(data));
   // console.log(data);
   return data;
 }

@@ -968,7 +968,7 @@ export const STOP_TOURNEY_COMMAND = {
 
 export const LEADERBOARD_COMMAND = {
     name: "leaderboard",
-    // id: "1322802982596771854", // replace later
+    // id: "1322802982596771854",
     description: "get unofficial leaderboard for One Shot Showdown",
     dm_permission: false,
     type: 1,
@@ -984,7 +984,7 @@ export const LEADERBOARD_COMMAND = {
 
 export const EXTEND_TOUR_COMMAND = {
   name: "extend",
-  // id: ""
+  // id: "1335651670784217118"
   description: "extend a tournament by some number of minutes",
   dm_permission:false,
   type:1,
@@ -1000,13 +1000,13 @@ export const EXTEND_TOUR_COMMAND = {
 
 export const DELETE_SUBMISSION_COMMAND = {
   name: "delete",
-  // id: ""
+  // id: "1336711561108131880"
   description: "delete a submission for One Shot Showdown",
   dm_permission:false,
   type:1,
   options: [
     {
-      name:"team member",
+      name:"team_member",
       description:"a team member on the submission to delete",
       type:6,
       required:true
