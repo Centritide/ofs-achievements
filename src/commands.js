@@ -998,6 +998,22 @@ export const EXTEND_TOUR_COMMAND = {
   ]
 }
 
+export const DELETE_SUBMISSION_COMMAND = {
+  name: "delete",
+  // id: ""
+  description: "delete a submission for One Shot Showdown",
+  dm_permission:false,
+  type:1,
+  options: [
+    {
+      name:"team member",
+      description:"a team member on the submission to delete",
+      type:6,
+      required:true
+    }
+  ]
+}
+
 
 // export const PROFILE_TO_ROLES_COMMAND = {
 //   name:"role",

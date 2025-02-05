@@ -7,7 +7,9 @@
         "submit": "</submit:1322802982596771851>\nSubmit a score for One Shot Showdown. Include your score, @ mentions to all 3 of your teammates, and an attached screenshot of the shift from NSO.",
         "leaderboard": "</leaderboard:1322802982596771854>\nShows scores of all submissions for specified OSS or current OSS if none is specified. Unofficial leaderboard, as only the top 3 scores were verified.",
         "start": "For TOs.\n</start:1329965467837792419>\nStarts OSS with the specified code. The 15 minute timer will begin immediately, so please ensure you have announced the event already to give time for people to form teams.\n\nYou can also set the check option to true to check if the scenario is valid beforehand, without sending the start message.",
-        "stop": "For TOs.\n</stop:1329965467837792420>\nStops OSS after submissions are closed. Triggers the top 3 scores to be sent for approval, after which they will be announced."
+        "stop": "For TOs.\n</stop:1329965467837792420>\nStops OSS after submissions are closed. Triggers the top 3 scores to be sent for approval, after which they will be announced.",
+        "extend": "For TOs.\nExtends OSS by specified number in minutes.",
+        "delete": "For TOs.\nDeletes submission that includes the member that is @ mentioned. Sends a message to the submitter that their submission was deleted."
     },
     "s3": [
         "sg",

@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND, LEADERBOARD_COMMAND, EXTEND_TOUR_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND, LEADERBOARD_COMMAND, EXTEND_TOUR_COMMAND, DELETE_SUBMISSION_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -93,6 +93,8 @@ router.post('/', async (request, env) => {
         return leaderboard(interaction, env);
       case EXTEND_TOUR_COMMAND.name.toLowerCase():
         return extendTour(interaction,env);
+      case DELETE_SUBMISSION_COMMAND.name.toLowerCase():
+        return deleteSubmission(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
 
         return new JsonResponse({
@@ -503,7 +505,7 @@ async function tourneyResponse(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": "Your OSS submission was denied.",
+          "content": "Your OSS " + tourney_id + " submission was denied.",
           "embeds": interaction.message.embeds,
         })
       });
@@ -696,6 +698,96 @@ async function extendTour(interaction,env){
     }
   });
 
+}
+
+async function deleteSubmission(interaction, env) {
+  if (!interaction.member.roles.includes("1330632415181279303")) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You do not have permissions to use this command.",
+        "flags": 1000000
+      }
+    });
+  }
+  let teammate_id = interaction.data.options[0].value;
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  client.connect();
+  const output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no ongoing tournament. Submissions can only be deleted during an ongoing tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  if (!output.rows[0].is_active) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "One Shot Showdown " + tourney_id + " has already ended. Submissions can only be deleted during an ongoing tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  const tourney_id = output.rows[0].id;
+  const output2 = await client.query(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND ${teammate_id} = ANY(team_members) RETURNING *;`);
+  if (output2.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "No submission found for <@" + teammate_id + ">.",
+        "flags": 1000000
+      }
+    });
+  }
+  const submission = output2.rows[0];
+  const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "recipient_id": submission.team_members[0]
+    })
+  });
+  const dmchannel = await response.json();
+  const delete_response = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": `Your OSS ${tourney_id} submission has been deleted.`,
+      "embeds": interaction.message.embeds,
+    })
+  });
+  const delete_data = await delete_response.json();
+  // console.log(delete_data);
+  const content = interaction.message.content;
+  client.end();
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": content + "\nDeleted submission for <@" + teammate_id + ">." + "Message sent to original submitter <@" + submission.team_members[0] + ">.",
+      "flags": 1000000
+    }
+  });
 }
 //formatting for the super secret staff messages
 
@@ -1439,7 +1531,7 @@ async function submitTourney(interaction, env) {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       // need to allow some way to delete wrong submissions in the future
       data: {
-        "content": "Your team has non-unique members.",
+        "content": "Your team has non-unique members. Make sure you aren't @'ing yourself, and only your 3 teammates.",
         "flags": 1000000
       }
     });
@@ -1454,7 +1546,7 @@ async function submitTourney(interaction, env) {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       // need to allow some way to delete wrong submissions in the future
       data: {
-        "content": "You or one of your teammates have already submitted a score for this event. For now, there is no way to submit another score - a method to delete wrong submissions will be added in the future.",
+        "content": "You or one of your teammates have already submitted a score for this event. If you believe this is an error, please ping the OSS Organizer for help.",
         "flags": 1000000
       }
     });
