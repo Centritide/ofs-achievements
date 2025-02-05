@@ -576,7 +576,7 @@ async function tourneyResponse(interaction, env) {
 }
 // leaderboard helper function
 async function top3_leaderboard(env, leaderboard, client, tourney_id) {
-  let leaderboardstring = "";
+  let leaderboardstring = '';
   const place = ['🥇 1st', '🥈 2nd', '🥉 3rd'];
   const oss_cols = ['oss_1st', 'oss_2nd', 'oss_3rd'];
   let prevScore = 0;
@@ -586,14 +586,16 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
     let score = Number(leaderboard[i].score);
     if (score !== prevScore) {
       if (i > 2) {
-        break; // 3 scores have already been added
+        break; // at least 3 scores have already been added and no more ties
       }
       p = i;
       prevScore = score;
+      leaderboardstring += `\n${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${score}**\nTeam Members: ${members}\n`
+    } else {
+      // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
+      leaderboardstring += `<:OFS4a_goldenegg:737492285998104688> x **${score}**\nTeam Members: ${members}\n`;
     }
-    // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
     let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
-    leaderboardstring += `${place[p]}\n<:OFS4a_goldenegg:737492285998104688> x **${score}**\nTeam Members: ${members}\n\n`
     for (let j in leaderboard[i].team_members) {
       // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
       let output3 = await client.query(`UPDATE users SET ${oss_cols[p]} = ${oss_cols[p]} + 1 WHERE id = ${leaderboard[i].team_members[j]}`);
@@ -605,7 +607,7 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
     }
     i++;
   }
-  leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}\n${leaderboardstring}`;
+  leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}${leaderboardstring}`;
   const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
   const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
     headers: {
@@ -693,7 +695,7 @@ async function extendTour(interaction,env){
       "flags": 1000000
     }
   });
-  
+
 }
 //formatting for the super secret staff messages
 
@@ -1223,7 +1225,7 @@ async function startTourney(interaction, env) {
       }
     });
   }
-  
+
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
   const tour_announcement_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
@@ -1268,7 +1270,7 @@ async function startTourney(interaction, env) {
       "flags": 1000000
     }
   });
-  
+
 }
 
 // stops tournament, sends the 3 fastest times in secret channel for approval
@@ -1591,18 +1593,20 @@ async function leaderboard(interaction, env) {
       }
     });
   }
-  let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n";
-  let p = 1;
+  let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n+\`\`\`";
   let prev_score = 0;
 
   for (let i = 0; i < output.rows.length; i++) {
     let score = Number(output.rows[i].score);
     if (score !== prev_score) {
-      p = i + 1;
+      content += `${i + 1}. ${score}\n`;
       prev_score = score;
+    } else {
+      let spaces = ' '.repeat((i + 1).toString().length + 2);
+      content += spaces + score + '\n';
     }
-    content += `${p}\\. ${score}\n`;
   }
+  content += "\`\`\`";
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
