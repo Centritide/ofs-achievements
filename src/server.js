@@ -466,7 +466,7 @@ async function tourneyResponse(interaction, env) {
         return new JsonResponse({
           type: InteractionResponseType.UPDATE_MESSAGE,
           data: {
-            content: content + "\nAdded submission for<@" + user + ">. score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
+            content: content + "\nAdded submission for " + user + ". score: " + score + "\nAnd leaderboard sent to <#" + tourney_channel + ">",
             components:[]
           }
         })
@@ -491,7 +491,7 @@ async function tourneyResponse(interaction, env) {
       return new JsonResponse({
         type: InteractionResponseType.UPDATE_MESSAGE,
         data: {
-          content: content + "\nAdded submission for <@" + user + ">. score: " + score,
+          content: content + "\nAdded submission for " + user + ". score: " + score,
           components: []
         }
       });
@@ -1644,7 +1644,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link,deleter=f
     }
   ];
   // console.log(embeds);
-  
+
   const components = deleter?[]:componentMaker("tourney", score, null, null);
   // console.log("a");
   const response = await fetch(`https://discord.com/api/v10/channels/${channel_id}/messages`, {
