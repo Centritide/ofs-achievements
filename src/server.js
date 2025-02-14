@@ -585,6 +585,8 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   let i = 0;
   let p = 0; // place index
   while (i < leaderboard.length) {
+    let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
+
     let score = Number(leaderboard[i].score);
     if (score !== prevScore) {
       if (i > 2) {
@@ -597,7 +599,6 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
       // if the score is the same as the 3rd place score, add it to the leaderboard even if there are already 3 teams
       leaderboardstring += `<:OFS4a_goldenegg:737492285998104688> x **${score}**\nTeam Members: ${members}\n`;
     }
-    let members = leaderboard[i].team_members.map((member) => "<@" + member + ">").join(", ");
     for (let j in leaderboard[i].team_members) {
       // console.log(`UPDATE users SET ${oss_cols[i]} = ${oss_cols[i]} + 1 WHERE id = ${j}`);
       let output3 = await client.query(`UPDATE users SET ${oss_cols[p]} = ${oss_cols[p]} + 1 WHERE id = ${leaderboard[i].team_members[j]}`);
