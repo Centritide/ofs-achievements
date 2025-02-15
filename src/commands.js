@@ -305,6 +305,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"7 - Bonerattle Arena",
               value:"ew7"
+            },
+            {
+              name:"8 - Sockeye Station",
+              value:"ew8"
             }
           ]
         },
@@ -826,6 +830,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"7 - Bonerattle Arena",
               value:"ew7"
+            },
+            {
+              name:"8 - Sockeye Station",
+              value:"ew8"
             }
           ]
         },

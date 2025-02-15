@@ -43,7 +43,8 @@
         "ew4",
         "ew5",
         "ew6",
-        "ew7"
+        "ew7",
+        "ew8"
     ],
     "oss": [
         "oss_1st",
@@ -197,6 +198,7 @@
         "ew5": "Eggstra Work 5",
         "ew6": "Eggstra Work 6",
         "ew7": "Eggstra Work 7",
+        "ew8": "Eggstra Work 8",
         "princess": "S3 👑📥",
         "s2princess": "S2 👑📥",
         "princessc": "S3 👑",
@@ -1103,7 +1105,8 @@
         "ew4": 218,
         "ew5": 236,
         "ew6": 227,
-        "ew7": 99999
+        "ew7": 99999,
+        "ew8": 99999
     },
     "col_groups": {
         "sstc": [
@@ -1434,7 +1437,8 @@
             "ew4",
             "ew5",
             "ew6",
-            "ew7"
+            "ew7",
+            "ew8"
         ],
         "oss": [
             "oss_1st",
@@ -1920,6 +1924,11 @@
                             "label": "Eggstra Work #7 - Bonerattle Arena",
                             "value": "ew7",
                             "description": "Splattershot, Octobrush, Nautilus 47, Explosher"
+                        },
+                        {
+                            "label": "Eggstra Work #7 - Bonerattle Arena",
+                            "value": "ew8",
+                            "description": "Splat Dualies, Clash Blaster, Big Swig Roller, Snipewriter 5H"
                         }
                     ]
                 }
