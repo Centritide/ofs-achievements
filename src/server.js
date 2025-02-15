@@ -1697,7 +1697,7 @@ async function leaderboard(interaction, env) {
       }
     });
   }
-  let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n+\`\`\`";
+  let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n\`\`\`";
   let prev_score = 0;
 
   for (let i = 0; i < output.rows.length; i++) {
