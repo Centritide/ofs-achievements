@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, START_TOURNEY_COMMAND, SUBMIT_TOURNEY_COMMAND,STOP_TOURNEY_COMMAND, LEADERBOARD_COMMAND, EXTEND_TOUR_COMMAND, DELETE_SUBMISSION_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, OSS_COMMAND, SUBMIT_TOURNEY_COMMAND, LEADERBOARD_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -83,18 +83,12 @@ router.post('/', async (request, env) => {
         return requestScore(interaction,env);
       case INFO_COMMAND.name.toLowerCase():
         return help(interaction, env);
-      case START_TOURNEY_COMMAND.name.toLowerCase():
-        return startTourney(interaction, env);
       case SUBMIT_TOURNEY_COMMAND.name.toLowerCase():
         return submitTourney(interaction, env);
-      case STOP_TOURNEY_COMMAND.name.toLowerCase():
-        return stopTourney(interaction, env);
       case LEADERBOARD_COMMAND.name.toLowerCase():
         return leaderboard(interaction, env);
-      case EXTEND_TOUR_COMMAND.name.toLowerCase():
-        return extendTour(interaction,env);
-      case DELETE_SUBMISSION_COMMAND.name.toLowerCase():
-        return deleteSubmission(interaction, env);
+      case OSS_COMMAND.name.toLowerCase():
+        return oss(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
 
         return new JsonResponse({
@@ -625,173 +619,7 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   // const tourney_data = await tourney_response.json();
   // console.log(tourney_data);
 }
-async function extendTour(interaction,env){
-  const mins = BigInt(interaction.data.options[0].value);
-  if (!interaction.member.roles.includes("1330632415181279303")) {
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "You do not have permissions to use this command.",
-        "flags": 1000000
-      }
-    });
-  }
-  const client = new Client({
-    user: env.PG_USER,
-    password: env.PG_PW,
-    host: env.PG_HOST,
-    port: 6543,
-    database: env.PG_NAME
-  });
-  await client.connect();
-  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
-  const tourney_id = output.rows[0].id;
-  const date = BigInt(output.rows[0].start_time);
-  const date_end = `<t:${(date+mins*60000n+tourney_length)/1000n}:R>`
-  if (output.rows.length <= 0) {
-    client.end();
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "There is no ongoing event. Please wait until an event starts before ending it.",
-        "flags": 1000000
-      }
-    });
-  }
-  if (!output.rows[0].is_active) {
-    client.end();
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "One Shot Showdown " + tourney_id + " has already ended.",
-        "flags": 1000000
-      }
-    });
-  }
-  try {
-    const output2 = await client.query(`UPDATE tournaments SET start_time = ${date + mins*60000n} WHERE id = ${tourney_id}`)
-  } catch(e) {
-    client.end();
-    console.error(e);
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "Failed to extend tournament.",
-        "flags": 1000000
-      }
-    });
-  }
-  const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bot ${env.DISCORD_TOKEN}`,
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      "content": `One Shot Showdown has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}. <@&1330632674477473883>`
-    })
-  });
-  return new JsonResponse({
-    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: {
-      "content": `Successfully extended tournament by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}.`,
-      "flags": 1000000
-    }
-  });
 
-}
-
-async function deleteSubmission(interaction, env) {
-  if (!interaction.member.roles.includes("1330632415181279303")) {
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "You do not have permissions to use this command.",
-        "flags": 1000000
-      }
-    });
-  }
-  let teammate_id = interaction.data.options[0].value;
-  const client = new Client({
-    user: env.PG_USER,
-    password: env.PG_PW,
-    host: env.PG_HOST,
-    port: 6543,
-    database: env.PG_NAME
-  });
-  client.connect();
-  const output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
-  if (output.rows.length <= 0) {
-    client.end();
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "There is no ongoing tournament. Submissions can only be deleted during an ongoing tournament.",
-        "flags": 1000000
-      }
-    });
-  }
-
-  if (!output.rows[0].is_active) {
-    client.end();
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "One Shot Showdown " + tourney_id + " has already ended. Submissions can only be deleted during an ongoing tournament.",
-        "flags": 1000000
-      }
-    });
-  }
-
-  const tourney_id = output.rows[0].id;
-  // console.log(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND ${teammate_id.toString()} = ANY(team_members) RETURNING *;`);
-  const output2 = await client.query(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND '${teammate_id.toString()}' = ANY(team_members) RETURNING *;`);
-  if (output2.rows.length <= 0) {
-    client.end();
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "No submission found for <@" + teammate_id + ">.",
-        "flags": 1000000
-      }
-    });
-  }
-  const submission = output2.rows[0];
-  const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bot ${env.DISCORD_TOKEN}`,
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      "recipient_id": submission.team_members[0]
-    })
-  });
-  const dmchannel = await response.json();
-  const delete_response = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bot ${env.DISCORD_TOKEN}`,
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      "content": `Your OSS ${tourney_id} submission has been deleted.`,
-      // "embeds": interaction.message.embeds,
-    })
-  });
-  const delete_data = await delete_response.json();
-  // console.log(delete_data);
-  // const content = interaction.message.content;
-  client.end();
-  await handleSubmission(env, submission.team_members[0], submission.score, submission.team_members, tourney_id, submission.link,interaction.member.user.id)
-  return new JsonResponse({
-    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: {
-      "content": "Deleted submission for <@" + teammate_id + ">. Message sent to original submitter <@" + submission.team_members[0] + ">.",
-      "flags": 1000000
-    }
-  });
-}
 //formatting for the super secret staff messages
 
 function embedMaker(link,user,subcommand,score,rot_type,stage){
@@ -1221,37 +1049,47 @@ async function importFromRoles(id,interaction,env){
   });
 }
 
-// starts tournament, sends message in tournament channel
-async function startTourney(interaction, env) {
-  // check if user has the correct permissions
+// handles all OSS TO commands
+async function oss(interaction,env){
   if (!interaction.member.roles.includes("1330632415181279303")) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "You do not have permissions to use this command.",
+        "content": "You do not have permission to use this command.",
         "flags": 1000000
       }
     });
   }
-  // check if the scenario is in the correct format
-  let scenario = interaction.data.options[0].value.toUpperCase();
+  const subcommand = interaction.data.options[0].name.toLowerCase();
+  switch(subcommand){
+    case 'start':
+      return await startTourney(interaction,env);
+    case 'check':
+      return await checkTourney(interaction,env);
+    case 'stop':
+      return await stopTourney(interaction,env);
+    case 'extend':
+      return await extendTour(interaction,env);
+    case 'delete':
+      return await deleteSubmission(interaction,env);
+  }
+}
+
+// scenario code checker
+function checkCode(scenario){
+  scenario = scenario.toUpperCase();
   const validDashedFormat = /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
   const validUndashedFormat = /^[A-Z0-9]{16}$/;
   if (validUndashedFormat.test(scenario)) {
-    // console.log(scenario);
     scenario = scenario.match(/.{4}/g).join("-");
-    // console.log(scenario);
   } else if (!validDashedFormat.test(scenario)) {
-
-    return new JsonResponse({
-
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
-        "flags": 1000000
-      }
-    });
+    return false;
   }
+  return scenario;
+}
+
+// starts tournament, sends message in tournament channel
+async function startTourney(interaction, env) {
   const client = new Client({
     user: env.PG_USER,
     password: env.PG_PW,
@@ -1260,40 +1098,171 @@ async function startTourney(interaction, env) {
     database: env.PG_NAME
   });
   await client.connect();
-  let output;
-  // if the option for check is true, only check if the scenario is valid
-  if (interaction.data.options[1] && interaction.data.options[1].value) {
-    output = await client.query(`SELECT 1 from tournaments WHERE scenario = $1;`, [scenario]);
-    if (output.rows.length > 0) {
-      client.end();
-      return new JsonResponse({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          "content": "Scenario has already been used before.",
-          "flags": 1000000
-        }
-      });
-    } else {
-      client.end();
-      return new JsonResponse({
-        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          "content": "Scenario is valid.",
-          "flags": 1000000
-        }
-      });
-    }
+  // database has a table called tournaments with columns id, scenario, start_time, and status.
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
   }
+  let output2;
+  const tour_announcement_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
+  // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
-  // check if there's an ongoing tournament by using the database and looking for the latest tournament
-
-  // database has a table called tournaments with columns id, scenario, and start_time.
-  output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
   const date = new Date();
-  if (output.rows.length > 0) {
-    // check if the latest tournament has ended
-    if (output.rows[0].is_active) {
+  if (output.rows[0].status != 'awaiting' && Object.hasOwn(interaction.data.options[0], "options")) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Only provide scenario code when tournament is about to begin. If you want to start a new tournament or end the queueing phase, please rerun this command with only /start.",
+        "flags": 1000000
+      }
+    });
+  } else if (output.rows[0].status == 'awaiting' && !Object.hasOwn(interaction.data.options[0], "options")) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Please provide the scenario code for the tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+  switch (output.rows[0].status) {
+    case 'ended':
+      // if the latest tournament has ended, start a new one
+      output2 = await client.query(`INSERT INTO tournaments (status) VALUES ($1) RETURNING id;`, ['queueing']);
+      // send message to tournament channel
+      const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": "One Shot Showdown " + output2.rows[0].id + data.oss_messages.queueing
+        })
+      });
+      // const data = await response.json();
+      // console.log(data);
       client.end();
+      return new JsonResponse({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          "content": "Tournament queueing started!",
+          "flags": 1000000
+        }
+      });
+    case 'queueing':
+      // if the latest tournament is queueing, advance to awaiting
+      output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id} RETURNING queue;`);
+      const queue = output2.rows[0].queue;
+      // break the queue into teams of 4, with the remainder being subs. teams are randomly assigned
+      const teams = [];
+      let team = [];
+      // random choose from queue
+      while (queue.length > 0) {
+        const index = Math.floor(Math.random() * queue.length);
+        team.push(queue[index]);
+        queue.splice(index, 1);
+        if (team.length == 4) {
+          teams.push(team);
+          team = [];
+        }
+      }
+      
+      // write team assignment message
+      if (teams.length > 0) {
+        let team_message = "here are your team assignments:\n";
+        let captain_message = `**${teams.length == 1 ? "Captain" : "Captains"}:**\n`;
+        for (let i = 0; i < teams.length; i++) {
+          team_message += `- ${teams[i].map((member) => "<@" + member + ">").join(", ")}\n`;
+          captain_message += `<@${teams[i][0]}>, `;
+        }
+        team_message += captain_message.substring(0, captain_message.length - 2) + data.oss_messages.captain;
+        // if there are any remaining players, add them as subs
+        if (team.length > 0) {
+          team_message += `\n**${team.length == 1 ? "Sub" : "Subs"}:**\n- ${team.map((member) => "<@" + member + ">").join(", ")}\n${data.oss_messages.sub}`;
+        }
+      }
+
+      // send message to tournament channel
+      const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": `One Shot Showdown ${output.rows[0].id} will be starting in a few minutes! Queueing has ended; ${teams.length > 0 ? team_message : "no players queued.\n"} ${data.oss_messages.awaiting}`
+        })
+      });
+      // const data2 = await response2.json();
+      // console.log(data2);
+      client.end();
+      return new JsonResponse({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          "content": "Tournament queueing ended and teams assigned. Awaiting scenario code.",
+          "flags": 1000000
+        }
+      });
+    case 'awaiting':
+      // if the latest tournament is awaiting, start the tournament
+      // check if the scenario is in the correct format
+      let scenario = checkCode(interaction.data.options[0].options[0].value);
+      if (!scenario) {
+        return new JsonResponse({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
+            "flags": 1000000
+          }
+        });
+      }
+
+      // if there's no ongoing tournament, start a new one
+      // insert the new tournament into the database
+      try {
+        output2 = await client.query(`UPDATE tournaments SET scenario = $1, start_time = $2, status = $3 WHERE id = ${output.rows[0].id};`, [scenario, date.getTime(), 'ongoing']);
+      } catch (error) {
+        // will error if the scenario has been used before
+        console.error(error);
+        return new JsonResponse({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            "content": "The scenario has been used before in a previous tournament. Please use a different scenario. In the future, you can check the validity of the scenario beforehand with /oss check.",
+            "flags": 1000000
+          }
+        });
+      }
+      // the date tourney_length from now with discord timestamps
+      const date_end = "<t:" + (BigInt(date.getTime()) + tourney_length) / BigInt(1000) + ":R>";
+      const response3 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": `One Shot Showdown ${output.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
+        })
+      });
+      // const data = await response3.json();
+      // console.log(data);
+      client.end();
+      return new JsonResponse({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          "content": "Tournament started!",
+          "flags": 1000000
+        }
+      });
+    case 'ongoing':
       return new JsonResponse({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -1301,87 +1270,55 @@ async function startTourney(interaction, env) {
           "flags": 1000000
         }
       });
-    }
+      
   }
-  // if there's no ongoing tournament, start a new one
+}
 
-  // insert the new tournament into the database
-  let output2;
-  try {
-    output2 = await client.query(`INSERT INTO tournaments (scenario, start_time) VALUES ($1, $2) RETURNING id;`, [scenario, date.getTime()]);
-  } catch (error) {
-    // will error if the scenario has been used before
-    console.error(error);
+// only check if scenario has been used before
+async function checkTourney(interaction, env) {
+  let client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  const scenario = checkCode(interaction.data.options[0].options[0].value);
+  if (!scenario) {
+    client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "The scenario has been used before in a previous tournament. Please use a different scenario. In the future, you can check the validity of the scenario beforehand by setting the check option to true when using this command.",
+        "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
         "flags": 1000000
       }
     });
   }
-
-  // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
-
-  const tour_announcement_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
-
-  // the date tourney_length from now with discord timestamps
-  // console.log(`tourney_length ${tourney_length}`)
-  // console.log(`date.getTime() ${date.getTime()}`)
-  // console.log(`nya ${BigInt(date.getTime()) + tourney_length}`)
-  // console.log(1000n);
-  // console.log(BigInt(1000))
-  // console.log((BigInt(date.getTime()) + tourney_length) / 1000n)
-  const date_end = "<t:" + (BigInt(date.getTime()) + tourney_length) / BigInt(1000) + ":R>";
-  // console.log(JSON.stringify(output2));
-  try {const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bot ${env.DISCORD_TOKEN}`,
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      "content": `One Shot Showdown ${output2.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.\n\nYou must play the scenario **ONLY ONCE**! No backing out, or intentionally disconnecting to gain an unfair advantage. If you have a disconnection, we'll be running these events very often, so don't worry, just catch the next one!\n\nPlease submit your score with the following format: </submit:1322802982596771851>; @mention all your teammates, and remember to attach proof by attaching an image of the shift from NSO. You can submit in <#746130457455886337>, <#1330801952438878250>, or anywhere you can type as the submission will only be visible to you. Good luck!\n<@&1330632674477473883>`
-    })
-  });}
-  catch {
-    client.query(`DELETE FROM tournaments WHERE id = ${output2.rows[0].id}`);
-    client.end();
-    return new JsonResponse({
-      type:InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data:{
-        "content": "Message send failed. Tournament was not started.",
-        "flags":1000000
-      }
-    })
-  }
-  // const data = await response.json();
-  // console.log(data);
+  let output = await client.query(`SELECT 1 from tournaments WHERE scenario = $1;`, [scenario]);
   client.end();
-  return new JsonResponse({
-    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-    data: {
-      "content": "Tournament started!",
-      "flags": 1000000
-    }
-  });
-
+  if (output.rows.length > 0) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Scenario already used before in OSS " + output.rows[0].id + ".",
+        "flags": 1000000
+      }
+    });
+  } else {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Scenario is valid.",
+        "flags": 1000000
+      }
+    });
+  }
 }
 
 // stops tournament, sends the 3 fastest times in secret channel for approval
 
 async function stopTourney(interaction, env) {
-  // check if user has the correct permissions
-  if (!interaction.member.roles.includes("1330632415181279303")) {
-    return new JsonResponse({
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        "content": "You do not have permissions to use this command.",
-        "flags": 1000000
-      }
-    });
-  }
-
   // check if there's an ongoing tournament by using the database and looking for the latest tournament
   const client = new Client({
     user: env.PG_USER,
@@ -1400,17 +1337,17 @@ async function stopTourney(interaction, env) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "There is no ongoing event. Please wait until an event starts before ending it.",
+        "content": "Error: no tournament found in database.",
         "flags": 1000000
       }
     });
   }
-  if (!output.rows[0].is_active) {
+  if (output.rows[0].status != 'ongoing') {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "One Shot Showdown " + tourney_id + " has already ended.",
+        "content": "There is no ongoing tournament.",
         "flags": 1000000
       }
     });
@@ -1472,7 +1409,7 @@ async function stopTourney(interaction, env) {
     await handleSubmission(env, id, score, team, tourney_id, link);
     num_sent++;
   }
-  let output2 = await client.query(`UPDATE tournaments SET is_active = false WHERE id = ${tourney_id};`);
+  let output2 = await client.query(`UPDATE tournaments SET status = 'ended' WHERE id = ${tourney_id};`);
 
   client.end();
   return new JsonResponse({
@@ -1483,6 +1420,158 @@ async function stopTourney(interaction, env) {
     }
   });
 }
+
+async function extendTour(interaction,env){
+  const mins = BigInt(interaction.data.options[0].options[0].value);
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
+  }
+  if (output.rows[0].status != 'ongoing') {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no ongoing tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+  const tourney_id = output.rows[0].id;
+  const date = BigInt(output.rows[0].start_time);
+  const date_end = `<t:${(date+mins*60000n+tourney_length)/1000n}:R>`
+  try {
+    const output2 = await client.query(`UPDATE tournaments SET start_time = ${date + mins*60000n} WHERE id = ${tourney_id}`)
+  } catch(e) {
+    client.end();
+    console.error(e);
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Failed to extend tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+  const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": `One Shot Showdown has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}. <@&1330632674477473883>`
+    })
+  });
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": `Successfully extended tournament by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}.`,
+      "flags": 1000000
+    }
+  });
+
+}
+
+async function deleteSubmission(interaction, env) {
+  let teammate_id = interaction.data.options[0].options[0].value;
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  client.connect();
+  const output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  if (output.rows[0].status != 'ongoing') {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Submissions can only be deleted during an ongoing tournament.",
+        "flags": 1000000
+      }
+    });
+  }
+
+  const tourney_id = output.rows[0].id;
+  // console.log(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND ${teammate_id.toString()} = ANY(team_members) RETURNING *;`);
+  const output2 = await client.query(`DELETE FROM submissions WHERE tournament_id = ${tourney_id} AND '${teammate_id.toString()}' = ANY(team_members) RETURNING *;`);
+  if (output2.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "No submission found for <@" + teammate_id + ">.",
+        "flags": 1000000
+      }
+    });
+  }
+  const submission = output2.rows[0];
+  const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "recipient_id": submission.team_members[0]
+    })
+  });
+  const dmchannel = await response.json();
+  const delete_response = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      "content": `Your OSS ${tourney_id} submission has been deleted.`,
+      // "embeds": interaction.message.embeds,
+    })
+  });
+  const delete_data = await delete_response.json();
+  // console.log(delete_data);
+  // const content = interaction.message.content;
+  client.end();
+  await handleSubmission(env, submission.team_members[0], submission.score, submission.team_members, tourney_id, submission.link,interaction.member.user.id)
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "Deleted submission for <@" + teammate_id + ">. Message sent to original submitter <@" + submission.team_members[0] + ">.",
+      "flags": 1000000
+    }
+  });
+}
+
+
 
 // checks submission for validity, adds to database
 
@@ -1532,7 +1621,6 @@ async function submitTourney(interaction, env) {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      // need to allow some way to delete wrong submissions in the future
       data: {
         "content": "Your team has non-unique members. Make sure you aren't @'ing yourself, and only your 3 teammates.",
         "flags": 1000000
@@ -1547,7 +1635,6 @@ async function submitTourney(interaction, env) {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      // need to allow some way to delete wrong submissions in the future
       data: {
         "content": "You or one of your teammates have already submitted a score for this event. If you believe this is an error, please ping the OSS Organizer for help.",
         "flags": 1000000
@@ -1598,6 +1685,62 @@ async function submitTourney(interaction, env) {
       "flags": 1000000
       }
   });
+}
+
+async function queueTourney(interaction, env) {
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
+  }
+  if (output.rows[0].status != 'queueing') {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no ongoing tournament queueing phase.",
+        "flags": 1000000
+      }
+    });
+  }
+  const user = interaction.member.user.id;
+  // queue is an array of user ids associated with the queue column in tournament table
+  const output2 = await client.query(`SELECT * from tournaments WHERE id = ${output.rows[0].id} AND ${user} = ANY(queue);`);
+  if (output2.rows.length > 0) {
+    const output3 = await client.query(`UPDATE tournaments SET queue = array_remove(queue, ${user}) WHERE id = ${output.rows[0].id};`);
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": `Removed from the queue for One Shot Showdown ${output.rows[0].id}.`,
+        "flags": 1000000
+      }
+    });
+  } else {
+    const output3 = await client.query(`UPDATE tournaments SET queue = COALESCE(queue, '{}') || ${user} WHERE id = ${output.rows[0].id};`);
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": `Added to the queue for One Shot Showdown ${output.rows[0].id}.`,
+        "flags": 1000000
+      }
+    });
+  }
 }
 
 async function handleSubmission(env, id, score, team, tourney_id, link,deleter=false) {

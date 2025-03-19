@@ -3,7 +3,6 @@
  * and registration.
  */
 
-
 export const UPDATE_EVENT_COMMAND = {
   name: 'modify_score_debug',
   // id:"1178119204302491779",
@@ -902,6 +901,73 @@ export const INFO_COMMAND = {
   ]
 }
 
+export const OSS_COMMAND = {
+  // oss command, includes options for start, stop, extend, delete, and check for TOs
+  name:"oss",
+  description:"One Shot Showdown commands for TOs",
+  dm_permission:false,
+  type:1,
+  options:[
+    {
+      name:"start",
+      description:"start a tournament",
+      type:1,
+      options:[
+        {
+          name:"scenario",
+          description:"scenario code",
+          type:3,
+          required:false
+        }
+      ]
+    },
+    {
+      name:"stop",
+      description:"stop a tournament",
+      type:1
+    },
+    {
+      name:"extend",
+      description:"extend a tournament by some number of minutes",
+      type:1,
+      options: [
+        {
+          name:"minutes",
+          description:"number of minutes to extend by",
+          type:4,
+          required:true
+        }
+      ]
+    },
+    {
+      name:"delete",
+      description:"delete a submission for One Shot Showdown",
+      type:1,
+      options: [
+        {
+          name:"team_member",
+          description:"a team member on the submission to delete",
+          type:6,
+          required:true
+        }
+      ]
+    },
+    {
+      name:"check",
+      description:"check if a scenario is valid",
+      type:1,
+      options:[
+        {
+          name:"scenario",
+          description:"scenario code",
+          type:3,
+          required:true
+        }
+      ]
+    }
+  ]
+}
+
 export const SUBMIT_TOURNEY_COMMAND = {
   name:"submit",
   // id: "1322802982596771851"
@@ -942,37 +1008,6 @@ export const SUBMIT_TOURNEY_COMMAND = {
   ]
 }
 
-// start tourney command, one required option that is a string with description "scenario code"
-
-export const START_TOURNEY_COMMAND = {
-    name:"start",
-    // id: "1329965467837792419"
-    description:"start a tournament",
-    dm_permission:false,
-    type:1,
-    options:[
-        {
-        name:"scenario",
-        description:"scenario code",
-        type:3,
-        required:true
-        },
-        {
-          name: "check",
-          description: "Instead of starting a tournament, check if the scenario is valid",
-          type: 5,
-          required: false
-        }
-    ]
-}
-
-export const STOP_TOURNEY_COMMAND = {
-    name: "stop",
-    // id: "1329965467837792420"
-    description: "stop a tournament",
-    dm_permission: false,
-    type: 1
-}
 
 export const LEADERBOARD_COMMAND = {
     name: "leaderboard",
@@ -989,39 +1024,6 @@ export const LEADERBOARD_COMMAND = {
         }
     ]
 }
-
-export const EXTEND_TOUR_COMMAND = {
-  name: "extend",
-  // id: "1335651670784217118"
-  description: "extend a tournament by some number of minutes",
-  dm_permission:false,
-  type:1,
-  options: [
-    {
-      name:"minutes",
-      description:"number of minutes to extend by",
-      type:4,
-      required:true
-    }
-  ]
-}
-
-export const DELETE_SUBMISSION_COMMAND = {
-  name: "delete",
-  // id: "1336711561108131880"
-  description: "delete a submission for One Shot Showdown",
-  dm_permission:false,
-  type:1,
-  options: [
-    {
-      name:"team_member",
-      description:"a team member on the submission to delete",
-      type:6,
-      required:true
-    }
-  ]
-}
-
 
 // export const PROFILE_TO_ROLES_COMMAND = {
 //   name:"role",
