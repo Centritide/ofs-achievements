@@ -1008,6 +1008,34 @@ export const SUBMIT_TOURNEY_COMMAND = {
   ]
 }
 
+export const JOIN_TOURNEY_COMMAND = {
+  name:"join",
+  description:"join queue for One Shot Showdown by yourself or with up to 2 teammates",
+  dm_permission:false,
+  type:1,
+  options:[
+    {
+      name:"teammate1",
+      description:"first teammate",
+      type:6,
+      required:false
+    },
+    {
+      name:"teammate2",
+      description:"second teammate",
+      type:6,
+      required:false
+    }
+  ]
+}
+
+export const LEAVE_TOURNEY_COMMAND = {
+  name:"leave",
+  description:"leave queue for One Shot Showdown",
+  dm_permission:false,
+  type:1
+}
+
 
 export const LEADERBOARD_COMMAND = {
     name: "leaderboard",

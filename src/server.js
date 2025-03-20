@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, OSS_COMMAND, SUBMIT_TOURNEY_COMMAND, LEADERBOARD_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, OSS_COMMAND, SUBMIT_TOURNEY_COMMAND, LEADERBOARD_COMMAND, JOIN_TOURNEY_COMMAND, LEAVE_TOURNEY_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -87,6 +87,10 @@ router.post('/', async (request, env) => {
         return submitTourney(interaction, env);
       case LEADERBOARD_COMMAND.name.toLowerCase():
         return leaderboard(interaction, env);
+      case JOIN_TOURNEY_COMMAND.name.toLowerCase():
+        return joinTourney(interaction, env);
+      case LEAVE_TOURNEY_COMMAND.name.toLowerCase():
+        return leaveTourney(interaction, env);
       case OSS_COMMAND.name.toLowerCase():
         return oss(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
@@ -1159,12 +1163,17 @@ async function startTourney(interaction, env) {
       });
     case 'queueing':
       // if the latest tournament is queueing, advance to awaiting
-      output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id} RETURNING queue;`);
+      output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
+      let output3 = await client.query(`SELECT * FROM queue WHERE tournament_id = ${output.rows[0].id};`);
       const queue = output2.rows[0].queue;
       // break the queue into teams of 4, with the remainder being subs. teams are randomly assigned
+      const triplets = queue.filter((member) => member.length == 3);
+      const pairs = queue.filter((member) => member.length == 2);
+      const singles = queue.filter((member) => member.length == 1);
       const teams = [];
       let team = [];
       // random choose from queue
+      // this is the old method, an update is needed. awaiting feedback from oss-to-only
       while (queue.length > 0) {
         const index = Math.floor(Math.random() * queue.length);
         team.push(queue[index]);
@@ -1687,7 +1696,8 @@ async function submitTourney(interaction, env) {
   });
 }
 
-async function queueTourney(interaction, env) {
+// handles joining the queue for a tournament, user can join solo or with up to 2 teammates
+async function joinTourney(interaction, env) {
   const client = new Client({
     user: env.PG_USER,
     password: env.PG_PW,
@@ -1712,26 +1722,72 @@ async function queueTourney(interaction, env) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "There is no ongoing tournament queueing phase.",
+        "content": "There is no tournament with a joinable queue.",
         "flags": 1000000
       }
     });
   }
+  const tourney_id = output.rows[0].id;
   const user = interaction.member.user.id;
-  // queue is an array of user ids associated with the queue column in tournament table
-  const output2 = await client.query(`SELECT * from tournaments WHERE id = ${output.rows[0].id} AND ${user} = ANY(queue);`);
-  if (output2.rows.length > 0) {
-    const output3 = await client.query(`UPDATE tournaments SET queue = array_remove(queue, ${user}) WHERE id = ${output.rows[0].id};`);
+  const teammate1 = Object.hasOwn(interaction.data, "options") ? interaction.data.options[0].value : null;
+  const teammate2 = Object.hasOwn(interaction.data, "options") && interaction.data.options.length > 1 ? interaction.data.options[1].value : null;
+  const group = [user, teammate1, teammate2].filter((member) => member != null);
+  const groupset = new Set(group);
+  if (groupset.size != group.length) {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": `Removed from the queue for One Shot Showdown ${output.rows[0].id}.`,
+        "content": "You have duplicate teammates. Make sure you aren't @'ing yourself, and only your teammate(s).",
+        "flags": 1000000
+      }
+    });
+  }
+  const group_members = group.join('\', \'') //formatting for sql query
+  // gets all users who are in the queue for the same tournament and have any of the same teammates
+  const output2 = await client.query(`SELECT array_agg(DISTINCT u) AS conflicting
+    FROM ( 
+      SELECT unnest(queue) AS u
+      FROM queues
+      WHERE tournament_id = ${tourney_id}
+      AND queue && ARRAY['${group_members}']
+    ) sub`);
+  const conflicting = output2.rows[0]?.conflicting || [];
+  const matching = group_members.filter((member) => conflicting.includes(member));
+  if (matching.length > 0) {
+    client.end();
+    const standard = `already in the queue for One Shot Showdown ${output.rows[0].id}. Please `;
+    const standard1 = 'use leave, then you can rejoin the queue.'
+    const standard2 = ' You may need to have your teammates use /leave as well, if they are in different groups.';
+    let msg;
+    if (matching.includes(user)) {
+      msg = "You";
+      if (matching.length == 2) {
+        msg += " and " + `<@${teammate1}> are `;
+      } else if (matching.length == 3) {
+        msg += ", " + `<@${teammate1}>` + ", and " + `<@${teammate2}> are `;
+      } else {
+        msg += " are ";
+      }
+      msg += ` ${standard}${standard1}${conflicting.length == 1 ? "" : standard2}`;
+    } else {
+      if (matching.length == 1) {
+        msg = `<@${matching[0]}> is `;
+      } else {
+        // if user is not included, there can only be 2 matching teammates
+        msg = `<@${matching[0]}> and <@${matching[1]}> are `;
+      }
+      msg += ` ${standard}have them ${standard1}${conflicting.length == 1 ? "" : standard2}`;
+    }
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": msg,
         "flags": 1000000
       }
     });
   } else {
-    const output3 = await client.query(`UPDATE tournaments SET queue = COALESCE(queue, '{}') || ${user} WHERE id = ${output.rows[0].id};`);
+    const output3 = await client.query(`INSERT INTO queues (tournament_id, queue) VALUES (${tourney_id}, ARRAY['${group_members}']) RETURNING id;`);
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1741,6 +1797,111 @@ async function queueTourney(interaction, env) {
       }
     });
   }
+}
+
+async function leaveTourney(interaction, env) {
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
+  }
+  if (output.rows[0].status != 'queueing') {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no tournament with an active queue.",
+        "flags": 1000000
+      }
+    });
+  }
+  const tourney_id = output.rows[0].id;
+  const user = interaction.member.user.id;
+  const output2 = await client.query(`DELETE FROM queues WHERE tournament_id = ${tourney_id} AND '${user}' = ANY(queue) RETURNING *;`);
+  client.end();
+  if (output2.rows.length == 0) {
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "You are not in the queue for One Shot Showdown " + tourney_id + ". If you'd like to join, use /join.",
+        "flags": 1000000
+      }
+    });
+  }
+  // direct message the teammates, if there are any
+  const teammates = output2.rows[0].queue.filter((member) => member != user);
+  if (teammates.length > 0) {
+    const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        "recipient_id": teammates[0]
+      })
+    });
+    const dmchannel = await response.json();
+    const delete_response = await fetch(`https://discord.com/api/v10/channels/${dmchannel.id}/messages`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        "content": `Your teammate <@${user}> has left the queue for OSS ${tourney_id}, so you were also removed from the queue. If you wish, you may rejoin it with /join.`
+      })
+    });
+    const delete_data = await delete_response.json();
+    // console.log(delete_data);
+    if (teammates.length > 1) {
+      const response2 = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "recipient_id": teammates[1]
+        })
+      });
+      const dmchannel2 = await response2.json();
+      const delete_response2 = await fetch(`https://discord.com/api/v10/channels/${dmchannel2.id}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": `Your teammate <@${user}> has left the queue for OSS ${tourney_id}, so you were also removed from the queue. If you wish, you may rejoin it with /join.`
+        })
+      });
+      const delete_data2 = await delete_response2.json();
+      // console.log(delete_data2);
+    }
+  }
+  let msg = teammates.length > 0 ? teammates.length == 1 ? ` along with your teammate <@${teammate[0]}>, who was notified.` : ` along with your teammates <@${teammate[0]} and <@${teammate[1]}, who were notified.` : ".";
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "Removed from the queue for One Shot Showdown " + tourney_id + msg,
+      "flags": 1000000
+    }
+  });
 }
 
 async function handleSubmission(env, id, score, team, tourney_id, link,deleter=false) {
