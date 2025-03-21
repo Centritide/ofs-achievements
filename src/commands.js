@@ -991,13 +991,13 @@ export const SUBMIT_TOURNEY_COMMAND = {
       name:"teammate2",
       description:"second teammate",
       type:6,
-      required:true
+      required:false
     },
     {
       name:"teammate3",
       description:"third teammate",
       type:6,
-      required:true
+      required:false
     },
     {
       name:"attachment",

@@ -573,6 +573,26 @@ async function tourneyResponse(interaction, env) {
         }
       });
   }
+  // lazy to create new embed, could add that later
+  if (interaction.data.custom_id.toLowerCase().includes('sub')) {
+    score -= Number(interaction.data.custom_id.split(' ')[1]);
+    output = await client.query(`UPDATE submissions SET score = ${score} WHERE id = ${id};`);
+    return new JsonResponse({
+      type: InteractionResponseType.UPDATE_MESSAGE,
+      data: {
+        content: content + "\nUpdated score: " + score,
+      }
+    });
+  } else if (interaction.data.custom_id.toLowerCase().includes('add')) {
+    score += Number(interaction.data.custom_id.split(' ')[1]);
+    output = await client.query(`UPDATE submissions SET score = ${score} WHERE id = ${id};`);
+    return new JsonResponse({
+      type: InteractionResponseType.UPDATE_MESSAGE,
+      data: {
+        content: content + "\nUpdated score: " + score,
+      }
+    });
+  }
 }
 // leaderboard helper function
 async function top3_leaderboard(env, leaderboard, client, tourney_id) {
@@ -1055,6 +1075,7 @@ async function importFromRoles(id,interaction,env){
 
 // handles all OSS TO commands
 async function oss(interaction,env){
+  // TO role id: 1330632415181279303
   if (!interaction.member.roles.includes("1330632415181279303")) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1067,15 +1088,15 @@ async function oss(interaction,env){
   const subcommand = interaction.data.options[0].name.toLowerCase();
   switch(subcommand){
     case 'start':
-      return await startTourney(interaction,env);
+      return startTourney(interaction,env);
     case 'check':
-      return await checkTourney(interaction,env);
+      return checkTourney(interaction,env);
     case 'stop':
-      return await stopTourney(interaction,env);
+      return stopTourney(interaction,env);
     case 'extend':
-      return await extendTour(interaction,env);
+      return extendTour(interaction,env);
     case 'delete':
-      return await deleteSubmission(interaction,env);
+      return deleteSubmission(interaction,env);
   }
 }
 
@@ -1164,29 +1185,70 @@ async function startTourney(interaction, env) {
     case 'queueing':
       // if the latest tournament is queueing, advance to awaiting
       output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
-      let output3 = await client.query(`SELECT * FROM queue WHERE tournament_id = ${output.rows[0].id};`);
-      const queue = output2.rows[0].queue;
-      // break the queue into teams of 4, with the remainder being subs. teams are randomly assigned
-      const triplets = queue.filter((member) => member.length == 3);
-      const pairs = queue.filter((member) => member.length == 2);
-      const singles = queue.filter((member) => member.length == 1);
-      const teams = [];
-      let team = [];
-      // random choose from queue
-      // this is the old method, an update is needed. awaiting feedback from oss-to-only
-      while (queue.length > 0) {
-        const index = Math.floor(Math.random() * queue.length);
-        team.push(queue[index]);
-        queue.splice(index, 1);
-        if (team.length == 4) {
-          teams.push(team);
-          team = [];
+      let output3 = await client.query(`SELECT groups FROM queue ORDER BY id ASC WHERE tournament_id = ${output.rows[0].id};`);
+      const rows = output3.rows;
+      // sort rows by group size
+      let triplets = [];
+      let triplets_r = [];
+      let pairs = [];
+      let pairs_r = [];
+      let singles = [];
+      let singles_r = [];
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].group.length == 3) {
+          triplets.push(rows[i].group);
+          triplets_r.push(rows[i].group);
+        } else if (rows[i].group.length == 2) {
+          pairs.push(rows[i].group);
+          pairs_r.push(rows[i].group);
+        } else {
+          singles.push(rows[i].group);
+          singles_r.push(rows[i].group);
         }
       }
-      
+      const teams = [];
+      while (triplets.length > 0 && singles.length > 0) {
+        teams.push([...triplets.pop(), ...singles.pop()]);
+      }
+      while (pairs.length > 1) {
+        teams.push([...pairs.pop(), ...pairs.pop()]);
+      }
+      if (pairs.length == 1 && singles.length > 1) {
+        teams.push([...pairs.pop(), ...singles.pop(), ...singles.pop()]);
+      }
+      while (singles.length > 3) {
+        teams.push([...singles.pop(), ...singles.pop(), ...singles.pop(), ...singles.pop()]);
+      }
+      // algorithm prioritizes larger groups first
+      // it's quite complicated to prioritize early signups while preserving the maximum number of teams, so that is a future improvement
+
+      const remainder = [triplets.length, pairs.length, singles.length];
+      const remainder_sum = remainder.reduce((a, b) => a + b, 0);
+      // remove the remainder
+      triplets_r = triplets_r.slice(0, triplets_r.length - remainder[0]);
+      pairs_r = pairs_r.slice(0, pairs_r.length - remainder[1]);
+      singles_r = singles_r.slice(0, singles_r.length - remainder[2]);
+      // shuffle all the arrays
+      triplets_r = shuffle(triplets_r);
+      pairs_r = shuffle(pairs_r);
+      singles_r = shuffle(singles_r);
+      // now assign teams again, but this time randomly with the knowledge that everyone is in a group of 4
+      while (triplets_r.length > 0) {
+        teams.push([...triplets_r.pop(), ...singles_r.pop()]);
+      }
+      while (pairs_r.length > 1) {
+        teams.push([...pairs_r.pop(), ...pairs_r.pop()]);
+      }
+      if (pairs_r.length == 1) {
+        teams.push([...pairs_r.pop(), ...singles_r.pop(), ...singles_r.pop()]);
+      }
+      while (singles_r.length > 3) {
+        teams.push([...singles_r.pop(), ...singles_r.pop(), ...singles_r.pop(), ...singles_r.pop()]);
+      }
+
       // write team assignment message
       if (teams.length > 0) {
-        let team_message = "here are your team assignments:\n";
+        let team_message = "here are your **team assignments**:\n";
         let captain_message = `**${teams.length == 1 ? "Captain" : "Captains"}:**\n`;
         for (let i = 0; i < teams.length; i++) {
           team_message += `- ${teams[i].map((member) => "<@" + member + ">").join(", ")}\n`;
@@ -1194,8 +1256,35 @@ async function startTourney(interaction, env) {
         }
         team_message += captain_message.substring(0, captain_message.length - 2) + data.oss_messages.captain;
         // if there are any remaining players, add them as subs
-        if (team.length > 0) {
-          team_message += `\n**${team.length == 1 ? "Sub" : "Subs"}:**\n- ${team.map((member) => "<@" + member + ">").join(", ")}\n${data.oss_messages.sub}`;
+        // cases: 1-3 singles, 1 pair 1 single, 1 triplet, multiple triplets, 1 pair and any # of triplets
+        if (remainder[0] + remainder[1] > 1) {
+          // if there are more than 4 players in the remainder, suggest in the message that they can form their own team
+          // singles can't exist in any case where there would be more than 4 players in the remainder
+          team_message += `\n**Remaining players:**\n`;
+          for (let i = 0; i < remainder[0]; i++) {
+            team_message += `- ${triplets[i].map((member) => "<@" + member + ">").join(", ")}\n`;
+          }
+          if (remainder[1] == 1) {
+            team_message += `- ${pairs[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+          }
+          team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.';
+        } else if (remainder_sum > 0 && remainder[2] != 1) {
+          // 2-3 remaining players (so they could theoretically play together just by themselves if they wanted to)
+          team_message += `\n**Remaining players:**\n`;
+          if (remainder[0] == 1) {
+            team_message += `- ${triplets[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+          }
+          if (remainder[1] == 1) {
+            team_message += `- ${pairs[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+          }
+          for (let i = 0; i < remainder[2]; i++) {
+            team_message += `- <@${singles[0][0]}>\n`;
+          }
+          team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.';          
+        } else if (remainder[2] == 1) {
+          // 1 remaining player
+          team_message += `\n**Remaining player:**\n- <@${singles[0][0]}>\n`;
+          team_message += 'You may act as a sub for another team.';
         }
       }
 
@@ -1620,8 +1709,14 @@ async function submitTourney(interaction, env) {
       }
     });
   }
-
-  const team = [interaction.member.user.id, interaction.data.options[1].value, interaction.data.options[2].value, interaction.data.options[3].value];
+  // team has 2-4 members
+  let team = [interaction.member.user.id, interaction.data.options[1].value];
+  if (interaction.data.options.length > 2) {
+    team.push(interaction.data.options[2].value);
+  }
+  if (interaction.data.options.length > 3) {
+    team.push(interaction.data.options[3].value);
+  }
   console.log(team.length);
   //check if any teammates are duplicates
   const teamset = new Set(team);
@@ -1631,7 +1726,7 @@ async function submitTourney(interaction, env) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "Your team has non-unique members. Make sure you aren't @'ing yourself, and only your 3 teammates.",
+        "content": "Your team has non-unique members. Make sure you aren't @'ing yourself, and only your teammates.",
         "flags": 1000000
       }
     });
@@ -1651,7 +1746,8 @@ async function submitTourney(interaction, env) {
     });
   }
   const score = interaction.data.options[0].value;
-  const image = interaction.data.options[4].value;
+  const image = interaction.data.options[interaction.data.options.length - 1].value;
+  
   // only image attachment is allowed, so unsure if additional checks are needed like checking undefined
   let link;
   if (interaction.data.resolved.attachments[image].content_type && interaction.data.resolved.attachments[image].content_type.substring(0, 5) === "image") {
@@ -1747,10 +1843,10 @@ async function joinTourney(interaction, env) {
   // gets all users who are in the queue for the same tournament and have any of the same teammates
   const output2 = await client.query(`SELECT array_agg(DISTINCT u) AS conflicting
     FROM ( 
-      SELECT unnest(queue) AS u
-      FROM queues
+      SELECT unnest(group) AS u
+      FROM queue
       WHERE tournament_id = ${tourney_id}
-      AND queue && ARRAY['${group_members}']
+      AND group && ARRAY['${group_members}']
     ) sub`);
   const conflicting = output2.rows[0]?.conflicting || [];
   const matching = group_members.filter((member) => conflicting.includes(member));
@@ -1787,7 +1883,7 @@ async function joinTourney(interaction, env) {
       }
     });
   } else {
-    const output3 = await client.query(`INSERT INTO queues (tournament_id, queue) VALUES (${tourney_id}, ARRAY['${group_members}']) RETURNING id;`);
+    const output3 = await client.query(`INSERT INTO queue (tournament_id, group) VALUES (${tourney_id}, ARRAY['${group_members}']) RETURNING id;`);
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1831,7 +1927,7 @@ async function leaveTourney(interaction, env) {
   }
   const tourney_id = output.rows[0].id;
   const user = interaction.member.user.id;
-  const output2 = await client.query(`DELETE FROM queues WHERE tournament_id = ${tourney_id} AND '${user}' = ANY(queue) RETURNING *;`);
+  const output2 = await client.query(`DELETE FROM queue WHERE tournament_id = ${tourney_id} AND '${user}' = ANY(group) RETURNING *;`);
   client.end();
   if (output2.rows.length == 0) {
     return new JsonResponse({
@@ -1894,7 +1990,7 @@ async function leaveTourney(interaction, env) {
       // console.log(delete_data2);
     }
   }
-  let msg = teammates.length > 0 ? teammates.length == 1 ? ` along with your teammate <@${teammate[0]}>, who was notified.` : ` along with your teammates <@${teammate[0]} and <@${teammate[1]}, who were notified.` : ".";
+  let msg = teammates.length > 0 ? teammates.length == 1 ? ` along with your teammate <@${teammates[0]}>, who was notified.` : ` along with your teammates <@${teammates[0]} and <@${teammates[1]}, who were notified.` : ".";
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
@@ -1908,7 +2004,13 @@ async function handleSubmission(env, id, score, team, tourney_id, link,deleter=f
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
   // console.log(team);
   const channel_id = env.TOUR_CHANNEL_ID
-  const content = `<@${team[0]}> submitted ${score} for OSS${tourney_id} with <@${team[1]}>,<@${team[2]}>,and <@${team[3]}>.\n${link}`;
+  let msg = `<@${team[1]}>`;
+  if (team.length == 3) {
+    msg += ` and <@${team[2]}>`;
+  } else if (team.length == 4) {
+    msg += `, <@${team[2]}>, and <@${team[3]}>`;
+  }
+  const content = `<@${team[0]}> submitted ${score} for OSS${tourney_id} with ${msg}.\n${link}`;
   let fields = [
     {
       "name": "id",
@@ -1928,7 +2030,7 @@ async function handleSubmission(env, id, score, team, tourney_id, link,deleter=f
     },
     {
       "name": "team",
-      "value": `<@${team[0]}>,<@${team[1]}>,<@${team[2]}>,<@${team[3]}>`
+      "value": `${team.map((member) => "<@" + member + ">").join(", ")}`
     }
   ]
   if(deleter){
