@@ -1187,107 +1187,7 @@ async function startTourney(interaction, env) {
       output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
       let output3 = await client.query(`SELECT groups FROM queue ORDER BY id ASC WHERE tournament_id = ${output.rows[0].id};`);
       const rows = output3.rows;
-      // sort rows by group size
-      let triplets = [];
-      let triplets_r = [];
-      let pairs = [];
-      let pairs_r = [];
-      let singles = [];
-      let singles_r = [];
-      for (let i = 0; i < rows.length; i++) {
-        if (rows[i].group.length == 3) {
-          triplets.push(rows[i].group);
-          triplets_r.push(rows[i].group);
-        } else if (rows[i].group.length == 2) {
-          pairs.push(rows[i].group);
-          pairs_r.push(rows[i].group);
-        } else {
-          singles.push(rows[i].group);
-          singles_r.push(rows[i].group);
-        }
-      }
-      const teams = [];
-      while (triplets.length > 0 && singles.length > 0) {
-        teams.push([...triplets.pop(), ...singles.pop()]);
-      }
-      while (pairs.length > 1) {
-        teams.push([...pairs.pop(), ...pairs.pop()]);
-      }
-      if (pairs.length == 1 && singles.length > 1) {
-        teams.push([...pairs.pop(), ...singles.pop(), ...singles.pop()]);
-      }
-      while (singles.length > 3) {
-        teams.push([...singles.pop(), ...singles.pop(), ...singles.pop(), ...singles.pop()]);
-      }
-      // algorithm prioritizes larger groups first
-      // it's quite complicated to prioritize early signups while preserving the maximum number of teams, so that is a future improvement
-
-      const remainder = [triplets.length, pairs.length, singles.length];
-      const remainder_sum = remainder.reduce((a, b) => a + b, 0);
-      // remove the remainder
-      triplets_r = triplets_r.slice(0, triplets_r.length - remainder[0]);
-      pairs_r = pairs_r.slice(0, pairs_r.length - remainder[1]);
-      singles_r = singles_r.slice(0, singles_r.length - remainder[2]);
-      // shuffle all the arrays
-      triplets_r = shuffle(triplets_r);
-      pairs_r = shuffle(pairs_r);
-      singles_r = shuffle(singles_r);
-      // now assign teams again, but this time randomly with the knowledge that everyone is in a group of 4
-      while (triplets_r.length > 0) {
-        teams.push([...triplets_r.pop(), ...singles_r.pop()]);
-      }
-      while (pairs_r.length > 1) {
-        teams.push([...pairs_r.pop(), ...pairs_r.pop()]);
-      }
-      if (pairs_r.length == 1) {
-        teams.push([...pairs_r.pop(), ...singles_r.pop(), ...singles_r.pop()]);
-      }
-      while (singles_r.length > 3) {
-        teams.push([...singles_r.pop(), ...singles_r.pop(), ...singles_r.pop(), ...singles_r.pop()]);
-      }
-
-      // write team assignment message
-      if (teams.length > 0) {
-        let team_message = "here are your **team assignments**:\n";
-        let captain_message = `**${teams.length == 1 ? "Captain" : "Captains"}:**\n`;
-        for (let i = 0; i < teams.length; i++) {
-          team_message += `- ${teams[i].map((member) => "<@" + member + ">").join(", ")}\n`;
-          captain_message += `<@${teams[i][0]}>, `;
-        }
-        team_message += captain_message.substring(0, captain_message.length - 2) + data.oss_messages.captain;
-        // if there are any remaining players, add them as subs
-        // cases: 1-3 singles, 1 pair 1 single, 1 triplet, multiple triplets, 1 pair and any # of triplets
-        if (remainder[0] + remainder[1] > 1) {
-          // if there are more than 4 players in the remainder, suggest in the message that they can form their own team
-          // singles can't exist in any case where there would be more than 4 players in the remainder
-          team_message += `\n**Remaining players:**\n`;
-          for (let i = 0; i < remainder[0]; i++) {
-            team_message += `- ${triplets[i].map((member) => "<@" + member + ">").join(", ")}\n`;
-          }
-          if (remainder[1] == 1) {
-            team_message += `- ${pairs[0].map((member) => "<@" + member + ">").join(", ")}\n`;
-          }
-          team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.';
-        } else if (remainder_sum > 0 && remainder[2] != 1) {
-          // 2-3 remaining players (so they could theoretically play together just by themselves if they wanted to)
-          team_message += `\n**Remaining players:**\n`;
-          if (remainder[0] == 1) {
-            team_message += `- ${triplets[0].map((member) => "<@" + member + ">").join(", ")}\n`;
-          }
-          if (remainder[1] == 1) {
-            team_message += `- ${pairs[0].map((member) => "<@" + member + ">").join(", ")}\n`;
-          }
-          for (let i = 0; i < remainder[2]; i++) {
-            team_message += `- <@${singles[0][0]}>\n`;
-          }
-          team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.';          
-        } else if (remainder[2] == 1) {
-          // 1 remaining player
-          team_message += `\n**Remaining player:**\n- <@${singles[0][0]}>\n`;
-          team_message += 'You may act as a sub for another team.';
-        }
-      }
-
+      const team_message = queueAssignment(rows);
       // send message to tournament channel
       const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
@@ -1296,7 +1196,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `One Shot Showdown ${output.rows[0].id} will be starting in a few minutes! Queueing has ended; ${teams.length > 0 ? team_message : "no players queued.\n"} ${data.oss_messages.awaiting}`
+          "content": `One Shot Showdown ${output.rows[0].id} will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
       });
       // const data2 = await response2.json();
@@ -1370,6 +1270,222 @@ async function startTourney(interaction, env) {
       });
       
   }
+}
+
+// handles assignment of teams from the queue, returns a message with the team assignments
+function queueAssignment(rows) {
+  const teams = [];
+  const configs = [];
+  // each row in the config array is a different config with: excess, # of 3-1 groups, # of 2-2 groups, # of 2-1-1 groups, # of 1-1-1-1 groups
+  let triplets = [];
+  let pairs = [];
+  let singles = [];
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].group.length == 3) {
+      triplets.push(rows[i].group);
+    } else if (rows[i].group.length == 2) {
+      pairs.push(rows[i].group);
+    } else {
+      singles.push(rows[i].group);
+    }
+  }
+  
+  // first config: group trios to singles, group pairs, group pairs to singles, group singles
+  const num_trips = Math.min(triplets.length, singles.length);
+  let trips_excess = 0;
+  let single_ind = num_trips;
+  let config = {excess: 0, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+  if (triplets.length > singles.length) {
+    config.excess = 3 * (triplets.length - singles.length);
+    trips_excess = config.excess;
+  }
+  config.pairs = Math.floor(pairs.length / 2);
+  if (pairs.length % 2 == 1) {
+    if (singles.length - single_ind > 1) {
+      config.pair_singles = 1;
+      single_ind += 2;
+    } else {
+      config.excess += 2;
+    }
+  }
+  config.singles = Math.floor((singles.length - single_ind) / 4);
+  config.excess += (singles.length - single_ind) % 4;
+  configs.push(config);
+  // second config: group trios to singles, group pairs, group singles
+  config = {excess: trips_excess, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+  config.pairs = Math.floor(pairs.length / 2);
+  if (pairs.length % 2 == 1) {
+    config.excess += 2;
+  }
+  config.singles = Math.floor((singles.length - num_trips) / 4);
+  config.excess += (singles.length - num_trips) % 4;
+  configs.push(config);
+  // third config: group trios to singles, group pairs except for x = 2 pairs, group pairs to singles, group singles. repeat, incrementing x by 2, until no more teams made of 2 pairs
+  let x = 2;
+  while (true) {
+    single_ind = num_trips;
+    config = {excess: trips_excess, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+    config.pairs = Math.floor((pairs.length - x) / 2);
+    if (config.pairs < 0) {
+      config.pairs = 0;
+    }
+    let pairs_left = pairs.length - config.pairs * 2;
+    while (pairs_left > 0) {
+      if (singles.length - single_ind > 1) {
+        config.pair_singles += 1;
+        single_ind += 2;
+      } else {
+        break;
+      }
+    }
+    config.excess += pairs_left * 2;
+    config.singles = Math.floor((singles.length - single_ind) / 4);
+    config.excess += (singles.length - single_ind) % 4;
+    configs.push(config);
+    if (config.pairs == 0) {
+      break;
+    }
+    x += 2;
+  }
+  // fourth through sixth configs are unnecessary if trips_excess != 0 or if num_trips = 0
+  if (trips_excess == 0 || num_trips == 0) {
+    // fourth config: group trios to singles except for one, group pairs, group pairs to singles, group singles
+    single_ind = num_trips - 1;
+    config = {excess: 3, trips: num_trips - 1, pairs: 0, pair_singles: 0, singles: 0};
+    config.pairs = Math.floor(pairs.length / 2);
+    if (pairs.length % 2 == 1) {
+      if (singles.length - single_ind > 1) {
+        config.pair_singles = 1;
+        single_ind += 2;
+      } else {
+        config.excess += 2;
+      }
+    }
+    config.singles = Math.floor((singles.length - single_ind) / 4);
+    config.excess += (singles.length - single_ind) % 4;
+    configs.push(config);
+    // fifth config: group trios to singles except for one, group pairs, group singles
+    single_ind = num_trips - 1;
+    config = {excess: 3, trips: num_trips - 1, pairs: 0, pair_singles: 0, singles: 0};
+    config.pairs = Math.floor(pairs.length / 2);
+    if (pairs.length % 2 == 1) {
+      config.excess += 2;
+    }
+    config.singles = Math.floor((singles.length - num_trips) / 4);
+    config.excess += (singles.length - num_trips) % 4;
+    configs.push(config);
+    // sixth config: group trios to singles except for one, group pairs except for x = 2 pairs, group pairs to singles, group singles. repeat, incrementing x by 2, until no more teams made of 2 pairs
+    x = 2;
+    while (true) {
+      single_ind = num_trips - 1;
+      config = {excess: 3, trips: num_trips - 1, pairs: 0, pair_singles: 0, singles: 0};
+      config.pairs = Math.floor((pairs.length - x) / 2);
+      if (config.pairs < 0) {
+        config.pairs = 0;
+      }
+      let pairs_left = pairs.length - config.pairs * 2;
+      while (pairs_left > 0) {
+        if (singles.length - single_ind > 1) {
+          config.pair_singles += 1;
+          single_ind += 2;
+        } else {
+          break;
+        }
+      }
+      config.excess += pairs_left * 2;
+      config.singles = Math.floor((singles.length - single_ind) / 4);
+      config.excess += (singles.length - single_ind) % 4;
+      configs.push(config);
+      if (config.pairs == 0) {
+        break;
+      }
+      x += 2;
+    }
+  }
+  // determine min excess
+  let min_excess = configs[0].excess;
+  for (let i = 1; i < configs.length; i++) {
+    if (configs[i].excess < min_excess) {
+      min_excess = configs[i].excess;
+    }
+  }
+  // remove all configs with excess > min_excess
+  for (let i = 0; i < configs.length; i++) {
+    if (configs[i].excess > min_excess) {
+      configs.splice(i, 1);
+      i--;
+    }
+  }
+  // choose one of the remaining configs at random
+  const config_f = configs[Math.floor(Math.random() * configs.length)];
+  // using number of each group, determine which groups are a part of the excess, and separate them
+  let triplets_excess = triplets.slice(config_f.trips);
+  let pairs_excess = pairs.slice(config_f.pairs * 2 + config_f.pair_singles);
+  let singles_excess = singles.slice(config_f.singles * 4 + config_f.pair_singles * 2);
+  let total_excess = triplets_excess.length + pairs_excess.length + singles_excess.length;
+  triplets = triplets.slice(0, config_f.trips);
+  pairs = pairs.slice(0, config_f.pairs * 2 + config_f.pair_singles);
+  singles = singles.slice(0, config_f.singles * 4 + config_f.pair_singles * 2);
+  // assign teams based on the chosen config
+  triplets = shuffle(triplets);
+  pairs = shuffle(pairs);
+  singles = shuffle(singles);
+  for (let i = 0; i < config_f.trips; i++) {
+    teams.push([...triplets.pop(), ...singles.pop()]);
+  }
+  for (let i = 0; i < config_f.pairs; i++) {
+    teams.push([...pairs.pop(), ...pairs.pop()]);
+  }
+  for (let i = 0; i < config_f.pair_singles; i++) {
+    teams.push([...pairs.pop(), ...singles.pop(), ...singles.pop()]);
+  }
+  for (let i = 0; i < config_f.singles; i++) {
+    teams.push([...singles.pop(), ...singles.pop(), ...singles.pop(), ...singles.pop()]);
+  }
+
+  // write team assignment message
+  let team_message = 'no players queued.\n';
+  if (teams.length > 0) {
+    team_message = "here are your **team assignments**:\n";
+    let captain_message = `**${teams.length == 1 ? "Captain" : "Captains"}:**\n`;
+    for (let i = 0; i < teams.length; i++) {
+      team_message += `- ${teams[i].map((member) => "<@" + member + ">").join(", ")}\n`;
+      captain_message += `<@${teams[i][0]}>, `;
+    }
+    team_message += captain_message.substring(0, captain_message.length - 2) + data.oss_messages.captain;
+    // if there are any remaining players, add them as subs
+    // cases: 1-3 singles, 1 pair 1 single, 1 triplet, multiple triplets, 1 pair and any # of triplets
+    if (total_excess > 4) {
+      // if there are more than 4 players in the remainder, suggest in the message that they can form their own team
+      // singles can't exist in any case where there would be more than 4 players in the remainder
+      team_message += `\n**Remaining players:**\n`;
+      for (let i = 0; i < triplets_excess.length; i++) {
+        team_message += `- ${triplets_excess[i].map((member) => "<@" + member + ">").join(", ")}\n`;
+      }
+      if (pairs_excess.length == 1) {
+        team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+      }
+      team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.';
+    } else if (total_excess > 1) {
+      // 2-3 remaining players (so they could theoretically play together just by themselves if they wanted to)
+      team_message += `\n**Remaining players:**\n`;
+      if (triplets_excess.length == 1) {
+        team_message += `- ${triplets_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+      }
+      if (pairs_excess.length == 1) {
+        team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+      }
+      for (let i = 0; i < singles_excess.length; i++) {
+        team_message += `- <@${singles_excess[i][0]}>\n`;
+      }
+      team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.';          
+    } else if (total_excess == 1) {
+      // 1 remaining player
+      team_message += `\n**Remaining player:**\n- <@${singles_excess[0][0]}>\n`;
+      team_message += 'You may act as a sub for another team.';
+    }
+  }
+  return team_message;
 }
 
 // only check if scenario has been used before
