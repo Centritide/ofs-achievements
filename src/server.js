@@ -1190,7 +1190,18 @@ async function startTourney(interaction, env) {
       // if the latest tournament is queueing, advance to awaiting
       let output3 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${output.rows[0].id} ORDER BY id ASC ;`);
       const rows = output3.rows;
-      const team_message = queueAssignment(rows);
+      try {
+        const team_message = queueAssignment(rows);
+      } catch (error) {
+        console.error(error);
+        return new JsonResponse({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            "content": "Error: something went wrong with queue assignment.",
+            "flags": 1000000
+          }
+        });
+      }
       // send message to tournament channel
       output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
       const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
@@ -2237,6 +2248,7 @@ async function leaderboard(interaction, env) {
     tourney_id = output.rows[0].id;
   }
   output = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
+  let output2 = await client.query(`SELECT * from tournaments WHERE id = ${tourney_id};`);
   client.end();
   if (output.rows.length == 0) {
     return new JsonResponse({
@@ -2247,7 +2259,7 @@ async function leaderboard(interaction, env) {
       }
     });
   }
-  let content = "## Unofficial leaderboard for OSS " + tourney_id + "\n\`\`\`";
+  let content = `## Unofficial leaderboard for OSS ${tourney_id}\nScenario code: **${output2.rows[0].scenario}**\n\`\`\``;
   let prev_score = 0;
 
   for (let i = 0; i < output.rows.length; i++) {
