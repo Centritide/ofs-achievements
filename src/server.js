@@ -425,7 +425,7 @@ async function tourneyResponse(interaction, env) {
   // console.log("a");
   const id = interaction.message.embeds[0].fields[0].value;
   const user = interaction.message.embeds[0].fields[1].value
-  const score = Number(interaction.message.embeds[0].fields[2].value);
+  let score = Number(interaction.message.embeds[0].fields[2].value);
   const tourney_id = interaction.message.embeds[0].fields[3].value;
   const content = interaction.message.content;
   const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
@@ -451,14 +451,14 @@ async function tourneyResponse(interaction, env) {
   let output, output2;
   switch (interaction.data.custom_id.toLowerCase()) {
     case "approve":
-      output = await client.query(`UPDATE submissions SET submission_status = 'accepted' WHERE id = ${id};`);
+      output = await client.query(`UPDATE submissions SET status = 'accepted' WHERE id = ${id};`);
       output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
-      const requested = output2.rows.filter((row) => row.submission_status == 'requested');
+      const requested = output2.rows.filter((row) => row.status == 'requested');
 
       // if there are no more requested submissions, send leaderboard
       console.log(requested.length);
       if (requested.length == 0) {
-        const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
+        const leaderboard = output2.rows.filter((row) => row.status == 'accepted');
         console.log(leaderboard);
         await top3_leaderboard(env, leaderboard, client, tourney_id);
         return new JsonResponse({
@@ -511,10 +511,10 @@ async function tourneyResponse(interaction, env) {
       // console.log(denydata);
       output2 = await client.query(`SELECT * FROM submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
       // grab the next highest score and send it for approval
-      const null_submissions = output2.rows.filter((row) => row.submission_status == null);
+      const null_submissions = output2.rows.filter((row) => row.status == null);
       if (null_submissions.length != 0) {
         row = null_submissions.rows[0];
-        await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${row.id};`);
+        await client.query(`UPDATE submissions SET status = 'requested' WHERE id = ${row.id};`);
         client.end();
         await handleSubmission(env, row.id, row.score, row.team_members, row.tournament_id, row.link);
         return new JsonResponse({
@@ -526,7 +526,7 @@ async function tourneyResponse(interaction, env) {
         });
       }
       // if there are no more non-requested or accepted submissions, check if there are any requested submissions
-      const requested_submissions = output2.rows.filter((row) => row.submission_status == 'requested');
+      const requested_submissions = output2.rows.filter((row) => row.status == 'requested');
       // if there are still requested submissions, wait for them to be approved or denied
       if (requested_submissions.length != 0) {
         client.end();
@@ -539,7 +539,7 @@ async function tourneyResponse(interaction, env) {
         });
       }
       // if there are no more submissions, send leaderboard
-      const leaderboard = output2.rows.filter((row) => row.submission_status == 'accepted');
+      const leaderboard = output2.rows.filter((row) => row.status == 'accepted');
       if (leaderboard.length > 0) {
         await top3_leaderboard(env, leaderboard, client,tourney_id);
         client.end();
@@ -552,7 +552,7 @@ async function tourneyResponse(interaction, env) {
           },
           method: 'POST',
           body: JSON.stringify({
-            "content": `Unfortunately, One Shot Showdown ${interaction.message.embeds[0].fields[3].value} did not have any submissions. We'll see you in the next one!`
+            "content": `Unfortunately, **One Shot Showdown ${interaction.message.embeds[0].fields[3].value}** did not have any submissions. We'll see you in the next one!`
           })
         });
         // const data = await response.json();
@@ -573,23 +573,27 @@ async function tourneyResponse(interaction, env) {
         }
       });
   }
-  // lazy to create new embed, could add that later
+  score = Number(interaction.message.embeds[0].fields[2].value);
   if (interaction.data.custom_id.toLowerCase().includes('sub')) {
     score -= Number(interaction.data.custom_id.split(' ')[1]);
     output = await client.query(`UPDATE submissions SET score = ${score} WHERE id = ${id};`);
+    interaction.message.embeds[0].fields[2].value = score;
     return new JsonResponse({
       type: InteractionResponseType.UPDATE_MESSAGE,
       data: {
         content: content + "\nUpdated score: " + score,
+        embeds: interaction.message.embeds
       }
     });
   } else if (interaction.data.custom_id.toLowerCase().includes('add')) {
     score += Number(interaction.data.custom_id.split(' ')[1]);
     output = await client.query(`UPDATE submissions SET score = ${score} WHERE id = ${id};`);
+    interaction.message.embeds[0].fields[2].value = score;
     return new JsonResponse({
       type: InteractionResponseType.UPDATE_MESSAGE,
       data: {
         content: content + "\nUpdated score: " + score,
+        embeds: interaction.message.embeds
       }
     });
   }
@@ -1140,15 +1144,15 @@ async function startTourney(interaction, env) {
   // const test = env.DISCORD_APPLICATION_ID == "1173198500931043390";
 
   const date = new Date();
-  if (output.rows[0].status != 'awaiting' && Object.hasOwn(interaction.data.options[0], "options")) {
+  if (output.rows[0].status != 'awaiting' && interaction.data.options[0].options.length > 0) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": "Only provide scenario code when tournament is about to begin. If you want to start a new tournament or end the queueing phase, please rerun this command with only /start.",
+        "content": msg1 + '\n' + "Only provide scenario code when tournament is about to begin. If you want to start a new tournament or end the queueing phase, please rerun this command with only /start.",
         "flags": 1000000
       }
     });
-  } else if (output.rows[0].status == 'awaiting' && !Object.hasOwn(interaction.data.options[0], "options")) {
+  } else if (output.rows[0].status == 'awaiting' && interaction.data.options[0].options.length == 0) {
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1169,7 +1173,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": "One Shot Showdown " + output2.rows[0].id + data.oss_messages.queueing
+          "content": `**One Shot Showdown  ${output2.rows[0].id}**${data.oss_messages.queueing}`
         })
       });
       // const data = await response.json();
@@ -1184,11 +1188,11 @@ async function startTourney(interaction, env) {
       });
     case 'queueing':
       // if the latest tournament is queueing, advance to awaiting
-      output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
-      let output3 = await client.query(`SELECT groups FROM queue ORDER BY id ASC WHERE tournament_id = ${output.rows[0].id};`);
+      let output3 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${output.rows[0].id} ORDER BY id ASC ;`);
       const rows = output3.rows;
       const team_message = queueAssignment(rows);
       // send message to tournament channel
+      output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
       const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
@@ -1196,7 +1200,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `One Shot Showdown ${output.rows[0].id} will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
+          "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
       });
       // const data2 = await response2.json();
@@ -1226,7 +1230,7 @@ async function startTourney(interaction, env) {
       // if there's no ongoing tournament, start a new one
       // insert the new tournament into the database
       try {
-        output2 = await client.query(`UPDATE tournaments SET scenario = $1, start_time = $2, status = $3 WHERE id = ${output.rows[0].id};`, [scenario, date.getTime(), 'ongoing']);
+        output2 = await client.query(`UPDATE tournaments SET scenario = $1, start_time = $2, status = $3 WHERE id = ${output.rows[0].id};`, [scenario, date, 'ongoing']);
       } catch (error) {
         // will error if the scenario has been used before
         console.error(error);
@@ -1247,7 +1251,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `One Shot Showdown ${output.rows[0].id} has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
+          "content": `**One Shot Showdown ${output.rows[0].id}** has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
         })
       });
       // const data = await response3.json();
@@ -1272,26 +1276,35 @@ async function startTourney(interaction, env) {
   }
 }
 
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 // handles assignment of teams from the queue, returns a message with the team assignments
 function queueAssignment(rows) {
   const teams = [];
-  const configs = [];
+  let configs = [];
+  const unique_configs = new Set();
   // each row in the config array is a different config with: excess, # of 3-1 groups, # of 2-2 groups, # of 2-1-1 groups, # of 1-1-1-1 groups
   let triplets = [];
   let pairs = [];
   let singles = [];
   for (let i = 0; i < rows.length; i++) {
-    if (rows[i].group.length == 3) {
-      triplets.push(rows[i].group);
-    } else if (rows[i].group.length == 2) {
-      pairs.push(rows[i].group);
+    if (rows[i].user_group.length == 3) {
+      triplets.push(rows[i].user_group);
+    } else if (rows[i].user_group.length == 2) {
+      pairs.push(rows[i].user_group);
     } else {
-      singles.push(rows[i].group);
+      singles.push(rows[i].user_group);
     }
   }
   
   // first config: group trios to singles, group pairs, group pairs to singles, group singles
-  const num_trips = Math.min(triplets.length, singles.length);
+  let num_trips = Math.min(triplets.length, singles.length);
   let trips_excess = 0;
   let single_ind = num_trips;
   let config = {excess: 0, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
@@ -1310,48 +1323,58 @@ function queueAssignment(rows) {
   }
   config.singles = Math.floor((singles.length - single_ind) / 4);
   config.excess += (singles.length - single_ind) % 4;
+  unique_configs.add(`${config.trips}_${config.pairs}_${config.pair_singles}_${config.singles}`);
   configs.push(config);
   // second config: group trios to singles, group pairs, group singles
-  config = {excess: trips_excess, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
-  config.pairs = Math.floor(pairs.length / 2);
-  if (pairs.length % 2 == 1) {
-    config.excess += 2;
+  // only needs to be done if there are nonzero pair_singles
+  if (config.pair_singles > 0) {
+    config = {excess: trips_excess, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+    config.pairs = Math.floor(pairs.length / 2);
+    if (pairs.length % 2 == 1) {
+      config.excess += 2;
+    }
+    config.singles = Math.floor((singles.length - num_trips) / 4);
+    config.excess += (singles.length - num_trips) % 4;
+    unique_configs.add(`${config.trips}_${config.pairs}_${config.pair_singles}_${config.singles}`);
+    configs.push(config);
   }
-  config.singles = Math.floor((singles.length - num_trips) / 4);
-  config.excess += (singles.length - num_trips) % 4;
-  configs.push(config);
   // third config: group trios to singles, group pairs except for x = 2 pairs, group pairs to singles, group singles. repeat, incrementing x by 2, until no more teams made of 2 pairs
   let x = 2;
-  while (true) {
-    single_ind = num_trips;
-    config = {excess: trips_excess, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
-    config.pairs = Math.floor((pairs.length - x) / 2);
-    if (config.pairs < 0) {
-      config.pairs = 0;
-    }
-    let pairs_left = pairs.length - config.pairs * 2;
-    while (pairs_left > 0) {
-      if (singles.length - single_ind > 1) {
+  // doesn't need to be done if there are 0 pairs
+  if (pairs.length != 0) {
+    while (true) {
+      single_ind = num_trips;
+      config = {excess: trips_excess, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+      config.pairs = Math.floor((pairs.length - x) / 2);
+      if (config.pairs < 0) {
+        config.pairs = 0;
+      }
+      let pairs_left = pairs.length - config.pairs * 2;
+      while (pairs_left > 0 && singles.length - single_ind > 1) {
         config.pair_singles += 1;
         single_ind += 2;
-      } else {
+        pairs_left -= 1;
+      }
+      config.excess += pairs_left * 2;
+      config.singles = Math.floor((singles.length - single_ind) / 4);
+      config.excess += (singles.length - single_ind) % 4;
+      x += 2;
+      const key = `${config.trips}_${config.pairs}_${config.pair_singles}_${config.singles}`;
+      if (!unique_configs.has(key)) {
+        unique_configs.add(key);
+        configs.push(config);
+      }
+      if (config.pairs == 0) {
         break;
       }
     }
-    config.excess += pairs_left * 2;
-    config.singles = Math.floor((singles.length - single_ind) / 4);
-    config.excess += (singles.length - single_ind) % 4;
-    configs.push(config);
-    if (config.pairs == 0) {
-      break;
-    }
-    x += 2;
   }
-  // fourth through sixth configs are unnecessary if trips_excess != 0 or if num_trips = 0
-  if (trips_excess == 0 || num_trips == 0) {
+  // fourth through sixth configs are unnecessary if there are no triplet teams, or if there is already at least one triplet team in excess
+  if (num_trips != 0 && num_trips == triplets.length) {
     // fourth config: group trios to singles except for one, group pairs, group pairs to singles, group singles
-    single_ind = num_trips - 1;
-    config = {excess: 3, trips: num_trips - 1, pairs: 0, pair_singles: 0, singles: 0};
+    num_trips -= 1;
+    single_ind = num_trips;
+    config = {excess: 3, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
     config.pairs = Math.floor(pairs.length / 2);
     if (pairs.length % 2 == 1) {
       if (singles.length - single_ind > 1) {
@@ -1363,43 +1386,49 @@ function queueAssignment(rows) {
     }
     config.singles = Math.floor((singles.length - single_ind) / 4);
     config.excess += (singles.length - single_ind) % 4;
+    unique_configs.add(`${config.trips}_${config.pairs}_${config.pair_singles}_${config.singles}`);
     configs.push(config);
     // fifth config: group trios to singles except for one, group pairs, group singles
-    single_ind = num_trips - 1;
-    config = {excess: 3, trips: num_trips - 1, pairs: 0, pair_singles: 0, singles: 0};
-    config.pairs = Math.floor(pairs.length / 2);
-    if (pairs.length % 2 == 1) {
-      config.excess += 2;
+    if (config.pair_singles > 0) {
+      config = {excess: 3, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+      config.pairs = Math.floor(pairs.length / 2);
+      if (pairs.length % 2 == 1) {
+        config.excess += 2;
+      }
+      config.singles = Math.floor((singles.length - num_trips) / 4);
+      config.excess += (singles.length - num_trips) % 4;
+      unique_configs.add(`${config.trips}_${config.pairs}_${config.pair_singles}_${config.singles}`);
+      configs.push(config);
     }
-    config.singles = Math.floor((singles.length - num_trips) / 4);
-    config.excess += (singles.length - num_trips) % 4;
-    configs.push(config);
     // sixth config: group trios to singles except for one, group pairs except for x = 2 pairs, group pairs to singles, group singles. repeat, incrementing x by 2, until no more teams made of 2 pairs
     x = 2;
-    while (true) {
-      single_ind = num_trips - 1;
-      config = {excess: 3, trips: num_trips - 1, pairs: 0, pair_singles: 0, singles: 0};
-      config.pairs = Math.floor((pairs.length - x) / 2);
-      if (config.pairs < 0) {
-        config.pairs = 0;
-      }
-      let pairs_left = pairs.length - config.pairs * 2;
-      while (pairs_left > 0) {
-        if (singles.length - single_ind > 1) {
+    if (pairs.length != 0) {
+      while (true) {
+        single_ind = num_trips;
+        config = {excess: 3, trips: num_trips, pairs: 0, pair_singles: 0, singles: 0};
+        config.pairs = Math.floor((pairs.length - x) / 2);
+        if (config.pairs < 0) {
+          config.pairs = 0;
+        }
+        let pairs_left = pairs.length - config.pairs * 2;
+        while (pairs_left > 0 && singles.length - single_ind > 1) {
           config.pair_singles += 1;
           single_ind += 2;
-        } else {
+          pairs_left -= 1;
+        }
+        config.excess += pairs_left * 2;
+        config.singles = Math.floor((singles.length - single_ind) / 4);
+        config.excess += (singles.length - single_ind) % 4;
+        const key = `${config.trips}_${config.pairs}_${config.pair_singles}_${config.singles}`;
+        if (!unique_configs.has(key)) {
+          unique_configs.add(key);
+          configs.push(config);
+        }
+        if (config.pairs == 0) {
           break;
         }
+        x += 2;
       }
-      config.excess += pairs_left * 2;
-      config.singles = Math.floor((singles.length - single_ind) / 4);
-      config.excess += (singles.length - single_ind) % 4;
-      configs.push(config);
-      if (config.pairs == 0) {
-        break;
-      }
-      x += 2;
     }
   }
   // determine min excess
@@ -1409,23 +1438,18 @@ function queueAssignment(rows) {
       min_excess = configs[i].excess;
     }
   }
-  // remove all configs with excess > min_excess
-  for (let i = 0; i < configs.length; i++) {
-    if (configs[i].excess > min_excess) {
-      configs.splice(i, 1);
-      i--;
-    }
-  }
+  configs = configs.filter((c) => c.excess == min_excess);
+
   // choose one of the remaining configs at random
   const config_f = configs[Math.floor(Math.random() * configs.length)];
   // using number of each group, determine which groups are a part of the excess, and separate them
   let triplets_excess = triplets.slice(config_f.trips);
   let pairs_excess = pairs.slice(config_f.pairs * 2 + config_f.pair_singles);
-  let singles_excess = singles.slice(config_f.singles * 4 + config_f.pair_singles * 2);
-  let total_excess = triplets_excess.length + pairs_excess.length + singles_excess.length;
+  let singles_excess = singles.slice(config_f.singles * 4 + config_f.pair_singles * 2 + config_f.trips);
+  let total_excess = triplets_excess.length * 3 + pairs_excess.length * 2 + singles_excess.length;
   triplets = triplets.slice(0, config_f.trips);
   pairs = pairs.slice(0, config_f.pairs * 2 + config_f.pair_singles);
-  singles = singles.slice(0, config_f.singles * 4 + config_f.pair_singles * 2);
+  singles = singles.slice(0, config_f.singles * 4 + config_f.pair_singles * 2 + config_f.trips);
   // assign teams based on the chosen config
   triplets = shuffle(triplets);
   pairs = shuffle(pairs);
@@ -1453,38 +1477,42 @@ function queueAssignment(rows) {
       captain_message += `<@${teams[i][0]}>, `;
     }
     team_message += captain_message.substring(0, captain_message.length - 2) + data.oss_messages.captain;
-    // if there are any remaining players, add them as subs
-    // cases: 1-3 singles, 1 pair 1 single, 1 triplet, multiple triplets, 1 pair and any # of triplets
-    if (total_excess > 4) {
-      // if there are more than 4 players in the remainder, suggest in the message that they can form their own team
-      // singles can't exist in any case where there would be more than 4 players in the remainder
-      team_message += `\n**Remaining players:**\n`;
-      for (let i = 0; i < triplets_excess.length; i++) {
-        team_message += `- ${triplets_excess[i].map((member) => "<@" + member + ">").join(", ")}\n`;
-      }
-      if (pairs_excess.length == 1) {
-        team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
-      }
-      team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.';
-    } else if (total_excess > 1) {
-      // 2-3 remaining players (so they could theoretically play together just by themselves if they wanted to)
-      team_message += `\n**Remaining players:**\n`;
-      if (triplets_excess.length == 1) {
-        team_message += `- ${triplets_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
-      }
-      if (pairs_excess.length == 1) {
-        team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
-      }
-      for (let i = 0; i < singles_excess.length; i++) {
-        team_message += `- <@${singles_excess[i][0]}>\n`;
-      }
-      team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.';          
-    } else if (total_excess == 1) {
-      // 1 remaining player
-      team_message += `\n**Remaining player:**\n- <@${singles_excess[0][0]}>\n`;
-      team_message += 'You may act as a sub for another team.';
-    }
   }
+  // if there are any remaining players, add them as subs
+  // cases: 1-3 singles, 1 pair 1 single, 1 triplet, multiple triplets, 1 pair and any # of triplets
+  if (total_excess > 0 && teams.length == 0) {
+    team_message = "a full team could not be created.";
+  }
+  if (total_excess > 4) {
+    // if there are more than 4 players in the remainder, suggest in the message that they can form their own team
+    // singles can't exist in any case where there would be more than 4 players in the remainder
+    team_message += `\n**Remaining players:**\n`;
+    for (let i = 0; i < triplets_excess.length; i++) {
+      team_message += `- ${triplets_excess[i].map((member) => "<@" + member + ">").join(", ")}\n`;
+    }
+    if (pairs_excess.length == 1) {
+      team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+    }
+    team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.';
+  } else if (total_excess > 1) {
+    // 2-3 remaining players (so they could theoretically play together just by themselves if they wanted to)
+    team_message += `\n**Remaining players:**\n`;
+    if (triplets_excess.length == 1) {
+      team_message += `- ${triplets_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+    }
+    if (pairs_excess.length == 1) {
+      team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
+    }
+    for (let i = 0; i < singles_excess.length; i++) {
+      team_message += `- <@${singles_excess[i][0]}>\n`;
+    }
+    team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.';          
+  } else if (total_excess == 1) {
+    // 1 remaining player
+    team_message += `\n**Remaining player:**\n- <@${singles_excess[0][0]}>\n`;
+    team_message += 'You may act as a sub for another team.';
+  }
+  
   return team_message;
 }
 
@@ -1566,8 +1594,7 @@ async function stopTourney(interaction, env) {
       }
     });
   }
-
-  if (BigInt(date.getTime()) < BigInt(output.rows[0].start_time) + BigInt(tourney_length)) {
+  if (BigInt(date - output.rows[0].start_time) < tourney_length) {
     client.end();
     const mins = tourney_length / 60000n;
     return new JsonResponse({
@@ -1594,7 +1621,7 @@ async function stopTourney(interaction, env) {
       },
       method: 'POST',
       body: JSON.stringify({
-        "content": `Unfortunately, One Shot Showdown ${tourney_id} did not have any submissions. We'll see you in the next one!`
+        "content": `Unfortunately, **One Shot Showdown ${tourney_id}** did not have any submissions. We'll see you in the next one!`
       })
     });
     return new JsonResponse({
@@ -1619,7 +1646,7 @@ async function stopTourney(interaction, env) {
     const link = top3.rows[i].link;
     const id = top3.rows[i].id;
     // console.log("a");
-    await client.query(`UPDATE submissions SET submission_status = 'requested' WHERE id = ${id};`);
+    await client.query(`UPDATE submissions SET status = 'requested' WHERE id = ${id};`);
     await handleSubmission(env, id, score, team, tourney_id, link);
     num_sent++;
   }
@@ -1667,10 +1694,11 @@ async function extendTour(interaction,env){
     });
   }
   const tourney_id = output.rows[0].id;
-  const date = BigInt(output.rows[0].start_time);
-  const date_end = `<t:${(date+mins*60000n+tourney_length)/1000n}:R>`
+  const date = output.rows[0].start_time;
+  date.setMinutes(date.getMinutes() + Number(mins));
+  const date_end = `<t:${(date.getTime() + tourney_length)/1000n}:R>`
   try {
-    const output2 = await client.query(`UPDATE tournaments SET start_time = ${date + mins*60000n} WHERE id = ${tourney_id}`)
+    const output2 = await client.query(`UPDATE tournaments SET start_time = ${date} WHERE id = ${tourney_id}`)
   } catch(e) {
     client.end();
     console.error(e);
@@ -1689,7 +1717,7 @@ async function extendTour(interaction,env){
     },
     method: 'POST',
     body: JSON.stringify({
-      "content": `One Shot Showdown has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. The tournament will instead end ${date_end}. <@&1330632674477473883>`
+      "content": `**One Shot Showdown ${output.rows[0].id}**has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. It will instead end ${date_end}. <@&1330632674477473883>`
     })
   });
   return new JsonResponse({
@@ -1812,10 +1840,10 @@ async function submitTourney(interaction, env) {
     });
   }
   // check if the latest tournament has ended, which is tourney_length after the start time
-  const start_time = BigInt(output.rows[0].start_time);
-  const is_active = output.rows[0].is_active;
+  const start_time = output.rows[0].start_time;
+  const is_active = output.rows[0].status == 'ongoing';
   const tourney_id = output.rows[0].id;
-  if (!is_active || BigInt(date.getTime()) > start_time + tourney_length) {
+  if (!is_active || BigInt(date - start_time) > tourney_length) {
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1826,12 +1854,12 @@ async function submitTourney(interaction, env) {
     });
   }
   // team has 2-4 members
-  let team = [interaction.member.user.id, interaction.data.options[1].value];
-  if (interaction.data.options.length > 2) {
-    team.push(interaction.data.options[2].value);
-  }
+  let team = [interaction.member.user.id, interaction.data.options[2].value];
   if (interaction.data.options.length > 3) {
     team.push(interaction.data.options[3].value);
+  }
+  if (interaction.data.options.length > 4) {
+    team.push(interaction.data.options[4].value);
   }
   console.log(team.length);
   //check if any teammates are duplicates
@@ -1862,7 +1890,7 @@ async function submitTourney(interaction, env) {
     });
   }
   const score = interaction.data.options[0].value;
-  const image = interaction.data.options[interaction.data.options.length - 1].value;
+  const image = interaction.data.options[1].value;
   
   // only image attachment is allowed, so unsure if additional checks are needed like checking undefined
   let link;
@@ -1959,13 +1987,13 @@ async function joinTourney(interaction, env) {
   // gets all users who are in the queue for the same tournament and have any of the same teammates
   const output2 = await client.query(`SELECT array_agg(DISTINCT u) AS conflicting
     FROM ( 
-      SELECT unnest(group) AS u
+      SELECT unnest(user_group) AS u
       FROM queue
       WHERE tournament_id = ${tourney_id}
-      AND group && ARRAY['${group_members}']
+      AND user_group && ARRAY['${group_members}']
     ) sub`);
   const conflicting = output2.rows[0]?.conflicting || [];
-  const matching = group_members.filter((member) => conflicting.includes(member));
+  const matching = group.filter((member) => conflicting.includes(member));
   if (matching.length > 0) {
     client.end();
     const standard = `already in the queue for One Shot Showdown ${output.rows[0].id}. Please `;
@@ -1999,7 +2027,7 @@ async function joinTourney(interaction, env) {
       }
     });
   } else {
-    const output3 = await client.query(`INSERT INTO queue (tournament_id, group) VALUES (${tourney_id}, ARRAY['${group_members}']) RETURNING id;`);
+    const output3 = await client.query(`INSERT INTO queue (tournament_id, user_group) VALUES (${tourney_id}, ARRAY['${group_members}']) RETURNING id;`);
     client.end();
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -2043,7 +2071,7 @@ async function leaveTourney(interaction, env) {
   }
   const tourney_id = output.rows[0].id;
   const user = interaction.member.user.id;
-  const output2 = await client.query(`DELETE FROM queue WHERE tournament_id = ${tourney_id} AND '${user}' = ANY(group) RETURNING *;`);
+  const output2 = await client.query(`DELETE FROM queue WHERE tournament_id = ${tourney_id} AND '${user}' = ANY(user_group) RETURNING *;`);
   client.end();
   if (output2.rows.length == 0) {
     return new JsonResponse({

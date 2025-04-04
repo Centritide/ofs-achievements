@@ -982,6 +982,12 @@ export const SUBMIT_TOURNEY_COMMAND = {
       required:true
     },
     {
+      name:"attachment",
+      description:"link to image proof",
+      type:11,
+      required:true
+    },
+    {
       name:"teammate1",
       description:"first teammate",
       type:6,
@@ -998,13 +1004,7 @@ export const SUBMIT_TOURNEY_COMMAND = {
       description:"third teammate",
       type:6,
       required:false
-    },
-    {
-      name:"attachment",
-      description:"link to image proof",
-      type:11,
-      required:true
-    },
+    }
   ]
 }
 
