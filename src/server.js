@@ -1101,6 +1101,8 @@ async function oss(interaction,env){
       return extendTour(interaction,env);
     case 'delete':
       return deleteSubmission(interaction,env);
+    case 'cancel':
+      return cancelTourney(interaction,env);
   }
 }
 
@@ -1824,7 +1826,55 @@ async function deleteSubmission(interaction, env) {
   });
 }
 
+// cancels tourney and reverts the tourney id
 
+async function cancelTourney(interaction, env) {
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
+  }
+  if (output.rows[0].status == 'ended') {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no tournament to cancel.",
+        "flags": 1000000
+      }
+    });
+  }
+  const tourney_id = output.rows[0].id;
+  // remove all submissions for the tournament
+  await client.query(`DELETE FROM submissions WHERE tournament_id = ${tourney_id};`);
+  // remove all queue entries for the tournament
+  await client.query(`DELETE FROM queue WHERE tournament_id = ${tourney_id};`);
+  // remove the tournament from the database and revert the tourney id
+  await client.query(`DELETE FROM tournaments WHERE id = ${tourney_id};`);
+  await client.query(`SELECT setval('tournaments_id_seq', ${tourney_id});`);
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": "Tournament canceled. Please send a relevant message to the announcements channel explaining why it was canceled.",
+      "flags": 1000000
+    }
+  });
+  
+}
 
 // checks submission for validity, adds to database
 
@@ -2094,7 +2144,7 @@ async function leaveTourney(interaction, env) {
     });
   }
   // direct message the teammates, if there are any
-  const teammates = output2.rows[0].queue.filter((member) => member != user);
+  const teammates = output2.rows[0].user_group.filter((member) => member != user);
   if (teammates.length > 0) {
     const response = await fetch(`https://discord.com/api/v10/users/@me/channels`, {
       headers: {

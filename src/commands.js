@@ -964,6 +964,11 @@ export const OSS_COMMAND = {
           required:true
         }
       ]
+    },
+    {
+      name:"cancel",
+      description:"cancel a tournament",
+      type:1
     }
   ]
 }
