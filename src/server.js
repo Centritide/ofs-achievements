@@ -1175,7 +1175,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `**One Shot Showdown  ${output2.rows[0].id}**${data.oss_messages.queueing}`
+          "content": `**One Shot Showdown ${output2.rows[0].id}**${data.oss_messages.queueing}`
         })
       });
       // const data = await response.json();
@@ -1192,8 +1192,9 @@ async function startTourney(interaction, env) {
       // if the latest tournament is queueing, advance to awaiting
       let output3 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${output.rows[0].id} ORDER BY id ASC ;`);
       const rows = output3.rows;
+      let team_message = "";
       try {
-        const team_message = queueAssignment(rows);
+        team_message = queueAssignment(rows);
       } catch (error) {
         console.error(error);
         return new JsonResponse({
@@ -1624,6 +1625,7 @@ async function stopTourney(interaction, env) {
   // get the top 3 scores
   const top3 = await client.query(`SELECT * from submissions WHERE tournament_id = ${tourney_id} ORDER BY score DESC;`);
   // console.log(top3.rows.length);
+  let output2 = await client.query(`UPDATE tournaments SET status = 'ended' WHERE id = ${tourney_id};`);
   if (top3.rows.length == 0) {
     client.end();
     const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
@@ -1663,7 +1665,6 @@ async function stopTourney(interaction, env) {
     await handleSubmission(env, id, score, team, tourney_id, link);
     num_sent++;
   }
-  let output2 = await client.query(`UPDATE tournaments SET status = 'ended' WHERE id = ${tourney_id};`);
 
   client.end();
   return new JsonResponse({
@@ -1865,7 +1866,7 @@ async function cancelTourney(interaction, env) {
   await client.query(`DELETE FROM queue WHERE tournament_id = ${tourney_id};`);
   // remove the tournament from the database and revert the tourney id
   await client.query(`DELETE FROM tournaments WHERE id = ${tourney_id};`);
-  await client.query(`SELECT setval('tournaments_id_seq', ${tourney_id});`);
+  await client.query(`SELECT setval('tournaments_id_seq', ${tourney_id} - 1);`);
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
