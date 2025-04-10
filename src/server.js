@@ -1021,7 +1021,9 @@ async function importFromRoles(id,interaction,env){
   await client.connect();
   let query;
   let vals;
+  // console.log("?");
   const old = await client.query(`SELECT * from ${table} where id = ${id};`);
+  // console.log(old);
   let hits = 0;
   if(old.rows.length <= 0){
     query = `INSERT INTO ${table} (id,`;
@@ -1029,7 +1031,7 @@ async function importFromRoles(id,interaction,env){
     for(let i in user.roles){
       const pair = data.roleid_mapscores[user.roles[i]];
       if(pair!=undefined){
-        query = query + `\`${pair[0]}\`, `;
+        query = query + `${pair[0]}, `;
         vals = vals + `${pair[1]}, `;
         hits +=1;
       }
@@ -1062,7 +1064,9 @@ async function importFromRoles(id,interaction,env){
       }
     });
   }
+  // console.log(query);
   const response = await client.query(query);
+  // console.log(response);
   client.end();
   // console.log(response);
   return new JsonResponse({

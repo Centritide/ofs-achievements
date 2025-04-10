@@ -1203,13 +1203,15 @@
             "branormal",
             "bragreen_random",
             "brasingle_random",
-            "bragolden_random"
+            "bragolden_random",
+            "bra"
         ],
         "bradayc": [
             "branormalday",
             "bragreen_randomday",
             "brasingle_randomday",
-            "bragolden_randomday"
+            "bragolden_randomday",
+            "braday"
         ],
         "normal": [
             "sgnormal",
