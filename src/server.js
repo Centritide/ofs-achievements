@@ -930,20 +930,21 @@ async function requestScore(interaction,env){
     link = `https://s3-img-gen.stats.ink/salmon/en-US/${id}.jpg`;
     const img = await fetch(link);
     real = img.status;
-  } else if(link.substring(0,27)=="https://cdn.discordapp.com/"){
+  } else if (link.substring(0, 27) == "https://cdn.discordapp.com/") {
+    real = 200;
+  } else if  (link.substring(0, 29) == "https://media.discordapp.net/") {
     real = 200;
   } else {
     const img = await fetch(link);
     real = img.status;
   }
-  if(real==200){
-
-  } else {
+  if (real != 200) {
+    console.log(`broken link: ${link}; ${real}`);
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         "content": "Please link a valid image",
-        "flags":1000000
+        "flags": 1000000
       }
     });
   }
@@ -1974,11 +1975,14 @@ async function submitTourney(interaction, env) {
   let real;
   if (link.substring(0, 27) == "https://cdn.discordapp.com/") {
     real = 200;
+  } else if  (link.substring(0, 29) == "https://media.discordapp.net/") {
+    real = 200;
   } else {
     const img = await fetch(link);
     real = img.status;
   }
   if (real != 200) {
+    console.log(`broken link: ${link}`);
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
