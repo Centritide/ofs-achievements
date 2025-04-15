@@ -2204,7 +2204,7 @@ async function leaveTourney(interaction, env) {
       // console.log(delete_data2);
     }
   }
-  let msg = teammates.length > 0 ? teammates.length == 1 ? ` along with your teammate <@${teammates[0]}>, who was notified.` : ` along with your teammates <@${teammates[0]} and <@${teammates[1]}, who were notified.` : ".";
+  let msg = teammates.length > 0 ? teammates.length == 1 ? ` along with your teammate <@${teammates[0]}>, who was notified.` : ` along with your teammates <@${teammates[0]}> and <@${teammates[1]}>, who were notified.` : ".";
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
