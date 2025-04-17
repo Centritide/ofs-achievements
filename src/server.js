@@ -1715,7 +1715,7 @@ async function extendTour(interaction,env){
   const tourney_id = output.rows[0].id;
   const date = output.rows[0].start_time;
   date.setMinutes(date.getMinutes() + Number(mins));
-  const date_end = `<t:${(date.getTime() + tourney_length)/1000n}:R>`
+  const date_end = `<t:${(BigInt(date.getTime()) + tourney_length)/1000n}:R>`
   try {
     const output2 = await client.query(`UPDATE tournaments SET start_time = ${date} WHERE id = ${tourney_id}`)
   } catch(e) {
