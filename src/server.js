@@ -1717,10 +1717,11 @@ async function extendTour(interaction,env){
   date.setMinutes(date.getMinutes() + Number(mins));
   const date_end = `<t:${(BigInt(date.getTime()) + tourney_length)/1000n}:R>`
   try {
-    const output2 = await client.query(`UPDATE tournaments SET start_time = ${date} WHERE id = ${tourney_id}`)
+    const output2 = await client.query(`UPDATE tournaments SET start_time = $1 WHERE id = ${tourney_id}`,[date])
   } catch(e) {
     client.end();
     console.error(e);
+    // console.log(`UPDATE tournaments SET start_time = $1 WHERE id = ${tourney_id}`)
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
