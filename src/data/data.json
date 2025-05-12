@@ -50,7 +50,8 @@
         "ew5",
         "ew6",
         "ew7",
-        "ew8"
+        "ew8",
+        "ew9"
     ],
     "oss": [
         "oss_1st",
@@ -205,6 +206,7 @@
         "ew6": "Eggstra Work 6",
         "ew7": "Eggstra Work 7",
         "ew8": "Eggstra Work 8",
+        "ew9": "Eggstra Work 9",
         "princess": "S3 👑📥",
         "s2princess": "S2 👑📥",
         "princessc": "S3 👑",
@@ -1112,7 +1114,8 @@
         "ew5": 236,
         "ew6": 227,
         "ew7": 99999,
-        "ew8": 99999
+        "ew8": 99999,
+        "ew9": 99999
     },
     "col_groups": {
         "sstc": [
@@ -1446,7 +1449,8 @@
             "ew5",
             "ew6",
             "ew7",
-            "ew8"
+            "ew8",
+            "ew9"
         ],
         "oss": [
             "oss_1st",
@@ -1937,6 +1941,11 @@
                             "label": "Eggstra Work #7 - Bonerattle Arena",
                             "value": "ew8",
                             "description": "Splat Dualies, Clash Blaster, Big Swig Roller, Snipewriter 5H"
+                        },
+                        {
+                          "label":"Eggstra Work #9 - Jammin' Salmon Junction",
+                          "value":"ew9",
+                          "description": "Dapple Dualies, Luna Blaster, Dualie Squelchers, Jet Squelcher"
                         }
                     ]
                 }
