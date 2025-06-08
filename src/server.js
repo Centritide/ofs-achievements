@@ -2362,6 +2362,20 @@ const server = {
   fetch: async function (request, env) {
     return router.handle(request, env);
   },
-
+  scheduled: async function (controller,env,ctx){
+    console.log("cron processed");
+    // const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: `Bot ${env.DISCORD_TOKEN}`,
+    //   },
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     "content": `test`
+    //   })
+    // });
+    // return response;
+    return;
+  }
 };
 export default server;
