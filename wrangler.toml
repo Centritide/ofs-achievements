@@ -4,5 +4,7 @@ compatibility_date = "2024-09-23"
 compatibility_flags = [ "nodejs_compat" ]
 [observability.logs]
 enabled = true
+[triggers]
+crons = ["*/5 * * * *"]
 # [secrets]
 # 
