@@ -1270,7 +1270,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `**One Shot Showdown ${output.rows[0].id}** has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
+          "content": `**\u00a0\nOne Shot Showdown ${output.rows[0].id}** has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
         })
       });
       // const data = await response3.json();
@@ -1500,7 +1500,7 @@ function queueAssignment(rows) {
   // if there are any remaining players, add them as subs
   // cases: 1-3 singles, 1 pair 1 single, 1 triplet, multiple triplets, 1 pair and any # of triplets
   if (total_excess > 0 && teams.length == 0) {
-    team_message = "a full team could not be created.";
+    team_message = "a full team could not be created.\n";
   }
   if (total_excess > 4) {
     // if there are more than 4 players in the remainder, suggest in the message that they can form their own team
@@ -1512,7 +1512,7 @@ function queueAssignment(rows) {
     if (pairs_excess.length == 1) {
       team_message += `- ${pairs_excess[0].map((member) => "<@" + member + ">").join(", ")}\n`;
     }
-    team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.';
+    team_message += 'The groups worked out to be uneven. If you would like to form your own team between your groups, please do so. You may act as subs for another team as well.\n';
   } else if (total_excess > 1) {
     // 2-3 remaining players (so they could theoretically play together just by themselves if they wanted to)
     team_message += `\n**Remaining players:**\n`;
@@ -1525,11 +1525,11 @@ function queueAssignment(rows) {
     for (let i = 0; i < singles_excess.length; i++) {
       team_message += `- <@${singles_excess[i][0]}>\n`;
     }
-    team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.';          
+    team_message += 'You may act as subs for another team, or you may also participate with less than 4 people, if you\'d like.\n';          
   } else if (total_excess == 1) {
     // 1 remaining player
     team_message += `\n**Remaining player:**\n- <@${singles_excess[0][0]}>\n`;
-    team_message += 'You may act as a sub for another team.';
+    team_message += 'You may act as a sub for another team.\n';
   }
   
   return team_message;
