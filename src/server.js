@@ -2364,6 +2364,115 @@ const server = {
   },
   scheduled: async function (controller,env,ctx){
     console.log("cron processed");
+    const client = new Client({
+      user: env.PG_USER,
+      password: env.PG_PW,
+      host: env.PG_HOST,
+      port: 6543,
+      database: env.PG_NAME
+    });
+    await client.connect();
+    let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+    if (output.rows.length <= 0) {
+      return;
+    }
+    switch (output.rows[0].status) {
+      case 'ended':
+        console.log(`No tournament waiting to start. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`);
+        return;
+      case 'queueing':
+        console.log(`A tournament is queuing. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`)
+        return;
+        // // if the latest tournament is queueing, advance to awaiting
+        // let output3 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${output.rows[0].id} ORDER BY id ASC ;`);
+        // const rows = output3.rows;
+        // let team_message = "";
+        // try {
+        //   team_message = queueAssignment(rows);
+        // } catch (error) {
+        //   console.error(error);
+        //   return new JsonResponse({
+        //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        //     data: {
+        //       "content": "Error: something went wrong with queue assignment.",
+        //       "flags": 1000000
+        //     }
+        //   });
+        // }
+        // // send message to tournament channel
+        // output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
+        // const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        //   },
+        //   method: 'POST',
+        //   body: JSON.stringify({
+        //     "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
+        //   })
+        // });
+        // // const data2 = await response2.json();
+        // // console.log(data2);
+        // client.end();
+        // return new JsonResponse({
+        //   type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        //   data: {
+        //     "content": "Tournament queueing ended and teams assigned. Awaiting scenario code.",
+        //     "flags": 1000000
+        //   }
+        // });
+      case 'awaiting':
+        console.log(`A tournament is ready to start. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`)
+        return;
+        // // if the latest tournament is awaiting, start the tournament
+        // // check if the scenario is in the correct format
+        // let scenario = checkCode(interaction.data.options[0].options[0].value);
+        // if (!scenario) {
+        //   return new JsonResponse({
+        //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        //     data: {
+        //       "content": "Invalid scenario format. Please use the format XXXX-XXXX-XXXX-XXXX or XXXXXXXXXXXXXXXXXX.",
+        //       "flags": 1000000
+        //     }
+        //   });
+        // }
+  
+        // // if there's no ongoing tournament, start a new one
+        // // insert the new tournament into the database
+        // try {
+        //   output2 = await client.query(`UPDATE tournaments SET scenario = $1, start_time = $2, status = $3 WHERE id = ${output.rows[0].id};`, [scenario, date, 'ongoing']);
+        // } catch (error) {
+        //   // will error if the scenario has been used before
+        //   console.error(error);
+        //   return new JsonResponse({
+        //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        //     data: {
+        //       "content": "The scenario has been used before in a previous tournament. Please use a different scenario. In the future, you can check the validity of the scenario beforehand with /oss check.",
+        //       "flags": 1000000
+        //     }
+        //   });
+        // }
+        // // the date tourney_length from now with discord timestamps
+        // const date_end = "<t:" + (BigInt(date.getTime()) + tourney_length) / BigInt(1000) + ":R>";
+        // const response3 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        //   },
+        //   method: 'POST',
+        //   body: JSON.stringify({
+        //     "content": `**One Shot Showdown ${output.rows[0].id}** has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
+        //   })
+        // });
+        // // const data = await response3.json();
+        // // console.log(data);
+        // client.end();
+        
+        // console.log("Tournament started!");
+        
+      case 'ongoing':
+        console.log(`There is an ongoing tournament. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`);
+    }
     // const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
     //   headers: {
     //     'Content-Type': 'application/json',
