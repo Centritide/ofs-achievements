@@ -2433,9 +2433,11 @@ const server = {
     }
     switch (output.rows[0].status) {
       case 'ended':
-        console.log(`No tournament waiting to start. start_time: ${output.rows[0].start_time}`);
+        console.log(`No tournament waiting to start. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`);
         return;
       case 'queueing':
+        console.log(`A tournament is queuing. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`)
+        return;
         // // if the latest tournament is queueing, advance to awaiting
         // let output3 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${output.rows[0].id} ORDER BY id ASC ;`);
         // const rows = output3.rows;
@@ -2475,6 +2477,8 @@ const server = {
         //   }
         // });
       case 'awaiting':
+        console.log(`A tournament is ready to start. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`)
+        return;
         // // if the latest tournament is awaiting, start the tournament
         // // check if the scenario is in the correct format
         // let scenario = checkCode(interaction.data.options[0].options[0].value);
@@ -2522,7 +2526,7 @@ const server = {
         // console.log("Tournament started!");
         
       case 'ongoing':
-        console.log(`There is an ongoing tournament. start_time: ${output.rows[0].start_time}`);
+        console.log(`There is an ongoing tournament. date():${BigInt((new Date()).getTime())} start_time: ${output.rows[0].start_time}`);
     }
     // const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
     //   headers: {
