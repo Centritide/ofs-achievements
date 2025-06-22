@@ -1042,6 +1042,13 @@ export const JOIN_TOURNEY_COMMAND = {
   ]
 }
 
+export const QUEUE_STATUS_COMMAND = {
+  name:"status",
+  description:"check the current number of people in the queue for One Shot Showdown",
+  dm_permission:false,
+  type:1
+}
+
 export const LEAVE_TOURNEY_COMMAND = {
   name:"leave",
   description:"leave queue for One Shot Showdown",
