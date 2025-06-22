@@ -9,7 +9,7 @@ import {
   InteractionType,
   verifyKey,
 } from 'discord-interactions';
-import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, OSS_COMMAND, SUBMIT_TOURNEY_COMMAND, LEADERBOARD_COMMAND, JOIN_TOURNEY_COMMAND, LEAVE_TOURNEY_COMMAND} from './commands.js';
+import {UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND, IMPORT_FROM_ROLES_COMMAND,REQUEST_SCORE_COMMAND,IMPORT_USER,INFO_COMMAND, OSS_COMMAND, SUBMIT_TOURNEY_COMMAND, LEADERBOARD_COMMAND, JOIN_TOURNEY_COMMAND, LEAVE_TOURNEY_COMMAND, QUEUE_STATUS_COMMAND} from './commands.js';
 const data = require("./data/data.json");
 const dict = data.dict;
 const event_thresholds = data.event_thresholds;
@@ -93,6 +93,8 @@ router.post('/', async (request, env) => {
         return leaveTourney(interaction, env);
       case OSS_COMMAND.name.toLowerCase():
         return oss(interaction, env);
+      case QUEUE_STATUS_COMMAND.name.toLowerCase():
+        return queueStatus(interaction, env);
       case TEST_COMMAND.name.toLowerCase():
 
         return new JsonResponse({
@@ -2099,16 +2101,69 @@ async function joinTourney(interaction, env) {
     });
   } else {
     const output3 = await client.query(`INSERT INTO queue (tournament_id, user_group) VALUES (${tourney_id}, ARRAY['${group_members}']) RETURNING id;`);
+    const output4 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${tourney_id};`);
     client.end();
+    let total = 0;
+    for (let i = 0; i < output2.rows.length; i++) {
+      total += output2.rows[i].user_group.length;
+    }
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        "content": `Added to the queue for One Shot Showdown ${output.rows[0].id}.`,
+        "content": `Added to the queue. There ${total == 1 ? "is" : "are"} now ${total} player${total == 1 ? "" : "s"} in the queue for One Shot Showdown ${tourney_id}.`,
         "flags": 1000000
       }
     });
   }
 }
+
+// returns to the user an ephemeral message indicating how many total people are in the queue (including teammates)
+async function queueStatus(interaction, env) {
+  const client = new Client({
+    user: env.PG_USER,
+    password: env.PG_PW,
+    host: env.PG_HOST,
+    port: 6543,
+    database: env.PG_NAME
+  });
+  await client.connect();
+  let output = await client.query(`SELECT * from tournaments ORDER BY start_time DESC LIMIT 1`);
+  if (output.rows.length <= 0) {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "Error: no tournament found in database.",
+        "flags": 1000000
+      }
+    });
+  }
+  if (output.rows[0].status != 'queueing') {
+    client.end();
+    return new JsonResponse({
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        "content": "There is no tournament with an active queue.",
+        "flags": 1000000
+      }
+    });
+  }
+  const tourney_id = output.rows[0].id;
+  const output2 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${tourney_id};`);
+  client.end();
+  let total = 0;
+  for (let i = 0; i < output2.rows.length; i++) {
+    total += output2.rows[i].user_group.length;
+  }
+  return new JsonResponse({
+    type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+    data: {
+      "content": `There ${total == 1 ? "is" : "are"} ${total} player${total == 1 ? "" : "s"} in the queue for One Shot Showdown ${tourney_id}.`,
+      "flags": 1000000
+    }
+  });
+}
+
 
 async function leaveTourney(interaction, env) {
   const client = new Client({
