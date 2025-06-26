@@ -1224,6 +1224,16 @@ async function startTourney(interaction, env) {
           "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
       });
+      const response2b = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": `_ _`
+        })
+      });
       // const data2 = await response2.json();
       // console.log(data2);
       client.end();
