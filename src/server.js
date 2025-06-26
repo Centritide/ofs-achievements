@@ -1272,7 +1272,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `**\u00a0\nOne Shot Showdown ${output.rows[0].id}** has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
+          "content": `## 💥 __One Shot Showdown ${output.rows[0].id}:__ ${scenario} <:OFS1b_big_shot:1062262830595837963> <:OFS1e_big_shot_cannon:1069362700418830346>\nDeadline to submit: ${date_end}${data.oss_messages.start}`
         })
       });
       // const data = await response3.json();
