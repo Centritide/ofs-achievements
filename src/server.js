@@ -1224,6 +1224,16 @@ async function startTourney(interaction, env) {
           "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
       });
+      const response2b = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({
+          "content": `_ _`
+        })
+      });
       // const data2 = await response2.json();
       // console.log(data2);
       client.end();
@@ -1272,7 +1282,7 @@ async function startTourney(interaction, env) {
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `**\u00a0\nOne Shot Showdown ${output.rows[0].id}** has started! You'll have until ${date_end} to complete the following scenario: **${scenario}** and submit it.${data.oss_messages.start}`
+          "content": `## 💥 __One Shot Showdown ${output.rows[0].id}:__ ${scenario} <:OFS1b_big_shot:1062262830595837963> <:OFS1e_big_shot_cannon:1069362700418830346>\nDeadline to submit: ${date_end}${data.oss_messages.start}`
         })
       });
       // const data = await response3.json();
