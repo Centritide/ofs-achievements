@@ -2114,8 +2114,8 @@ async function joinTourney(interaction, env) {
     const output4 = await client.query(`SELECT user_group FROM queue WHERE tournament_id = ${tourney_id};`);
     client.end();
     let total = 0;
-    for (let i = 0; i < output2.rows.length; i++) {
-      total += output2.rows[i].user_group.length;
+    for (let i = 0; i < output4.rows.length; i++) {
+      total += output4.rows[i].user_group.length;
     }
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
