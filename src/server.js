@@ -165,7 +165,11 @@ async function showProfile(interaction,env){
   }else{
     avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".png";
   }
-  const page = (interaction.data.options[0].options.length>=2) ? interaction.data.options[0].options[1].value : 0;
+  // const page = (interaction.data.options[0].options.length>=2) ? interaction.data.options[0].options[1].value : 0;
+  let page = 0;
+  for(let i of interaction.data.options[0].options){
+    if(i.name=="page") page= i.value;
+  }
   // console.log(interaction.data.options[0].options);
   const usemax = data.layouts[page][0];
   const title = data.layouts[page][1];
@@ -259,6 +263,14 @@ async function showProfile(interaction,env){
   }
   client.end();
   // console.log(fields)
+  let ethereal = false;
+  for(let i of interaction.data.options[0].options){
+    if(i.name=="ethereal") ethereal = ethereal | i.value;
+  }
+  console.log("isthisthingon")
+  const flags =(ethereal) ? 1000000 : 0 ;
+
+  // console.log(interaction.data.options[0].options[1] != undefined && interaction.data.options[0].options[1].value)
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
       "content": "",
@@ -285,9 +297,11 @@ async function showProfile(interaction,env){
             "text": (daysum > 0 || nightsum > 0) ? `total: ${nightsum} / ${daysum} ☀️ | avg: ${((nightsum/hasnightnum) || 0).toFixed(1)} / ${((daysum/hasdaynum) || 0).toFixed(1)} ☀️ `:"what should i write here 😔",
             "icon_url": ""
           },
+          
           // "timestamp": "<t:"+Date.now()":d>"
         }
-      ]
+      ],
+      "flags": flags
     }
   });
 }

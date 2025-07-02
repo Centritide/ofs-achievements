@@ -463,7 +463,14 @@ export const DISPLAY_PROFILE_COMMAND = {
               value:30
             }
           ]
+        },
+        {
+          name:"ethereal",
+          description:"send as ethereal message (only you can see)",
+          type:5,
+          required:false
         }
+
       ]
     },
     {
@@ -490,6 +497,12 @@ export const DISPLAY_PROFILE_COMMAND = {
               value:10
             }
           ]
+        },
+        {
+          name:"ethereal",
+          description:"send as ethereal message (only you can see)",
+          type:5,
+          required:false
         }
       ]
     }
