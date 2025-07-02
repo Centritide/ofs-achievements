@@ -910,12 +910,36 @@ export const INFO_COMMAND = {
           value:"submit"
         },
         {
+          name:"leaderboard",
+          value:"leaderboard"
+        },
+        {
           name:"start",
           value:"start"
         },
         {
           name:"stop",
           value:"stop"
+        },
+        {
+          name:"extend",
+          value:"extend"
+        },
+        {
+          name:"delete",
+          value:"delete"
+        },
+        {
+          name:"join",
+          value:"join"
+        },
+        {
+          name:"leave",
+          value:"leave"
+        },
+        {
+          name:"status",
+          value:"status"
         }
       ]
     }
