@@ -571,6 +571,12 @@ async function tourneyResponse(interaction, env) {
             "content": `Unfortunately, **One Shot Showdown ${interaction.message.embeds[0].fields[3].value}** did not have any submissions. We'll see you in the next one!`
           })
         });
+        response.then( response => {
+          return response.json()
+        })
+        .then( json => {
+          console.log(json); // add this line
+        });
         // const data = await response.json();
         // console.log(data);
         return new JsonResponse({
@@ -659,6 +665,12 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
     body: JSON.stringify({
       "content": leaderboardstring
     })
+  });
+  tourney_response.then( response => {
+    return response.json()
+  })
+  .then( json => {
+    console.log(json); // add this line
   });
   // const tourney_data = await tourney_response.json();
   // console.log(tourney_data);
@@ -1199,6 +1211,12 @@ async function startTourney(interaction, env) {
           "content": `**One Shot Showdown ${output2.rows[0].id}**${data.oss_messages.queueing}`
         })
       });
+      response.then( response => {
+        return response.json()
+      })
+      .then( json => {
+        console.log(json); // add this line
+      });
       // const data = await response.json();
       // console.log(data);
       client.end();
@@ -1237,6 +1255,12 @@ async function startTourney(interaction, env) {
         body: JSON.stringify({
           "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in 10 minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
+      });
+      response2.then( response => {
+        return response.json()
+      })
+      .then( json => {
+        console.log(json); // add this line
       });
       // const data2 = await response2.json();
       // console.log(data2);
@@ -1288,6 +1312,12 @@ async function startTourney(interaction, env) {
         body: JSON.stringify({
           "content": `## 💥 __One Shot Showdown ${output.rows[0].id}:__ ${scenario} <:OFS1b_big_shot:1062262830595837963> <:OFS1e_big_shot_cannon:1069362700418830346>\nDeadline to submit: ${date_end}${data.oss_messages.start}`
         })
+      });
+      response3.then( response => {
+        return response.json()
+      })
+      .then( json => {
+        console.log(json); // add this line
       });
       // const data = await response3.json();
       // console.log(data);
@@ -1660,6 +1690,12 @@ async function stopTourney(interaction, env) {
         "content": `Unfortunately, **One Shot Showdown ${tourney_id}** did not have any submissions. We'll see you in the next one!`
       })
     });
+    response.then( response => {
+      return response.json()
+    })
+    .then( json => {
+      console.log(json); // add this line
+    });
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -1755,6 +1791,12 @@ async function extendTour(interaction,env){
     body: JSON.stringify({
       "content": `**One Shot Showdown ${output.rows[0].id}**has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. It will instead end ${date_end}. <@&1330632674477473883>`
     })
+  });
+  response.then( response => {
+    return response.json()
+  })
+  .then( json => {
+    console.log(json); // add this line
   });
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
