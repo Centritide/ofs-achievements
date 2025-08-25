@@ -561,7 +561,7 @@ async function tourneyResponse(interaction, env) {
         client.end();
       } else { // the only submissions were denied
         client.end();
-        const response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+        const response =  fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -571,7 +571,7 @@ async function tourneyResponse(interaction, env) {
             "content": `Unfortunately, **One Shot Showdown ${interaction.message.embeds[0].fields[3].value}** did not have any submissions. We'll see you in the next one!`
           })
         });
-        response.then( response => {
+        await response.then( response => {
           return response.json()
         })
         .then( json => {
@@ -656,7 +656,7 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   }
   leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}${leaderboardstring}`;
   const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
-  const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+  const tourney_response =  fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -666,7 +666,7 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
       "content": leaderboardstring
     })
   });
-  tourney_response.then( response => {
+  await tourney_response.then( response => {
     return response.json()
   })
   .then( json => {
@@ -1201,7 +1201,7 @@ async function startTourney(interaction, env) {
       // if the latest tournament has ended, start a new one
       output2 = await client.query(`INSERT INTO tournaments (status) VALUES ($1) RETURNING id;`, ['queueing']);
       // send message to tournament channel
-      const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      const response =  fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1211,7 +1211,7 @@ async function startTourney(interaction, env) {
           "content": `**One Shot Showdown ${output2.rows[0].id}**${data.oss_messages.queueing}`
         })
       });
-      response.then( response => {
+      await response.then( response => {
         return response.json()
       })
       .then( json => {
@@ -1246,7 +1246,7 @@ async function startTourney(interaction, env) {
       }
       // send message to tournament channel
       output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
-      const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      const response2 =  fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1256,7 +1256,7 @@ async function startTourney(interaction, env) {
           "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in 10 minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
       });
-      response2.then( response => {
+      await response2.then( response => {
         return response.json()
       })
       .then( json => {
@@ -1268,7 +1268,7 @@ async function startTourney(interaction, env) {
       return new JsonResponse({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          "content": "Tournament queueing ended and teams assigned. Awaiting scenario code.",
+          "content": `Tournament queueing ended and teams assigned. If the message send for team assignments failed, it is duplicated here: ${team_message}. Awaiting scenario code.`,
           "flags": 1000000
         }
       });
@@ -1303,7 +1303,7 @@ async function startTourney(interaction, env) {
       }
       // the date tourney_length from now with discord timestamps
       const date_end = "<t:" + (BigInt(date.getTime()) + tourney_length) / BigInt(1000) + ":R>";
-      const response3 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      const response3 =  fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1313,7 +1313,7 @@ async function startTourney(interaction, env) {
           "content": `## 💥 __One Shot Showdown ${output.rows[0].id}:__ ${scenario} <:OFS1b_big_shot:1062262830595837963> <:OFS1e_big_shot_cannon:1069362700418830346>\nDeadline to submit: ${date_end}${data.oss_messages.start}`
         })
       });
-      response3.then( response => {
+      await response3.then( response => {
         return response.json()
       })
       .then( json => {
@@ -1680,7 +1680,7 @@ async function stopTourney(interaction, env) {
   if (top3.rows.length == 0) {
     client.end();
     const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
-    const response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+    const response =  fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1690,7 +1690,7 @@ async function stopTourney(interaction, env) {
         "content": `Unfortunately, **One Shot Showdown ${tourney_id}** did not have any submissions. We'll see you in the next one!`
       })
     });
-    response.then( response => {
+    await response.then( response => {
       return response.json()
     })
     .then( json => {
@@ -1782,7 +1782,7 @@ async function extendTour(interaction,env){
       }
     });
   }
-  const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
+  const response =  fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1792,7 +1792,7 @@ async function extendTour(interaction,env){
       "content": `**One Shot Showdown ${output.rows[0].id}**has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. It will instead end ${date_end}. <@&1330632674477473883>`
     })
   });
-  response.then( response => {
+  await response.then( response => {
     return response.json()
   })
   .then( json => {
