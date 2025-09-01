@@ -54,7 +54,8 @@
         "ew6",
         "ew7",
         "ew8",
-        "ew9"
+        "ew9",
+        "ew10"
     ],
     "oss": [
         "oss_1st",
@@ -210,6 +211,7 @@
         "ew7": "Eggstra Work 7",
         "ew8": "Eggstra Work 8",
         "ew9": "Eggstra Work 9",
+        "ew10": "Eggstra Work 10",
         "princess": "S3 👑📥",
         "s2princess": "S2 👑📥",
         "princessc": "S3 👑",
@@ -1116,9 +1118,10 @@
         "ew4": 218,
         "ew5": 236,
         "ew6": 227,
-        "ew7": 99999,
-        "ew8": 99999,
-        "ew9": 99999
+        "ew7": 246,
+        "ew8": 233,
+        "ew9": 273,
+        "ew10": 250
     },
     "col_groups": {
         "sstc": [
@@ -1453,7 +1456,8 @@
             "ew6",
             "ew7",
             "ew8",
-            "ew9"
+            "ew9",
+            "ew10"
         ],
         "oss": [
             "oss_1st",
@@ -1941,7 +1945,7 @@
                             "description": "Splattershot, Octobrush, Nautilus 47, Explosher"
                         },
                         {
-                            "label": "Eggstra Work #7 - Bonerattle Arena",
+                            "label": "Eggstra Work #8 - Bonerattle Arena",
                             "value": "ew8",
                             "description": "Splat Dualies, Clash Blaster, Big Swig Roller, Snipewriter 5H"
                         },
@@ -1949,6 +1953,11 @@
                           "label":"Eggstra Work #9 - Jammin' Salmon Junction",
                           "value":"ew9",
                           "description": "Dapple Dualies, Luna Blaster, Dualie Squelchers, Jet Squelcher"
+                        },
+                        {
+                          "label":"Eggstra Work #10 - Salmonid Smokeyard",
+                          "value":"ew10",
+                          "description": "Sploosh-o-matic, Splash-o-matic, Mint Decavitator, Bamboozler Mk I"
                         }
                     ]
                 }
