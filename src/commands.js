@@ -316,6 +316,10 @@ export const UPDATE_EVENT_COMMAND = {
             {
               name:"10 - Salmonid Smokeyard",
               value:"ew10"
+            },
+            {
+              name:"11 - Gone Fission Hydroplant",
+              value:"ew11"
             }
           ]
         },
@@ -862,6 +866,10 @@ export const REQUEST_SCORE_COMMAND = {
             {
               name:"10 - Salmonid Smokeyard",
               value:"ew10"
+            },
+            {
+              name:"11 - Gone Fission Hydroplant",
+              value:"ew11"
             }
           ]
         },

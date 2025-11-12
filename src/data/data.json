@@ -55,7 +55,8 @@
         "ew7",
         "ew8",
         "ew9",
-        "ew10"
+        "ew10",
+        "ew11"
     ],
     "oss": [
         "oss_1st",
@@ -212,6 +213,7 @@
         "ew8": "Eggstra Work 8",
         "ew9": "Eggstra Work 9",
         "ew10": "Eggstra Work 10",
+        "ew11": "Eggstra Work 11",
         "princess": "S3 👑📥",
         "s2princess": "S2 👑📥",
         "princessc": "S3 👑",
@@ -1121,7 +1123,8 @@
         "ew7": 246,
         "ew8": 233,
         "ew9": 273,
-        "ew10": 250
+        "ew10": 250,
+        "ew11": 243
     },
     "col_groups": {
         "sstc": [
@@ -1457,7 +1460,8 @@
             "ew7",
             "ew8",
             "ew9",
-            "ew10"
+            "ew10",
+            "ew11"
         ],
         "oss": [
             "oss_1st",
@@ -1958,6 +1962,11 @@
                           "label":"Eggstra Work #10 - Salmonid Smokeyard",
                           "value":"ew10",
                           "description": "Sploosh-o-matic, Splash-o-matic, Mint Decavitator, Bamboozler Mk I"
+                        },
+                        {
+                          "label":"Eggstra Work #11 - Gone Fission Hydroplant",
+                          "value":"ew11",
+                          "description": "Undercover Brella, Recycled Brella Mk I, Splattershot Nova, Ballpoint Splatling"
                         }
                     ]
                 }
