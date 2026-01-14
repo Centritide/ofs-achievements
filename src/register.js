@@ -34,7 +34,7 @@ const response = await fetch(url, {
     Authorization: `Bot ${token}`,
   },
   method: 'PUT',
-  body: JSON.stringify([UPDATE_EVENT_COMMAND,DISPLAY_PROFILE_COMMAND,IMPORT_FROM_ROLES_COMMAND,IMPORT_USER,REQUEST_SCORE_COMMAND,INFO_COMMAND,SUBMIT_TOURNEY_COMMAND,OSS_COMMAND,LEADERBOARD_COMMAND,JOIN_TOURNEY_COMMAND,LEAVE_TOURNEY_COMMAND,QUEUE_STATUS_COMMAND]),
+  body: JSON.stringify([UPDATE_EVENT_COMMAND,IMPORT_FROM_ROLES_COMMAND,IMPORT_USER,SUBMIT_TOURNEY_COMMAND,OSS_COMMAND,LEADERBOARD_COMMAND,JOIN_TOURNEY_COMMAND,LEAVE_TOURNEY_COMMAND,QUEUE_STATUS_COMMAND]),
 });
 
 if (response.ok) {
@@ -46,6 +46,34 @@ if (response.ok) {
   let errorText = `Error registering commands \n ${response.url}: ${response.status} ${response.statusText}`;
   try {
     const error = await response.text();
+    if (error) {
+      errorText = `${errorText} \n\n ${error}`;
+    }
+  } catch (err) {
+    console.error('Error reading body from request:', err);
+  }
+  console.error(errorText);
+}
+const url2 = `https://discord.com/api/v10/applications/${applicationId}/commands`;
+
+const response2 = await fetch(url2, {
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bot ${token}`,
+  },
+  method: 'PUT',
+  body: JSON.stringify([DISPLAY_PROFILE_COMMAND,REQUEST_SCORE_COMMAND,INFO_COMMAND]),
+});
+
+if (response2.ok) {
+  console.log('Registered all commands');
+  const data = await response2.json();
+  console.log(JSON.stringify(data, null, 2));
+} else {
+  console.error('Error registering commands');
+  let errorText = `Error registering commands \n ${response2.url}: ${response2.status} ${response2.statusText}`;
+  try {
+    const error = await response2.text();
     if (error) {
       errorText = `${errorText} \n\n ${error}`;
     }

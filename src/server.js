@@ -886,7 +886,7 @@ async function update(interaction,env){
 // requests. sends a message to secret channel
 async function requestScore(interaction,env){
   const subcommand = interaction.data.options[0].name.toLowerCase();
-  const user = interaction.member.user.id;
+  const user = interaction.context == 0? interaction.member.user.id : interaction.user.id;
   const options = interaction.data.options[0].options;
   // console.log(options);
   let link, score,stage;
@@ -1013,7 +1013,7 @@ async function requestScore(interaction,env){
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      "content": "Request sent! https://discord.com/channels/" + interaction.guild_id + "/" + data.channel_id + "/" + data.id ,
+      "content": "Request sent! https://discord.com/channels/737359708276654121/" + data.channel_id + "/" + data.id ,
       "flags":1000000
     }
   });}

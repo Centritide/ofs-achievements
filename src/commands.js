@@ -339,16 +339,18 @@ export const UPDATE_EVENT_COMMAND = {
 export const DISPLAY_PROFILE_COMMAND = {
   name:"profile",
   type:1,
+  contexts:[0,1],
   // id:"1178119204302491780",
-  dm_permission:"false",
+  dm_permission:true,
   description:"see user profile",
   options:[
     {
       name: 's2s3',
       type:1,
       // default_member_permissions:"268435456",
-      dm_permission:"false",
+      dm_permission:true,
       description: 'see user s2s3 profile',
+      contexts:[0,1],
       options: [
         {
           name:"user",
@@ -485,8 +487,9 @@ export const DISPLAY_PROFILE_COMMAND = {
       name: 'oss',
       type:1,
       // default_member_permissions:"268435456",
-      dm_permission:"false",
+      dm_permission:true,
       description: 'see user OSS profile',
+      contexts:[0,1],
       options: [
         {
           name:"user",
@@ -542,7 +545,7 @@ export const IMPORT_USER = {
 export const REQUEST_SCORE_COMMAND = {
   name:"request",
   type:1,
-  dm_permission:false,
+  dm_permission:true,
   // id:"1178119204302491783",
   description:"request a score with a message link",
   options: [
@@ -550,7 +553,7 @@ export const REQUEST_SCORE_COMMAND = {
       name: 's3',
       type:1,
       // default_member_permissions:"268435456",
-      dm_permission:"false",
+      dm_permission:true,
       description: 'request an s3 score',
       options: [
         {
@@ -657,7 +660,7 @@ export const REQUEST_SCORE_COMMAND = {
       name: 's2',
       type:1,
       // default_member_permissions:"32",
-      dm_permission:"false",
+      dm_permission:true,
       description: 'request an s2 score',
       options: [
 
