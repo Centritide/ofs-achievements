@@ -165,7 +165,11 @@ async function showProfile(interaction,env){
   }else{
     avi_url = "https://cdn.discordapp.com/avatars/"+user+"/"+interaction.data.resolved.users[user].avatar+".png";
   }
-  const page = (interaction.data.options[0].options.length>=2) ? interaction.data.options[0].options[1].value : 0;
+  // const page = (interaction.data.options[0].options.length>=2) ? interaction.data.options[0].options[1].value : 0;
+  let page = 0;
+  for(let i of interaction.data.options[0].options){
+    if(i.name=="page") page= i.value;
+  }
   // console.log(interaction.data.options[0].options);
   const usemax = data.layouts[page][0];
   const title = data.layouts[page][1];
@@ -259,6 +263,14 @@ async function showProfile(interaction,env){
   }
   client.end();
   // console.log(fields)
+  let ethereal = false;
+  for(let i of interaction.data.options[0].options){
+    if(i.name=="ethereal") ethereal = ethereal | i.value;
+  }
+  console.log("isthisthingon")
+  const flags =(ethereal) ? 1000000 : 0 ;
+
+  // console.log(interaction.data.options[0].options[1] != undefined && interaction.data.options[0].options[1].value)
   return new JsonResponse({type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
       "content": "",
@@ -285,9 +297,11 @@ async function showProfile(interaction,env){
             "text": (daysum > 0 || nightsum > 0) ? `total: ${nightsum} / ${daysum} ☀️ | avg: ${((nightsum/hasnightnum) || 0).toFixed(1)} / ${((daysum/hasdaynum) || 0).toFixed(1)} ☀️ `:"what should i write here 😔",
             "icon_url": ""
           },
+          
           // "timestamp": "<t:"+Date.now()":d>"
         }
-      ]
+      ],
+      "flags": flags
     }
   });
 }
@@ -547,7 +561,7 @@ async function tourneyResponse(interaction, env) {
         client.end();
       } else { // the only submissions were denied
         client.end();
-        const response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+        const response =  fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -556,6 +570,12 @@ async function tourneyResponse(interaction, env) {
           body: JSON.stringify({
             "content": `Unfortunately, **One Shot Showdown ${interaction.message.embeds[0].fields[3].value}** did not have any submissions. We'll see you in the next one!`
           })
+        });
+        await response.then( response => {
+          return response.json()
+        })
+        .then( json => {
+          console.log(json); // add this line
         });
         // const data = await response.json();
         // console.log(data);
@@ -636,7 +656,7 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
   }
   leaderboardstring = `## Top ${i} for One Shot Showdown ${tourney_id}${leaderboardstring}`;
   const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
-  const tourney_response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+  const tourney_response =  fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -645,6 +665,12 @@ async function top3_leaderboard(env, leaderboard, client, tourney_id) {
     body: JSON.stringify({
       "content": leaderboardstring
     })
+  });
+  await tourney_response.then( response => {
+    return response.json()
+  })
+  .then( json => {
+    console.log(json); // add this line
   });
   // const tourney_data = await tourney_response.json();
   // console.log(tourney_data);
@@ -860,7 +886,7 @@ async function update(interaction,env){
 // requests. sends a message to secret channel
 async function requestScore(interaction,env){
   const subcommand = interaction.data.options[0].name.toLowerCase();
-  const user = interaction.member.user.id;
+  const user = interaction.context == 0? interaction.member.user.id : interaction.user.id;
   const options = interaction.data.options[0].options;
   // console.log(options);
   let link, score,stage;
@@ -987,7 +1013,7 @@ async function requestScore(interaction,env){
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
     data: {
-      "content": "Request sent! https://discord.com/channels/" + interaction.guild_id + "/" + data.channel_id + "/" + data.id ,
+      "content": "Request sent! https://discord.com/channels/737359708276654121/" + data.channel_id + "/" + data.id ,
       "flags":1000000
     }
   });}
@@ -1175,7 +1201,7 @@ async function startTourney(interaction, env) {
       // if the latest tournament has ended, start a new one
       output2 = await client.query(`INSERT INTO tournaments (status) VALUES ($1) RETURNING id;`, ['queueing']);
       // send message to tournament channel
-      const response = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      const response =  fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1184,6 +1210,12 @@ async function startTourney(interaction, env) {
         body: JSON.stringify({
           "content": `**One Shot Showdown ${output2.rows[0].id}**${data.oss_messages.queueing}`
         })
+      });
+      await response.then( response => {
+        return response.json()
+      })
+      .then( json => {
+        console.log(json); // add this line
       });
       // const data = await response.json();
       // console.log(data);
@@ -1214,14 +1246,14 @@ async function startTourney(interaction, env) {
       }
       // send message to tournament channel
       output2 = await client.query(`UPDATE tournaments SET status = 'awaiting' WHERE id = ${output.rows[0].id};`);
-      const response2 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      const response2 =  fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bot ${env.DISCORD_TOKEN}`,
         },
         method: 'POST',
         body: JSON.stringify({
-          "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in a few minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
+          "content": `**One Shot Showdown ${output.rows[0].id}** will be starting in 10 minutes! Queueing has ended; ${team_message}${data.oss_messages.awaiting}`
         })
       });
       const response2b = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
@@ -1240,7 +1272,7 @@ async function startTourney(interaction, env) {
       return new JsonResponse({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          "content": "Tournament queueing ended and teams assigned. Awaiting scenario code.",
+          "content": `Tournament queueing ended and teams assigned. If the message send for team assignments failed, it is duplicated here: ${team_message}. Awaiting scenario code.`,
           "flags": 1000000
         }
       });
@@ -1275,7 +1307,7 @@ async function startTourney(interaction, env) {
       }
       // the date tourney_length from now with discord timestamps
       const date_end = "<t:" + (BigInt(date.getTime()) + tourney_length) / BigInt(1000) + ":R>";
-      const response3 = await fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
+      const response3 =  fetch(`https://discord.com/api/v10/channels/${tour_announcement_channel}/messages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1284,6 +1316,12 @@ async function startTourney(interaction, env) {
         body: JSON.stringify({
           "content": `## 💥 __One Shot Showdown ${output.rows[0].id}:__ ${scenario} <:OFS1b_big_shot:1062262830595837963> <:OFS1e_big_shot_cannon:1069362700418830346>\nDeadline to submit: ${date_end}${data.oss_messages.start}`
         })
+      });
+      await response3.then( response => {
+        return response.json()
+      })
+      .then( json => {
+        console.log(json); // add this line
       });
       // const data = await response3.json();
       // console.log(data);
@@ -1646,7 +1684,7 @@ async function stopTourney(interaction, env) {
   if (top3.rows.length == 0) {
     client.end();
     const tourney_channel = env.TOUR_ANNOUNCE_ID; // oss-announcements
-    const response = await fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
+    const response =  fetch(`https://discord.com/api/v10/channels/${tourney_channel}/messages`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1655,6 +1693,12 @@ async function stopTourney(interaction, env) {
       body: JSON.stringify({
         "content": `Unfortunately, **One Shot Showdown ${tourney_id}** did not have any submissions. We'll see you in the next one!`
       })
+    });
+    await response.then( response => {
+      return response.json()
+    })
+    .then( json => {
+      console.log(json); // add this line
     });
     return new JsonResponse({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -1742,7 +1786,7 @@ async function extendTour(interaction,env){
       }
     });
   }
-  const response = await fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
+  const response =  fetch(`https://discord.com/api/v10/channels/${env.TOUR_ANNOUNCE_ID}/messages`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
@@ -1751,6 +1795,12 @@ async function extendTour(interaction,env){
     body: JSON.stringify({
       "content": `**One Shot Showdown ${output.rows[0].id}**has been extended by ${mins} ${(mins ==1)? "minute":"minutes"}. It will instead end ${date_end}. <@&1330632674477473883>`
     })
+  });
+  await response.then( response => {
+    return response.json()
+  })
+  .then( json => {
+    console.log(json); // add this line
   });
   return new JsonResponse({
     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
